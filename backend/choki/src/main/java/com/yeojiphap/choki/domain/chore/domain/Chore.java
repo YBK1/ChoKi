@@ -1,5 +1,7 @@
 package com.yeojiphap.choki.domain.chore.domain;
 
+import java.util.List;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,4 +19,7 @@ public class Chore {
 	private ObjectId id;
 	private Building startPoint;
 	private Building destination;
+	private Route route;
+	private List<Product> shoppingList;
+	private List<CartItem> cartItem;
 }
