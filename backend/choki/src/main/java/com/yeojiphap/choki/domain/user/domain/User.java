@@ -1,4 +1,4 @@
-package com.yeojiphap.choki.domain.user.entity;
+package com.yeojiphap.choki.domain.user.domain;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,10 +1,9 @@
-package com.yeojiphap.choki.domain.collected;
+package com.yeojiphap.choki.domain.collected.domain;
 
-import com.yeojiphap.choki.domain.character.entity.Character;
-import com.yeojiphap.choki.domain.user.entity.User;
+import com.yeojiphap.choki.domain.character.domain.Character;
+import com.yeojiphap.choki.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

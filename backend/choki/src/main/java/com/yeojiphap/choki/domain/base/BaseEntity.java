@@ -17,8 +17,8 @@ public class BaseEntity {
 
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime createdDate;  // 필드명과 매핑할 컬럼명을 다르게 설정
+    private LocalDateTime createdAt;  // 필드명과 매핑할 컬럼명을 다르게 설정
 
     @LastModifiedDate
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime lastModifiedAt;
 }
