@@ -1,5 +1,6 @@
-package com.yeojiphap.choki.domain.user.domain;
+package com.yeojiphap.choki.domain.family.domain;
 
+import com.yeojiphap.choki.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,8 +9,6 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@AllArgsConstructor
-@Builder
 public class Family {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

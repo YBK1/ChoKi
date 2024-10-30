@@ -1,13 +1,12 @@
 package com.yeojiphap.choki.domain.user.domain;
 
+import com.yeojiphap.choki.domain.family.domain.Family;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@AllArgsConstructor
-@Builder
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,7 +35,7 @@ public class User {
 
     private int pastLevel;
 
-    private int mainCharacter;
+    private int mainAnimal;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "family_id")
