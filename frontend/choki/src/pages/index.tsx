@@ -1,3 +1,3 @@
 export default function Home() {
-	return <>index.tsx</>;
+	return <>왜 안되는걸까요?</>;
 }
