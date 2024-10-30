@@ -35,7 +35,7 @@ public class User {
 
     private int pastLevel;
 
-    private int mainAnimal;
+    private Long mainAnimal;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "family_id")
