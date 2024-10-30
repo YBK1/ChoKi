@@ -29,10 +29,10 @@ public record signUpRequest(
         @NotNull(message = "역할은 필수 입력 항목입니다.")
         Role role
 ) {
-    public User toEntity() {
+    public User toEntity(String encodedPassword) {
         return User.builder()
                 .userId(userId)
-                .userPassword(userPassword)
+                .userPassword(encodedPassword)
                 .nickname(nickname)
                 .address(address)
                 .latitude(latitude)
