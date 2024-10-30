@@ -31,8 +31,6 @@ public class User {
 
     private Role role;
 
-    private String inviteCode;
-
     private int level;
 
     private int exp;
