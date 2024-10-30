@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* styles/globals.css */
+/* @font-face 설정 */
 @font-face {
   font-family: 'pretendard';
   font-style: normal;
@@ -10,6 +10,7 @@
   src: url('/assets/fonts/Pretendard-Thin.woff2') format('woff2');
 }
 
+/* 다른 폰트 웨이트 설정 */
 @font-face {
   font-family: 'pretendard';
   font-style: normal;
@@ -17,7 +18,6 @@
   src: url('/assets/fonts/Pretendard-ExtraLight.woff2') format('woff2');
 }
 
-/* 다른 폰트 웨이트를 동일하게 설정 */
 @font-face {
   font-family: 'pretendard';
   font-style: normal;
@@ -60,6 +60,45 @@
   src: url('/assets/fonts/Pretendard-Black.woff2') format('woff2');
 }
 
+/* 기본 폰트를 Pretendard로 설정 */
 html {
   font-family: 'pretendard', sans-serif;
+}
+
+/* 전역 CSS 설정 */
+body {
+  @apply m-0 p-0 h-screen overflow-hidden;
+  background-color: #f0f0f0;
+}
+
+/* #root 스타일 */
+#root {
+  @apply h-screen bg-white flex flex-col;
+  width: 390px;
+  margin: 0 auto;
+}
+
+/* 390px 미만일 때 풀스크린 적용 */
+@media (max-width: 390px) {
+  #root {
+    @apply w-full h-screen m-0;
+  }
+}
+
+/* outletContainer 스타일 */
+.outletContainer {
+  @apply flex-1 overflow-y-auto;
+
+  /* 스크롤바 숨기기 */
+  scrollbar-width: none; /* Firefox용 */
+  -ms-overflow-style: none; /* IE 및 Edge용 */
+}
+
+.outletContainer::-webkit-scrollbar {
+  display: none;
+}
+
+/* outletPadding 스타일 */
+.outletPadding {
+  @apply p-8;
 }

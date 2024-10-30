@@ -8,8 +8,10 @@ export default function Document() {
 				<link rel="icon" href="/public/choki512x512.png" />
 			</Head>
 			<body className="antialiased">
-				<Main />
-				<NextScript />
+				<div id="root">
+					<Main />
+					<NextScript />
+				</div>
 			</body>
 		</Html>
 	);
