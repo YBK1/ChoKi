@@ -28,6 +28,7 @@ out/
 
 /src/main/resources/application.properties
 /src/main/resources/application.yml
+/src/main/resources/certs
 
 ### NetBeans ###
 /nbproject/private/

@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    public String signUp(signUpRequest signUpRequest) {
-        String encodedPassword = bCryptPasswordEncoder.encode(signUpRequest.userPassword());
-        User user = signUpRequest.toEntity(encodedPassword);
-        userRepository.save(user);
-        return SIGN_UP_SUCCESS.getMessage();
-    }
+    // private final UserRepository userRepository;
+    // private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    //
+    // public String signUp(signUpRequest signUpRequest) {
+    //     String encodedPassword = bCryptPasswordEncoder.encode(signUpRequest.userPassword());
+    //     User user = signUpRequest.toEntity(encodedPassword);
+    //     userRepository.save(user);
+    //     return SIGN_UP_SUCCESS.getMessage();
+    // }
 }

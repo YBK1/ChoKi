@@ -23,12 +23,14 @@ public class ProductDocument {
 	@Field(type = FieldType.Long, index = false, docValues = false)
 	private Long number;
 
+	// 검색이 필요한 필드는 text + nori
 	@Field(type = FieldType.Text, analyzer = "nori")
 	private String name;
 
-	@Field(type = FieldType.Text, index = false, docValues = false)
+	// 검색이 필요 없고 단순 저장용이면 keyword
+	@Field(type = FieldType.Keyword, index = false, docValues = false)
 	private String image;
 
-	@Field(type = FieldType.Text, index = false, docValues = false)
+	@Field(type = FieldType.Keyword, index = false, docValues = false)
 	private String category;
 }

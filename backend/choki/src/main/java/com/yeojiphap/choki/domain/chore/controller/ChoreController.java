@@ -3,6 +3,7 @@ package com.yeojiphap.choki.domain.chore.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.yeojiphap.choki.domain.chore.domain.Chore;
 import com.yeojiphap.choki.domain.chore.service.ChoreService;
+import com.yeojiphap.choki.global.ApiResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,17 @@ public class ChoreController {
 	private final ChoreService choreService;
 
 	@PostMapping("/create")
-	public ResponseEntity<?> create() {
-		return new ResponseEntity<>("message", HttpStatus.OK);
+	public ApiResponse create(@RequestBody Chore chore) {
+		return ApiResponse.success(HttpStatus.CREATED, "a");
+	}
+
+	@GetMapping("/item/{itemName}")
+	public ApiResponse searchByName(@PathVariable("itemName") String itemName) {
+		return ApiResponse.success(HttpStatus.OK, choreService.searchProductByName(itemName), "상품 조회 성공");
+	}
+
+	@GetMapping("/barcode/{barcode}")
+	public ApiResponse searchByBarcode(@PathVariable("barcode") String barcode) {
+		return ApiResponse.success(HttpStatus.OK, choreService.searchProductByBarcode(barcode), "상품 조회 성공");
 	}
 }

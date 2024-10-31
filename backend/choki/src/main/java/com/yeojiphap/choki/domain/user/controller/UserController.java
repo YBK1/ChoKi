@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/signup")
-    public ApiResponse signup(signUpRequest signUpRequest) {
-        return ApiResponse.success(HttpStatus.CREATED, userService.signUp(signUpRequest));
-    }
+    // @PostMapping("/signup")
+    // public ApiResponse signup(signUpRequest signUpRequest) {
+    //     return ApiResponse.success(HttpStatus.CREATED, userService.signUp(signUpRequest));
+    // }
 }
