@@ -1,7 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const Map = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
+	const [map, setMap] = useState<any>(null);
+	const [marker, setMarker] = useState<any>(null);
 
 	useEffect(() => {
 		const initMap = async () => {
@@ -10,43 +12,48 @@ const Map = () => {
 
 				kakao.maps.load(() => {
 					if (mapRef.current) {
-						// 서울
-						let center = new kakao.maps.LatLng(37.5665, 126.978);
+						const initialCenter = new kakao.maps.LatLng(37.5665, 126.978);
+						const mapInstance = new kakao.maps.Map(mapRef.current, {
+							center: initialCenter,
+							level: 3,
+						});
+
+						const customIconSrc = '/choki192x192.png';
+						const customIconSize = new kakao.maps.Size(32, 32);
+						const customIcon = new kakao.maps.MarkerImage(
+							customIconSrc,
+							customIconSize,
+						);
+
+						const initialMarker = new kakao.maps.Marker({
+							position: initialCenter,
+							image: customIcon,
+							map: mapInstance,
+						});
+
+						setMap(mapInstance);
+						setMarker(initialMarker);
 
 						if (navigator.geolocation) {
-							navigator.geolocation.getCurrentPosition(
+							navigator.geolocation.watchPosition(
 								position => {
 									const { latitude, longitude } = position.coords;
-									center = new kakao.maps.LatLng(latitude, longitude);
+									const newCenter = new kakao.maps.LatLng(latitude, longitude);
 
-									// 현재 위치 중앙으로
-									const map = new kakao.maps.Map(mapRef.current, {
-										center: center,
-										level: 3,
-									});
-
-									new kakao.maps.Marker({
-										position: center,
-										map: map,
-									});
+									mapInstance.setCenter(newCenter);
+									initialMarker.setPosition(newCenter);
 								},
 								error => {
-									console.error('Error getting geolocation:', error);
-
-									// 현재위치 추적 실패하면 서울 기준
-									const map = new kakao.maps.Map(mapRef.current, {
-										center: center,
-										level: 3,
-									});
+									console.error('Error watching position:', error);
+								},
+								{
+									enableHighAccuracy: true,
+									timeout: 5000,
+									maximumAge: 0,
 								},
 							);
 						} else {
-							console.error('현재위치 인식 실패');
-
-							const map = new kakao.maps.Map(mapRef.current, {
-								center: center,
-								level: 3,
-							});
+							console.error('Geolocation is not supported by this browser.');
 						}
 					}
 				});
