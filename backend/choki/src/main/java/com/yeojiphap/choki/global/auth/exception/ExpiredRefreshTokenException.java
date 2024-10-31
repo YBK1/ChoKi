@@ -1,11 +1,13 @@
 package com.yeojiphap.choki.global.auth.exception;
 
-public class ExpiredRefreshToken extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class ExpiredRefreshTokenException extends RuntimeException {
     @Override
     public String getMessage() {
         return RefreshExceptionMessage.EXPIRED_REFRESH_TOKEN.getMessage();
     }
-    public int getStatus() {
+    public HttpStatus getStatus() {
         return RefreshExceptionMessage.EXPIRED_REFRESH_TOKEN.getStatus();
     }
 }

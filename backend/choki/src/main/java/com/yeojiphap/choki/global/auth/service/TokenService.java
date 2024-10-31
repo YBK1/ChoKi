@@ -3,8 +3,8 @@ package com.yeojiphap.choki.global.auth.service;
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.global.ApiResponse;
 import com.yeojiphap.choki.global.auth.entity.RefreshToken;
-import com.yeojiphap.choki.global.auth.exception.ExpiredRefreshToken;
-import com.yeojiphap.choki.global.auth.exception.InvalidRefreshToken;
+import com.yeojiphap.choki.global.auth.exception.ExpiredRefreshTokenException;
+import com.yeojiphap.choki.global.auth.exception.InvalidRefreshTokenException;
 import com.yeojiphap.choki.global.auth.exception.NotFoundRefreshTokenException;
 import com.yeojiphap.choki.global.auth.jwt.JWTUtil;
 import com.yeojiphap.choki.global.auth.repository.RefreshRepository;
@@ -61,18 +61,18 @@ public class TokenService {
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
-            throw new ExpiredRefreshToken();
+            throw new ExpiredRefreshTokenException();
         }
 
         String category = jwtUtil.getCategory(refresh);
 
         Boolean isExist = refreshRepository.existsByRefresh(refresh);
         if (!isExist) {
-            throw new InvalidRefreshToken();
+            throw new InvalidRefreshTokenException();
         }
 
         if (!category.equals("refresh")) {
-            throw new InvalidRefreshToken();
+            throw new InvalidRefreshTokenException();
         }
 
         String username = jwtUtil.getUsername(refresh);
