@@ -1,4 +1,4 @@
-package com.yeojiphap.choki.global.config.interceptor;
+package com.yeojiphap.choki.global.interceptor;
 
 import java.security.Principal;
 

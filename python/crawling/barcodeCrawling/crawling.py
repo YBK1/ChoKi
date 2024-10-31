@@ -5,14 +5,6 @@ import time
 from elasticsearch import Elasticsearch
 import logging
 from typing import Dict, Any
-from urllib.parse import urlencode
-
-# 로깅 설정
-# logging.basicConfig(
-#     filename='crawler.log',
-#     level=logging.INFO,
-#     format='%(asctime)s [%(levelname)s] - %(message)s'
-# )
 
 class HTMLParser:
     def __init__(self, html_content):
