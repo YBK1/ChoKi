@@ -10,9 +10,8 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({ map }) => {
 		Array<{ latitude: number; longitude: number }>
 	>([]);
 	const [isRecording, setIsRecording] = useState(false);
-	const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null); // Use useRef for recordingInterval
+	const recordingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-	// Function to start recording the route
 	const startRecording = () => {
 		if (!isRecording && map) {
 			setIsRecording(true);
@@ -22,12 +21,12 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({ map }) => {
 						const { latitude, longitude } = position.coords;
 						setRoute(prevRoute => {
 							const newRoute = [...prevRoute, { latitude, longitude }];
-							console.log('Recording Location:', { latitude, longitude }); // Log each new location
+							console.log('Recording Location:', { latitude, longitude });
 							return newRoute;
 						});
 					},
 					error => {
-						console.error('Error getting location:', error);
+						console.error('위치 가져오는 중 오류 발생:', error);
 					},
 					{
 						enableHighAccuracy: true,
@@ -35,23 +34,21 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({ map }) => {
 						maximumAge: 0,
 					},
 				);
-			}, 3000); // Record location every 3 seconds
+			}, 3000);
 		}
 	};
 
-	// Function to stop recording the route
 	const stopRecording = () => {
 		if (isRecording && recordingIntervalRef.current) {
 			setIsRecording(false);
 			clearInterval(recordingIntervalRef.current);
 			recordingIntervalRef.current = null;
-			console.log('Route recorded:', route); // Log the full route array
+			console.log('기록된 경로:', route);
 		}
 	};
 
 	useEffect(() => {
 		return () => {
-			// Cleanup interval on component unmount
 			if (recordingIntervalRef.current) {
 				clearInterval(recordingIntervalRef.current);
 			}
@@ -77,7 +74,6 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({ map }) => {
 	);
 };
 
-// Button styling
 const buttonStyle = {
 	backgroundColor: '#fff',
 	border: 'none',
