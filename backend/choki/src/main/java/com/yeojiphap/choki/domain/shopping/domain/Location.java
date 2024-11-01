@@ -1,4 +1,4 @@
-package com.yeojiphap.choki.domain.chore.domain;
+package com.yeojiphap.choki.domain.shopping.domain;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,7 +12,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class Building {
+public class Location {
 	@Id
 	private ObjectId id;
 	private Double latitude;

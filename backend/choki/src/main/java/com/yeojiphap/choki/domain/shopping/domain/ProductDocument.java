@@ -1,13 +1,10 @@
-package com.yeojiphap.choki.domain.chore.domain;
-
-import java.util.ArrayList;
+package com.yeojiphap.choki.domain.shopping.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
-import org.springframework.data.elasticsearch.annotations.WriteOnlyProperty;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.yeojiphap.choki.domain.chore.domain;
+package com.yeojiphap.choki.domain.shopping.domain;
 
 import java.util.List;
 
@@ -10,15 +10,15 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-@Document(collection = "chore")
+@Document(collection = "shopping")
 @Getter
 @Builder
 @AllArgsConstructor
-public class Chore {
+public class Shopping {
 	@Id
 	private ObjectId id;
-	private Building startPoint;
-	private Building destination;
+	private Location startPoint;
+	private Location destination;
 	private Route route;
 	private List<Product> shoppingList;
 	private List<CartItem> cartItem;

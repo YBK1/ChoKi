@@ -1,4 +1,4 @@
-package com.yeojiphap.choki.domain.chore.dto;
+package com.yeojiphap.choki.domain.shopping.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.yeojiphap.choki.domain.chore.domain;
+package com.yeojiphap.choki.domain.shopping.domain;
 
 import java.util.List;
 

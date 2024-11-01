@@ -1,4 +1,4 @@
-package com.yeojiphap.choki.domain.chore.domain;
+package com.yeojiphap.choki.domain.shopping.domain;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
