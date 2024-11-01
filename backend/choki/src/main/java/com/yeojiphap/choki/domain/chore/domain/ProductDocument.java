@@ -12,9 +12,15 @@ import org.springframework.data.elasticsearch.annotations.WriteOnlyProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+// 만약 Spring으로 인덱스 생성부터 시작하고 싶다면 아래와 같은 어노테이션을 같이 써야한다
+// json은 직접 만들어야 하고
+// @Document(indexName = "product", createIndex = true)
+// @Setting(settingPath = "/elasticsearch/settings/settings.json")
+// @Mapping(mappingPath = "/elasticsearch/mappings/mappings.json")
+
 @Getter
 @Setter
-@Document(indexName = "alcohols")
+@Document(indexName = "product")
 @Setting(replicas = 0)
 public class ProductDocument {
 	@Id

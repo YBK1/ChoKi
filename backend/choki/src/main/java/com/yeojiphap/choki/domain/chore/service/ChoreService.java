@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
@@ -19,19 +21,19 @@ import lombok.RequiredArgsConstructor;
 public class ChoreService {
 	private final ProductRepository productRepository;
 
-	public List<ProductDto> searchProductByName(String itemName){
+	public List<ProductDto> searchProductByName(String itemName, Pageable pageable){
 		// elasticsearch 검색
-		SearchHits<ProductDocument> searchHits = productRepository.findByName(itemName);
+		Page<ProductDocument> pages = productRepository.findByNameContaining(itemName, pageable);
 
 		// 결과
 		List<ProductDto> productDtoList = new ArrayList<>();
-		for(SearchHit<ProductDocument> hit : searchHits) {
+		for(ProductDocument product : pages) {
 			// DTO로 변환
 			productDtoList.add(ProductDto.builder()
-					.barcode(hit.getContent().getNumber())
-					.productName(hit.getContent().getName())
-					.category(hit.getContent().getCategory())
-					.image(hit.getContent().getImage())
+					.barcode(product.getNumber())
+					.productName(product.getName())
+					.category(product.getCategory())
+					.image(product.getImage())
 					.build());
 		}
 		return productDtoList;
