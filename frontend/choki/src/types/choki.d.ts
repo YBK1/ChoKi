@@ -1,8 +1,8 @@
-//초키에서 사용할 타입을 정의한 파일
-type Text = string;
-type Color = string;
-
-interface ButtonInput {
-	text: Text;
-	color: Color;
+type ButtonSize = 'small' | 'medium' | 'large';
+type ButtonColor = 'orange' | 'white' | 'blue';
+// 버튼 스타일
+interface ButtonProps {
+	size: ButtonSize;
+	color: ButtonColor;
+	text?: string;
 }
