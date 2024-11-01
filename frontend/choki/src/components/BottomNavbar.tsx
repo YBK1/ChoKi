@@ -4,7 +4,7 @@ import gallery_nav from '@/assets/icons/gallery_nav.svg';
 
 export default function Navbar() {
 	return (
-		<nav className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[330px] h-[87px] bg-white rounded-2xl shadow-lg flex items-center justify-center">
+		<nav className="fixed bottom-10 left-1/2 transform -translate-x-1/2 w-[330px] h-[87px] bg-white rounded-2xl shadow-lg flex items-center justify-center">
 			<div className="flex gap-16">
 				<div className="flex flex-col items-center">
 					<div className="w-16 h-16 flex items-center justify-center mt-1">
