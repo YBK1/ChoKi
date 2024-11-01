@@ -13,8 +13,10 @@ const Map = ({ onMapLoad }: { onMapLoad: (map: any) => void }) => {
 					const center = new kakao.maps.LatLng(37.5665, 126.978); // Default center (Seoul)
 					const mapInstance = new kakao.maps.Map(mapRef.current, {
 						center: center,
-						level: 3,
+						level: 1,
 					});
+
+					mapInstance.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
 
 					onMapLoad(mapInstance); // Pass the map instance to the parent component
 				}
