@@ -15,7 +15,7 @@ CMD ["npm", "start"]
 
 # 3. Nginx stage - 리버스 프록시 설정
 FROM nginx:stable-alpine AS nginx-stage
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 COPY --from=next-stage /app /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
