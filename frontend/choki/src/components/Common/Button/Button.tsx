@@ -1,7 +1,7 @@
 import React from 'react';
 
-type ButtonSize = 'small' | 'medium' | 'large';
-type ButtonColor = 'orange' | 'white' | 'blue';
+type ButtonSize = 'small' | 'medium' | 'large' | 'small_mid';
+type ButtonColor = 'orange' | 'white' | 'blue' | 'gray';
 
 interface ButtonProps {
 	size: ButtonSize;
@@ -25,6 +25,7 @@ export default function Button({
 	// 사이즈별 스타일
 	const sizeStyles = {
 		small: 'px-4 py-1 text-sm rounded-full',
+		small_mid: 'w-[126px] h-[44px] text-base rounded-[22px]',
 		medium: 'w-[240px] h-[50px] text-base rounded-[15px]',
 		large: 'w-[315px] h-[65px] text-lg rounded-[20px]',
 	};
@@ -36,6 +37,7 @@ export default function Button({
 		white:
 			'bg-white text-orange_main border border-orange_main hover:bg-light_yellow_btn disabled:border-orange_main/50 disabled:text-orange_main/50',
 		blue: 'bg-light_blue_btn text-black_mission hover:bg-light_blue_btn/80 disabled:bg-light_blue_btn/50',
+		gray: 'bg-gray_btn text-white hover:bg-gray_btn/80 disabled:bg-gray_btn/50',
 	};
 
 	return (
