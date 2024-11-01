@@ -17,17 +17,24 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
-@RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
     private final CookieService cookieService;
-    private final RefreshRepository refreshRepository;
     private final AuthenticationManager authenticationManager;
+
+    public LoginFilter(JWTUtil jwtUtil, TokenService tokenService, CookieService cookieService, AuthenticationManager authenticationManager) {
+        super.setFilterProcessesUrl("/api/user/login");
+        this.jwtUtil = jwtUtil;
+        this.tokenService = tokenService;
+        this.cookieService = cookieService;
+        this.authenticationManager = authenticationManager;
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -46,7 +53,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
 
         //유저 정보
         String username = authentication.getName();
