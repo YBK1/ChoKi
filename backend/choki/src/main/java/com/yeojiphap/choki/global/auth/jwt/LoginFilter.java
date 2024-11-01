@@ -69,6 +69,21 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         tokenService.addRefreshToken(username, refresh, 86400000L);
 
+        // 응답 상태 설정
+        response.setStatus(HttpStatus.OK.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // JSON 응답 문자열 생성
+        String jsonResponse = String.format(
+                "{ \"status\": %d, \"message\": \"%s\" }",
+                HttpStatus.OK.value(),
+                "로그인 성공"
+        );
+
+        // 응답 전송
+        response.getWriter().write(jsonResponse);
+
         //응답 설정
         response.setHeader("access", access);
         response.addCookie(cookieService.createCookie("refresh", refresh));
