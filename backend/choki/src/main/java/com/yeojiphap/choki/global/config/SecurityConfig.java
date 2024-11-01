@@ -33,7 +33,6 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
     private final CookieService cookieService;
-    private final RefreshRepository refreshRepository;
     private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
@@ -82,14 +81,14 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/signup", "/reissue").permitAll()
+                        .requestMatchers("/api/login", "/", "/api/user/signup", "/api/reissue").permitAll()
                         .anyRequest().authenticated());
 
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
         http
-                .addFilterAt(new LoginFilter(jwtUtil, tokenService, cookieService, refreshRepository, authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(jwtUtil, tokenService, cookieService, authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
 
         http
                 .sessionManagement((session) -> session
