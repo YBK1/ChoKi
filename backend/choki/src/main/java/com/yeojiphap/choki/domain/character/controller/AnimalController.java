@@ -1,4 +1,4 @@
 package com.yeojiphap.choki.domain.character.controller;
 
-public class CharacterController {
+public class AnimalController {
 }
