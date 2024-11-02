@@ -11,7 +11,8 @@ export default function LoginPage() {
 		// TODO - 로그인 로직 구현
 	};
 	return (
-		<div className="bg-light_yellow_mid flex flex-col items-center h-screen">
+		<div className="bg-light_yellow_mid flex flex-col items-center h-screen pt-[20vh]">
+			{/* Logo Container */}
 			<div className="w-[120px] h-[120px] mb-16">
 				<Image src={MainLogo} alt="Choki Logo" width={120} height={120} />
 			</div>
@@ -33,7 +34,7 @@ export default function LoginPage() {
 				</div>
 
 				{/* Login Button */}
-				<div className="pt-4">
+				<div className="pt-8">
 					<CommonButton
 						onClick={handleLogin}
 						size="large"
@@ -45,7 +46,7 @@ export default function LoginPage() {
 
 			{/* Sign Up Link */}
 			<button
-				className="mt-4 text-gray-600 hover:text-gray-800"
+				className="mt-4 text-gray-600 "
 				onClick={() => {
 					/* 회원가입 페이지로 이동 */
 				}}
