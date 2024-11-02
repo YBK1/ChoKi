@@ -1,64 +1,52 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import CustomMarker from './CustomMarker';
-import SkyLayer from './SkyLayer';
-import ThreeDBuildingsLayer from './3DBuildingsLayer';
-import MapStyles from './MapStyles';
+import GlobeView from './GlobeView';
+import TransitionToLocalView from './TransitionToLocalView';
 import CurrentLocationButton from './CurrentLocationButton';
 import RouteRecorder from './RouteRecorder';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
-
 const MapComponent = () => {
 	const mapContainerRef = useRef<HTMLDivElement>(null);
 	const [map, setMap] = useState<mapboxgl.Map | null>(null);
+	const [userLocation, setUserLocation] = useState<[number, number] | null>(
+		null,
+	);
+	const [isGlobeView, setIsGlobeView] = useState(true);
 
 	useEffect(() => {
+		if (!mapContainerRef.current) return;
+
+		const mapInstance = new mapboxgl.Map({
+			container: mapContainerRef.current,
+			style: 'mapbox://styles/mapbox/satellite-v9',
+			center: [0, 20],
+			zoom: 1.5,
+			projection: 'globe',
+			attributionControl: false,
+		});
+
+		mapInstance.on('load', () => {
+			setMap(mapInstance); // Set the map state once it's fully loaded
+		});
+
+		return () => {
+			mapInstance.remove();
+		};
+	}, []); // Removed mapContainerRef from the dependency array
+
+	useEffect(() => {
+		if (!map) return; // Wait until the map is initialized
+
 		navigator.geolocation.getCurrentPosition(
 			position => {
 				const { latitude, longitude } = position.coords;
-
-				const mapInstance = new mapboxgl.Map({
-					container: mapContainerRef.current!,
-					style: 'mapbox://styles/mapbox/streets-v11',
-					center: [longitude, latitude],
-					zoom: 18,
-					pitch: 75,
-					attributionControl: false,
-				});
-
-				setMap(mapInstance);
-
-				mapInstance.on('style.load', () => {
-					const style = mapInstance.getStyle();
-					if (style && style.layers) {
-						style.layers.forEach(layer => {
-							if (
-								layer.type === 'symbol' &&
-								layer.layout &&
-								'text-field' in layer.layout
-							) {
-								mapInstance.setLayoutProperty(layer.id, 'text-field', [
-									'coalesce',
-									['get', 'name_ko'],
-									['get', 'name'],
-								]);
-							}
-						});
-					}
-
-					CustomMarker(mapInstance, latitude, longitude);
-					SkyLayer(mapInstance);
-					ThreeDBuildingsLayer(mapInstance);
-					MapStyles(mapInstance);
-				});
-
-				return () => mapInstance.remove();
+				setUserLocation([longitude, latitude]);
 			},
 			error => {
-				console.error('위치 불러오는 중 오류 발생:', error);
+				console.error('Error getting location:', error);
 			},
 			{
 				enableHighAccuracy: true,
@@ -66,17 +54,31 @@ const MapComponent = () => {
 				maximumAge: 0,
 			},
 		);
-	}, []);
+	}, [map]); // Only run this effect when the map is available
 
 	return (
-		<>
-			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>
-			<div style={{ position: 'relative', width: '100%', height: '100vh' }}>
-				<div ref={mapContainerRef} style={{ width: '100%', height: '100%' }} />
-				<CurrentLocationButton map={map} />
-				<RouteRecorder map={map} />
-			</div>
-		</>
+		<div className="relative w-full h-screen">
+			<div ref={mapContainerRef} className="w-full h-full" />
+			{isGlobeView ? (
+				<>
+					<GlobeView
+						mapContainerRef={mapContainerRef}
+						setMap={setMap}
+						setIsGlobeView={setIsGlobeView}
+					/>
+					<TransitionToLocalView
+						map={map}
+						userLocation={userLocation}
+						setIsGlobeView={setIsGlobeView}
+					/>
+				</>
+			) : (
+				<>
+					<CurrentLocationButton map={map} />
+					<RouteRecorder map={map} />
+				</>
+			)}
+		</div>
 	);
 };
 
