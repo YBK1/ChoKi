@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import CommonButton from '@/components/Common/Button';
 import CommonInput from '@/components/Common/Input';
@@ -5,6 +6,7 @@ import Image from 'next/image';
 import MainLogo from '@/assets/icons/choki_icon.svg';
 
 export default function LoginPage() {
+	const router = useRouter();
 	const [id, setId] = useState('');
 	const [password, setPassword] = useState('');
 	const handleLogin = () => {
@@ -22,11 +24,13 @@ export default function LoginPage() {
 				{/* Input Fields */}
 				<div className="space-y-4">
 					<CommonInput
+						type="text"
 						placeholder="아이디"
 						value={id}
 						onChange={e => setId(e.target.value)}
 					/>
 					<CommonInput
+						type="password"
 						placeholder="비밀번호"
 						value={password}
 						onChange={e => setPassword(e.target.value)}
@@ -49,6 +53,7 @@ export default function LoginPage() {
 				className="mt-4 text-gray-600 "
 				onClick={() => {
 					/* 회원가입 페이지로 이동 */
+					router.push('./signup');
 				}}
 			>
 				아이디가 없으신가요?
