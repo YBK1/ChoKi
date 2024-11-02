@@ -1,5 +1,5 @@
 // components/Map.tsx
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Script from 'next/script';
 
 const Map = ({ onMapLoad }: { onMapLoad: (map: any) => void }) => {
