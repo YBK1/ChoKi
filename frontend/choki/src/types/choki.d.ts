@@ -5,6 +5,7 @@ type ModalSize = 'small' | 'medium' | 'large';
 interface ButtonProps {
 	size: ButtonSize;
 	color: ButtonColor;
+	onClick?: () => void;
 	text?: string;
 }
 
