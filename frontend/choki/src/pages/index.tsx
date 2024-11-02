@@ -1,9 +1,13 @@
-import Button from '@/components/Common/Button/Button';
+import { useState } from 'react';
+import CommonInput from '@/components/Common/Input';
 export default function Home() {
+	const [value, setValue] = useState('');
+
 	return (
-		<>
-			<Button size="large" color="red" text="로그인" />
-			<Button size="call_large" color="white_call" text="아이에게 전화걸기" />
-		</>
+		<CommonInput
+			placeholder="텍스트를 입력하세요"
+			value={value}
+			onChange={e => setValue(e.target.value)}
+		/>
 	);
 }
