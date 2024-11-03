@@ -1,5 +1,6 @@
 package com.yeojiphap.choki.domain.shopping.controller;
 
+import com.yeojiphap.choki.domain.shopping.dto.ProductCompareRequestDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,5 +39,11 @@ public class ShoppingController {
 	@GetMapping("/barcode/{barcode}")
 	public ApiResponse searchByBarcode(@PathVariable("barcode") String barcode) {
 		return ApiResponse.success(HttpStatus.OK, shoppingService.searchProductByBarcode(barcode), "상품 조회 성공");
+	}
+
+	@PostMapping("/barcode/compare")
+	public ApiResponse compareProduct(ProductCompareRequestDto productCompareRequestDto) {
+		// api 명세서를 어떻게 해야 하려나 이걸..
+		return ApiResponse.success(HttpStatus.OK, shoppingService.compareBarcode(productCompareRequestDto), "비교 결과");
 	}
 }

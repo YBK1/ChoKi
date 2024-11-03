@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.yeojiphap.choki.domain.shopping.dto.*;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,16 +17,13 @@ import com.yeojiphap.choki.domain.shopping.domain.Shopping;
 import com.yeojiphap.choki.domain.shopping.domain.Product;
 import com.yeojiphap.choki.domain.shopping.domain.ProductDocument;
 import com.yeojiphap.choki.domain.shopping.domain.Route;
-import com.yeojiphap.choki.domain.shopping.dto.AddProductToCartRequestDto;
-import com.yeojiphap.choki.domain.shopping.dto.DeleteProductFromCartReqeustDto;
-import com.yeojiphap.choki.domain.shopping.dto.ShoppingCreateRequestDto;
-import com.yeojiphap.choki.domain.shopping.dto.ProductDto;
 import com.yeojiphap.choki.domain.shopping.repository.ShoppingRepository;
 import com.yeojiphap.choki.domain.shopping.repository.ProductRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ShoppingService {
 	private final ProductRepository productRepository;
@@ -117,4 +116,34 @@ public class ShoppingService {
 		// }
 	}
 
+	public ProductCompareResponseDto compareBarcode(ProductCompareRequestDto productCompareRequestDto) {
+		// log
+		log.info("상품 비교 시작");
+
+		// 장바구니 리스트 바코드 정보 확인
+		ProductDto originProduct =searchProductByBarcode(Long.toString(productCompareRequestDto.getOriginBarcode()));
+		// 입력 바코드 정보 확인
+		ProductDto inputProduct = searchProductByBarcode(Long.toString(productCompareRequestDto.getInputBarcode()));
+
+		ProductCompareResponseDto productCompareResponseDto = new ProductCompareResponseDto();
+		if(originProduct.getBarcode() == inputProduct.getBarcode()) {
+			productCompareResponseDto.setMatchStatus("MATCH");
+		}
+		else{
+			// 문자열을 '>'로 나눠 배열로 변환
+			String[] originCategory = originProduct.getCategory().split(">");
+			String[] inputCategory = inputProduct.getCategory().split(">");
+
+			// 마지막 요소 비교
+			if(originCategory[originCategory.length - 1].equals(inputCategory[inputCategory.length - 1])){
+				productCompareResponseDto.setMatchStatus("SIMILAR");
+			}
+			else {
+				productCompareResponseDto.setMatchStatus("NOT_MATCH");
+			}
+		}
+
+		// sub로 메세지를 전송
+		return productCompareResponseDto;
+	}
 }
