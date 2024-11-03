@@ -1,18 +1,12 @@
-import { useState } from 'react';
-import CommonModal from '@/components/Common/Modal';
-export default function Home() {
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	return (
-		<div>
-			<button onClick={() => setIsModalOpen(true)}>Open Modal</button>
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
-			<CommonModal
-				isOpen={isModalOpen}
-				onClose={() => setIsModalOpen(false)}
-				size="large"
-			>
-				<div>Modal Content Here</div>
-			</CommonModal>
-		</div>
-	);
+export default function Home() {
+	const router = useRouter();
+	// 초기 진입시 로그인 페이지로 이동
+	useEffect(() => {
+		router.push('/login');
+	}, [router]);
+
+	return <div></div>;
 }
