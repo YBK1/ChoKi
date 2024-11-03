@@ -33,3 +33,15 @@ interface PasswordForm {
 	isMatch: boolean;
 	message: string;
 }
+
+// 유니티 관련 Props
+interface UnityContextProps {
+	loaderUrl: string;
+	dataUrl: string;
+	frameworkUrl: string;
+	codeUrl: string;
+	streamingAssetsUrl?: string;
+	companyName?: string;
+	productName?: string;
+	productVersion?: string;
+}
