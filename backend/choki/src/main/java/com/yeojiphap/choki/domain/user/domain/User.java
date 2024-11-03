@@ -6,8 +6,6 @@ import lombok.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@AllArgsConstructor
-@Builder
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,17 +26,31 @@ public class User {
 
     private String tel;
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 
-    private int level;
+    private int level = 1;
 
-    private int exp;
+    private int exp = 0;
 
-    private int pastLevel;
+    private int pastLevel = 1;
 
     private int mainCharacter;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "family_id")
     private Family family;
+
+    @Builder
+    public User(String userId, String userPassword, String nickname, String address, Double latitude, Double longitude, String name, String tel, Role role) {
+        this.userId = userId;
+        this.userPassword = userPassword;
+        this.nickname = nickname;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.name = name;
+        this.tel = tel;
+        this.role = role;
+    }
 }
