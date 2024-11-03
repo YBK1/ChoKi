@@ -3,6 +3,7 @@ import dog_character from '@/assets/icons/dog_character.svg';
 import code_information from '@/assets/icons/cod-information.svg';
 import child_profile from '@/assets/icons/child_profile.svg';
 import map_icon_blurry from '@/assets/icons/map_icon_blurry.svg';
+import Link from 'next/link';
 
 export default function index() {
 	return (
@@ -48,23 +49,25 @@ export default function index() {
 				</div>
 
 				{/* 경로 등록하기 */}
-				<div className="relative w-[350px] h-[180px] bg-white p-6 rounded-3xl shadow-sm border-4 border-light_blue_side">
-					<h2 className="text-xl font-bold mb-2 mt-4 relative z-10">
-						경로 등록하기
-					</h2>
-					<p className="text-md text-gray-600 relative z-10">
-						아이에게 심부름을 시킬
-						<br />
-						경로를 미리 등록해주세요!
-					</p>
-					<div className="absolute right-0 bottom-0">
-						<Image
-							src={map_icon_blurry}
-							alt="map_icon_blurry"
-							className="opacity-50" // 선택적: 배경이미지처럼 보이도록 투명도 추가
-						/>
+				<Link href="parents/route/create">
+					<div className="relative w-[350px] h-[180px] bg-white p-6 rounded-3xl shadow-sm border-4 border-light_blue_side">
+						<h2 className="text-xl font-bold mb-2 mt-4 relative z-10">
+							경로 등록하기
+						</h2>
+						<p className="text-md text-gray-600 relative z-10">
+							아이에게 심부름을 시킬
+							<br />
+							경로를 미리 등록해주세요!
+						</p>
+						<div className="absolute right-0 bottom-0">
+							<Image
+								src={map_icon_blurry}
+								alt="map_icon_blurry"
+								className="opacity-50" // 선택적: 배경이미지처럼 보이도록 투명도 추가
+							/>
+						</div>
 					</div>
-				</div>
+				</Link>
 			</div>
 		</div>
 	);
