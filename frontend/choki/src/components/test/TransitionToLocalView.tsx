@@ -1,6 +1,6 @@
+/* eslint-disable no-undef */
 import { useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
-import CustomMarker from './CustomMarker';
 import SkyLayer from './SkyLayer';
 import ThreeDBuildingsLayer from './3DBuildingsLayer';
 import MapStyles from './MapStyles';
@@ -11,7 +11,6 @@ interface TransitionToLocalViewProps {
 	setIsGlobeView: (value: boolean) => void;
 }
 
-// eslint-disable-next-line no-undef
 const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 	map,
 	userLocation,
@@ -22,7 +21,6 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 
 		setIsGlobeView(false);
 
-		// Initial zoom out to prepare for transition
 		map.flyTo({
 			center: userLocation,
 			zoom: 3,
@@ -31,7 +29,6 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 			bearing: 0,
 		});
 
-		// Transition to street view
 		setTimeout(() => {
 			map.setProjection({ name: 'mercator' });
 			map.setStyle('mapbox://styles/mapbox/streets-v11');
@@ -54,7 +51,6 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 					});
 				}
 
-				// Final zoom to street level
 				map.flyTo({
 					center: userLocation,
 					zoom: 18,
@@ -63,8 +59,6 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 					essential: true,
 				});
 
-				// Add custom layers
-				CustomMarker(map, userLocation[1], userLocation[0]);
 				SkyLayer(map);
 				ThreeDBuildingsLayer(map);
 				MapStyles(map);
@@ -83,7 +77,7 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 				${!userLocation ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 active:bg-gray-100'}
 			`}
 		>
-			{userLocation ? '현재 위치로 이동' : '위치 확인 중...'}
+			{userLocation ? '시작하기' : '위치 확인 중...'}
 		</button>
 	);
 };

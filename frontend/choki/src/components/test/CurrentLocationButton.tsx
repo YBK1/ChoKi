@@ -12,38 +12,31 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 	const watchId = useRef<number | null>(null);
 	const locationMarker = useRef<mapboxgl.Marker | null>(null);
 
-	// Create or update marker
 	const updateMarker = useCallback(
 		(lngLat: [number, number]) => {
 			if (!map) return;
 
 			if (!locationMarker.current) {
-				// Create a custom marker element
 				const el = document.createElement('div');
 				el.className = 'current-location-marker';
-				el.style.width = '20px';
-				el.style.height = '20px';
-				el.style.borderRadius = '50%';
-				el.style.backgroundColor = '#4A90E2';
-				el.style.border = '3px solid white';
+				el.style.width = '30px';
+				el.style.height = '30px';
+				el.style.backgroundImage = 'url(/choki192x192.png)';
+				el.style.backgroundSize = 'cover';
 				el.style.boxShadow = '0 0 10px rgba(0,0,0,0.3)';
 
-				// Create new marker
 				locationMarker.current = new mapboxgl.Marker(el)
 					.setLngLat(lngLat)
 					.addTo(map);
 			} else {
-				// Update existing marker position
 				locationMarker.current.setLngLat(lngLat);
 			}
 		},
 		[map],
 	);
 
-	// Start watching location when component mounts
 	useEffect(() => {
 		if (navigator.geolocation && map) {
-			// Get initial position immediately
 			navigator.geolocation.getCurrentPosition(
 				position => {
 					const { latitude, longitude } = position.coords;
@@ -56,7 +49,6 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				},
 			);
 
-			// Then start watching for position changes
 			watchId.current = navigator.geolocation.watchPosition(
 				position => {
 					const { latitude, longitude } = position.coords;
@@ -70,7 +62,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				{
 					enableHighAccuracy: true,
 					timeout: 5000,
-					maximumAge: 0, // Don't use cached positions
+					maximumAge: 0,
 				},
 			);
 		}
@@ -84,14 +76,14 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				locationMarker.current.remove();
 			}
 		};
-	}, [map, updateMarker]); // Remove currentLocation from dependencies
+	}, [map, updateMarker]);
 
 	const centerMapOnLocation = () => {
 		if (map && currentLocation) {
 			map.flyTo({
 				center: currentLocation,
 				zoom: 18,
-				duration: 1000,
+				duration: 3000,
 			});
 		}
 	};

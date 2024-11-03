@@ -25,7 +25,6 @@ const GlobeView: React.FC<GlobeViewProps> = ({
 			attributionControl: false,
 		});
 
-		// Add atmosphere effect
 		mapInstance.on('style.load', () => {
 			mapInstance.setFog({
 				color: 'rgb(186, 210, 235)',
@@ -35,7 +34,6 @@ const GlobeView: React.FC<GlobeViewProps> = ({
 				'star-intensity': 0.6,
 			});
 
-			// Start a slow rotation
 			const rotateGlobe = () => {
 				mapInstance.rotateTo((mapInstance.getBearing() + 0.1) % 360, {
 					duration: 0,

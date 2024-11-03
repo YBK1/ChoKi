@@ -8,6 +8,7 @@ import RouteRecorder from './RouteRecorder';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
+
 const MapComponent = () => {
 	const mapContainerRef = useRef<HTMLDivElement>(null);
 	const [map, setMap] = useState<mapboxgl.Map | null>(null);
@@ -19,6 +20,8 @@ const MapComponent = () => {
 	useEffect(() => {
 		if (!mapContainerRef.current) return;
 
+		mapContainerRef.current.innerHTML = '';
+
 		const mapInstance = new mapboxgl.Map({
 			container: mapContainerRef.current,
 			style: 'mapbox://styles/mapbox/satellite-v9',
@@ -28,17 +31,25 @@ const MapComponent = () => {
 			attributionControl: false,
 		});
 
-		mapInstance.on('load', () => {
-			setMap(mapInstance); // Set the map state once it's fully loaded
+		mapInstance.on('style.load', () => {
+			mapInstance.setFog({
+				color: 'rgb(186, 210, 235)',
+				'high-color': 'rgb(36, 92, 223)',
+				'horizon-blend': 0.02,
+				'space-color': 'rgb(11, 11, 25)',
+				'star-intensity': 0.6,
+			});
+
+			setMap(mapInstance);
 		});
 
 		return () => {
 			mapInstance.remove();
 		};
-	}, []); // Removed mapContainerRef from the dependency array
+	}, []);
 
 	useEffect(() => {
-		if (!map) return; // Wait until the map is initialized
+		if (!map) return;
 
 		navigator.geolocation.getCurrentPosition(
 			position => {
@@ -46,7 +57,7 @@ const MapComponent = () => {
 				setUserLocation([longitude, latitude]);
 			},
 			error => {
-				console.error('Error getting location:', error);
+				console.error('현재 위치 가져오는 중 오류 발생:', error);
 			},
 			{
 				enableHighAccuracy: true,
@@ -54,10 +65,11 @@ const MapComponent = () => {
 				maximumAge: 0,
 			},
 		);
-	}, [map]); // Only run this effect when the map is available
+	}, [map]);
 
 	return (
 		<div className="relative w-full h-screen">
+			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>{' '}
 			<div ref={mapContainerRef} className="w-full h-full" />
 			{isGlobeView ? (
 				<>
