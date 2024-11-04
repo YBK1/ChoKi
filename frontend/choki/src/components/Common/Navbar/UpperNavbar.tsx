@@ -5,7 +5,7 @@ import basket from '@/assets/icons/basket.svg';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export default function Upper() {
+export default function UpperNavbar() {
 	return (
 		<>
 			<nav className="fixed top-5 z-50 w-full flex ml-10">
