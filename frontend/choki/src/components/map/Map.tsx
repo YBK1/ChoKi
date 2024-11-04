@@ -1,9 +1,9 @@
-// components/Map.tsx
 import { useState } from 'react';
 import MapContainer from './MapContainer';
 import UserLocationMarker from './UserLocationMarker';
 import RoutePolyline from './RoutePolyline';
 import RouteRecorder from './RouteRecorder';
+import DestinationSearch from './DestinationSearch';
 
 type MapProps = {
 	showRouteRecorder?: boolean;
@@ -18,7 +18,8 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 	);
 
 	return (
-		<div style={{ height: '100vh', width: '100%' }}>
+		<div style={{ height: '100vh', width: '100%', position: 'relative' }}>
+			{mapInstance && <DestinationSearch map={mapInstance} />}
 			<MapContainer onMapLoad={setMapInstance} />
 			{mapInstance && <UserLocationMarker map={mapInstance} />}
 			{mapInstance && showPolyline && (
@@ -47,5 +48,4 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 		</div>
 	);
 };
-
 export default Map;
