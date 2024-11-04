@@ -73,7 +73,7 @@ body {
 
 /* #root 스타일 */
 #root {
-  @apply h-screen bg-white flex flex-col;
+  @apply h-screen bg-white flex flex-col min-h-screen;
   width: 390px;
   margin: 0 auto;
 }
