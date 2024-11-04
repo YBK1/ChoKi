@@ -84,6 +84,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
                         .permitAll()
                         .requestMatchers("/api/login", "/", "/api/user/signup", "/api/reissue").permitAll()
+                        .requestMatchers("https://dapi.kakao.com/**").permitAll()
                         .anyRequest().authenticated());
 
         http
