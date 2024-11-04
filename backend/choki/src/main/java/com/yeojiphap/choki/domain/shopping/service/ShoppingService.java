@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.yeojiphap.choki.domain.shopping.domain.Point;
 import com.yeojiphap.choki.domain.shopping.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.yeojiphap.choki.domain.shopping.domain.CartItem;
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class ShoppingService {
 	private final ProductRepository productRepository;
 	private final ShoppingRepository shoppingRepository;
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	// 사용자가 입력한 내용으로 새로운 장보기를 만드는 함수
 	public void createShopping(ShoppingCreateRequestDto createRequestDto) {
@@ -145,5 +148,15 @@ public class ShoppingService {
 
 		// sub로 메세지를 전송
 		return productCompareResponseDto;
+	}
+
+	// Redis에 현재 아이 위치 저장
+	public void saveChildPoint(ChildPointDto childPointDto) {
+		Point point = Point.builder()
+			.latitude(childPointDto.getLatitude())
+			.longitude(childPointDto.getLongitude())
+			.build();
+
+		redisTemplate.opsForHash().put(childPointDto.getShoppingId().toString(), "location", point);
 	}
 }

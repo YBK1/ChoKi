@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.yeojiphap.choki.domain.shopping.dto.AddProductToCartRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.AddProductToCartResponseDto;
+import com.yeojiphap.choki.domain.shopping.dto.ChildPointDto;
 import com.yeojiphap.choki.domain.shopping.dto.DeleteProductFromCartReqeustDto;
 
 import lombok.RequiredArgsConstructor;
@@ -31,5 +32,10 @@ public class ShoppingWebSocketService {
 	// 장바구니에서 상품을 제거했음을 전송
 	public void sendDeleteProductMessage(DeleteProductFromCartReqeustDto deleteProductFromCartReqeustDto) {
 		simpMessagingTemplate.convertAndSend("/sub/shopping/" + deleteProductFromCartReqeustDto.getShoppingId(), deleteProductFromCartReqeustDto);
+	}
+
+	// 아이의 위치를 전송
+	public void sendChildPoint(ChildPointDto childPointDto) {
+		simpMessagingTemplate.convertAndSend("/sub/shopping/" + childPointDto.getShoppingId(), childPointDto);
 	}
 }

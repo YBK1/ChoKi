@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 
 import com.yeojiphap.choki.domain.shopping.dto.AddProductToCartRequestDto;
+import com.yeojiphap.choki.domain.shopping.dto.ChildPointDto;
 import com.yeojiphap.choki.domain.shopping.dto.DeleteProductFromCartReqeustDto;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingService;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingWebSocketService;
@@ -47,7 +48,7 @@ public class ShoppingMessageController {
 	@MessageMapping("/shopping/product/add")
 	public void sendCartAddMessage(AddProductToCartRequestDto addProductToCartRequestDto) {
 		// log
-		log.info("SEND: 상품 추가 메세지 보냄!!");
+		log.info("상품 추가 메세지 보냄!!");
 
 		// 장바구니 DB 정보 업데이트 ( 추가 )
 		shoppingService.addProductToShopping(addProductToCartRequestDto);
@@ -55,8 +56,8 @@ public class ShoppingMessageController {
 		shoppingWebSocketService.sendAddProductMessage(addProductToCartRequestDto);
 	}
 
-	// (/pub/shopping/product/add)
-	@MessageMapping("/shopping/product/add")
+	// (/pub/shopping/product/delete)
+	@MessageMapping("/shopping/product/delete")
 	public void sendCartDeleteMessage(DeleteProductFromCartReqeustDto deleteProductFromCartReqeustDto) {
 		// log
 		log.info("상품 삭제 메세지 보냄!!");
@@ -66,4 +67,17 @@ public class ShoppingMessageController {
 		// sub로 메세지를 전송
 		shoppingWebSocketService.sendDeleteProductMessage(deleteProductFromCartReqeustDto);
 	}
+
+	// (/pub/shopping/point)
+	@MessageMapping("/shopping/point")
+	public void sendChildPoint(ChildPointDto childPointDto){
+		// log
+		log.info("위치 정보 수신함");
+
+		// redis에 위치 저장
+		shoppingService.saveChildPoint(childPointDto);
+		// sub에 메세지를 전송
+		shoppingWebSocketService.sendChildPoint(childPointDto);
+	}
+
 }

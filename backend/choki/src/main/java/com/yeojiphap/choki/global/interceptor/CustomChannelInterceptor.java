@@ -1,21 +1,20 @@
 package com.yeojiphap.choki.global.interceptor;
 
-import java.security.Principal;
-
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.stereotype.Component;
+
+import com.yeojiphap.choki.global.auth.jwt.JWTUtil;
 
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class CustomChannelInterceptor implements ChannelInterceptor {
-	// private final JWTUtil jwtUtil;
+	private final JWTUtil jwtUtil;
 
 	@Override
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {

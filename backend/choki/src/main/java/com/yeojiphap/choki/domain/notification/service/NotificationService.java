@@ -1,0 +1,48 @@
+package com.yeojiphap.choki.domain.notification.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.yeojiphap.choki.domain.notification.Repository.NotificationRepository;
+import com.yeojiphap.choki.domain.notification.dto.NotificationResponseDto;
+import com.yeojiphap.choki.domain.notification.entity.Notification;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class NotificationService {
+	private final NotificationRepository notificationRepository;
+
+	// 부모의 특정 아이에 대한 모든 알림을 가져오는 함수
+	public List<NotificationResponseDto> getNotifications(String parentId, Long childId) {
+		List<Notification> notifications = new ArrayList<>();
+		notifications.addAll(notificationRepository.findAllByParentId(parentId, childId));
+
+		// DTO로 변환
+		List<NotificationResponseDto> dtos = notifications.stream()
+			.map((notification) -> NotificationResponseDto.builder()
+				.childId(notification.getChild().getId())
+				.type(notification.getType())
+				.content(notification.getContent())
+				.time(notification.getTime())
+				.missionId(notification.getMissionId())
+				.build())
+			.toList();
+
+		return dtos;
+	}
+
+	// 알림 추가
+	public void addNotfication(Notification notification) {
+		notificationRepository.save(notification);
+	}
+
+	// 알림 삭제
+	public void deleteNotification(Long id) {
+		notificationRepository.deleteById(id);
+	}
+}
