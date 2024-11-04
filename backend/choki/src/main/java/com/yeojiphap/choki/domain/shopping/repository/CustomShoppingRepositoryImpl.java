@@ -30,4 +30,10 @@ public class CustomShoppingRepositoryImpl implements CustomShoppingRepository {
 		Update update = new Update().pull("cartItems", Query.query(Criteria.where("barcode").is(barcode)));
 		mongoTemplate.updateFirst(query, update, Shopping.class);
 	}
+
+	@Override
+	public Shopping findById(ObjectId shoppingId) {
+		Query query = new Query(Criteria.where("_id").is(shoppingId));
+		return mongoTemplate.findOne(query, Shopping.class);
+	}
 }

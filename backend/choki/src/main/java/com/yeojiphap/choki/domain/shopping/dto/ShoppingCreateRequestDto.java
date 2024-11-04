@@ -14,7 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ShoppingCreateRequestDto {
 	private Long parentId;
-	private Long userId;
+	private Long childId;
 	private Location startPoint;
 	private Location destination;
 	private List<Point> route;

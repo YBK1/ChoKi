@@ -25,7 +25,7 @@ import lombok.Getter;
 public class NotificationResponseDto {
 	private Long childId;
 	private String content;
-	private ObjectId missionId;
+	private String missionId;
 	private NotificationType type;
 	private LocalDateTime time;
 }

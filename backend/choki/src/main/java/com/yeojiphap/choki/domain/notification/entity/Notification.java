@@ -20,6 +20,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -42,11 +43,21 @@ public class Notification {
 
 	private String content;
 
-	private ObjectId missionId;
+	private String missionId;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private NotificationType type;
 
 	private LocalDateTime time;
+
+	@Builder
+	Notification(User parent, User child, String content, String missionId, NotificationType type) {
+		this.parent = parent;
+		this.child = child;
+		this.content = content;
+		this.missionId = missionId;
+		this.type = type;
+		this.time = LocalDateTime.now();
+	}
 }

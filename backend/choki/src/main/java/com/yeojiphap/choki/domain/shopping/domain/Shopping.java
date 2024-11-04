@@ -17,9 +17,12 @@ import lombok.Getter;
 public class Shopping {
 	@Id
 	private ObjectId id;
+	private String parentId;
+	private String childId;
 	private Location startPoint;
 	private Location destination;
 	private Route route;
 	private List<Product> shoppingList;
 	private List<CartItem> cartItem;
+	private String missionId;
 }

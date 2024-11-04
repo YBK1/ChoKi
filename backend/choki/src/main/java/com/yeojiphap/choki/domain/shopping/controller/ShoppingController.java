@@ -1,5 +1,6 @@
 package com.yeojiphap.choki.domain.shopping.controller;
 
+import com.yeojiphap.choki.domain.mission.service.MissionService;
 import com.yeojiphap.choki.domain.shopping.dto.ProductCompareRequestDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import com.yeojiphap.choki.domain.shopping.dto.ShoppingCreateRequestDto;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingService;
 import com.yeojiphap.choki.global.ApiResponse;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,13 +26,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/shopping")
 public class ShoppingController {
 	private final ShoppingService shoppingService;
+	private final MissionService missionService;
 
 	@PostMapping("/create")
 	public ApiResponse create(@RequestBody ShoppingCreateRequestDto shoppingCreateRequestDto) {
 		// 장보기를 생성한다.
 		shoppingService.createShopping(shoppingCreateRequestDto);
-		// 미션도 생성해야 함
-		// missionService....
+
 		// FCM도 만들어야 겠지?;;
 
 		return ApiResponse.success(HttpStatus.CREATED, "장보기 생성 성공");

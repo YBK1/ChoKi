@@ -14,6 +14,8 @@ import com.yeojiphap.choki.domain.shopping.dto.ChildPointDto;
 import com.yeojiphap.choki.domain.shopping.dto.DeleteProductFromCartReqeustDto;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingService;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingWebSocketService;
+import com.yeojiphap.choki.global.auth.jwt.JWTUtil;
+import com.yeojiphap.choki.global.auth.util.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,20 +30,11 @@ public class ShoppingMessageController {
 	// /sub/shopping/{id}
 	// 사용자가 웹소켓 구독할 경우 ( 다른 사람이 이 주소로 보내는 메세지를 나한테도 주세요하고 신청했을 때 )
 	@SubscribeMapping("/shopping/{shoppingId}")  // 특정 방에 대한 구독 처리
-	public void handleSubscribe(SimpMessageHeaderAccessor headerAccessor, @DestinationVariable String shoppingId) {
+	public void handleSubscribe(@DestinationVariable String shoppingId, @Header("Authorization") String token) {
 		// 로그
 		log.info("SUBSCRIBING 구독함!!");
-
-		// 세션에서 사용자 ID 가져오기
-		Principal principal = headerAccessor.getUser();
-		if (principal != null) {
-			String userId = principal.getName();  // CustomPrincipal에서 userId 가져오기
-
-			// 여기서 구현해야 할 부분
-			// 1. 웹소켓 연결시 그 아이의 부모를 찾기
-			// 2. 그 아이의 부모에게 fcm 메세지 전송
-			// 3. 동시에 알림 디비에 값도 추가해야 겠지?
-		}
+		// 장보기 시작
+		shoppingWebSocketService.startShopping(shoppingId);
 	}
 
 	// (/pub/shopping/product/add)
@@ -78,6 +71,15 @@ public class ShoppingMessageController {
 		shoppingService.saveChildPoint(childPointDto);
 		// sub에 메세지를 전송
 		shoppingWebSocketService.sendChildPoint(childPointDto);
+	}
+
+	// 장보기 종료 메세지
+	@MessageMapping("/shopping/finish")
+	public void sendFinishMessage(){
+		// log
+		log.info("장보기 종료");
+
+		//
 	}
 
 }

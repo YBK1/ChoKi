@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.yeojiphap.choki.domain.mission.service.MissionService;
 import com.yeojiphap.choki.domain.shopping.domain.Point;
 import com.yeojiphap.choki.domain.shopping.dto.*;
+
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
@@ -31,8 +34,15 @@ public class ShoppingService {
 	private final ProductRepository productRepository;
 	private final ShoppingRepository shoppingRepository;
 	private final RedisTemplate<String, Object> redisTemplate;
+	private final MissionService missionService;
+
+	// 쇼핑 정보 검색하기
+	public Shopping getShoppingById(ObjectId id) {
+		return shoppingRepository.findById(id);
+	}
 
 	// 사용자가 입력한 내용으로 새로운 장보기를 만드는 함수
+	@Transactional
 	public void createShopping(ShoppingCreateRequestDto createRequestDto) {
 		Shopping shopping = Shopping.builder()
 			.startPoint(createRequestDto.getStartPoint())
@@ -55,9 +65,13 @@ public class ShoppingService {
 			.build();
 
 		shoppingRepository.save(shopping);
+
+		// 미션도 생성해야 함
+		missionService.addShoppingMission(createRequestDto);
 	}
 
 	// 장바구니에 상품 담기
+	@Transactional
 	public void addProductToShopping(AddProductToCartRequestDto addProductToCartRequestDto) {
 		ProductDto productDto = searchProductByBarcode(Long.toString(addProductToCartRequestDto.getBarcode()));
 
@@ -75,6 +89,7 @@ public class ShoppingService {
 	}
 
 	// 장바구니에서 상품 빼기
+	@Transactional
 	public void deleteProductFromShopping(DeleteProductFromCartReqeustDto deleteProductFromCartReqeustDto){
 		// 삭제 수행
 		shoppingRepository.deleteCartItemById(new ObjectId(deleteProductFromCartReqeustDto.getShoppingId()), deleteProductFromCartReqeustDto.getBarcode());

@@ -2,6 +2,8 @@ package com.yeojiphap.choki.domain.user.service;
 
 import static com.yeojiphap.choki.domain.user.message.UserSuccessMessage.*;
 
+import java.util.Optional;
+
 import com.yeojiphap.choki.domain.user.domain.User;
 import com.yeojiphap.choki.domain.user.dto.signUpRequest;
 import com.yeojiphap.choki.domain.user.repository.UserRepository;
@@ -20,5 +22,11 @@ public class UserService {
         User user = signUpRequest.toEntity(encodedPassword);
         userRepository.save(user);
         return SIGN_UP_SUCCESS.getMessage();
+    }
+
+    // 아이디로 유저 정보 조회하기
+    public User findByUserId(String userId) {
+        Optional<User> user = userRepository.findByUserId(userId);
+        return user.orElse(null);
     }
 }
