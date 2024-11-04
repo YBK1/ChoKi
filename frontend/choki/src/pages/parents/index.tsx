@@ -63,7 +63,7 @@ export default function index() {
 							<Image
 								src={map_icon_blurry}
 								alt="map_icon_blurry"
-								className="opacity-50" // 선택적: 배경이미지처럼 보이도록 투명도 추가
+								className="opacity-50"
 							/>
 						</div>
 					</div>
