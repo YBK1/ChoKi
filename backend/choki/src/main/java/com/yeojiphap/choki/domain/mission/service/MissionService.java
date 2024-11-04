@@ -2,6 +2,7 @@ package com.yeojiphap.choki.domain.mission.service;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import com.yeojiphap.choki.domain.mission.domain.Mission;
@@ -18,9 +19,14 @@ import lombok.RequiredArgsConstructor;
 public class MissionService {
 	private final MissionRepository missionRepository;
 
+	// 미션 조회하기
+	public Mission getMission(ObjectId id) {
+		return missionRepository.findById(id).orElse(null);
+	}
+
 	// 장보기 미션 저장하기
 	// 경험치는 일단 하드코딩 했음!!
-	public void addShoppingMission(ShoppingCreateRequestDto shoppingCreateRequestDto){
+	public ObjectId addShoppingMission(ShoppingCreateRequestDto shoppingCreateRequestDto){
 		Mission mission = Mission.builder()
 			.parentId(shoppingCreateRequestDto.getParentId())
 			.childId(shoppingCreateRequestDto.getChildId())
@@ -33,7 +39,8 @@ public class MissionService {
 			.comment(null)
 			.build();
 
-		missionRepository.save(mission);
+		Mission savedMission = missionRepository.save(mission);
+		return savedMission.getId();
 	}
 
 	// 미션 저장하기

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.service.MissionService;
 import com.yeojiphap.choki.domain.shopping.domain.Point;
 import com.yeojiphap.choki.domain.shopping.dto.*;
@@ -44,6 +45,9 @@ public class ShoppingService {
 	// 사용자가 입력한 내용으로 새로운 장보기를 만드는 함수
 	@Transactional
 	public void createShopping(ShoppingCreateRequestDto createRequestDto) {
+		// 미션을 먼저 생성해야 함
+		ObjectId missionId = missionService.addShoppingMission(createRequestDto);
+
 		Shopping shopping = Shopping.builder()
 			.startPoint(createRequestDto.getStartPoint())
 			.destination(createRequestDto.getDestination())
@@ -62,12 +66,12 @@ public class ShoppingService {
 						.build();
 				}).collect(Collectors.toList()))
 			.cartItem(new ArrayList<>())
+			// 매핑되는 미션을 포함해서 저장해야 함
+			.missionId(missionId)
 			.build();
 
 		shoppingRepository.save(shopping);
 
-		// 미션도 생성해야 함
-		missionService.addShoppingMission(createRequestDto);
 	}
 
 	// 장바구니에 상품 담기
@@ -161,7 +165,6 @@ public class ShoppingService {
 			}
 		}
 
-		// sub로 메세지를 전송
 		return productCompareResponseDto;
 	}
 
@@ -173,5 +176,16 @@ public class ShoppingService {
 			.build();
 
 		redisTemplate.opsForHash().put(childPointDto.getShoppingId().toString(), "location", point);
+	}
+
+	@Transactional
+	public void completeShopping(String shoppingId){
+		Optional<Shopping> shoppingOptional = shoppingRepository.findById(shoppingId);
+		if(shoppingOptional.isPresent()) {
+			Shopping shopping = shoppingOptional.get();
+
+			ObjectId missionId = shopping.getMissionId();
+			Mission mission = missionService.getMission(missionId);
+		}
 	}
 }

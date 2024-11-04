@@ -24,5 +24,5 @@ public class Shopping {
 	private Route route;
 	private List<Product> shoppingList;
 	private List<CartItem> cartItem;
-	private String missionId;
+	private ObjectId missionId;
 }

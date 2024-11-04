@@ -22,6 +22,6 @@ public class NotificationController {
 	@GetMapping("/{childId}")
 	public ApiResponse listNotification(@PathVariable Long childId) {
 		// 일단 임시로 넣어놓자
-		return ApiResponse.success(HttpStatus.OK, notificationService.getNotifications("id", childId), "알림 조회 성공");
+		return ApiResponse.success(HttpStatus.OK, notificationService.getNotifications(childId), "알림 조회 성공");
 	}
 }

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .connected { background-color: #d4edda; }
+        .disconnected { background-color: #f8d7da; }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #connect { background-color: #28a745; color: white; }
+        #disconnect { background-color: #dc3545; color: white; }
+        #messages {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>WebSocket Test Page</h2>
+    <div id="status" class="status disconnected">Status: Disconnected</div>
+    <div>
+        <button id="connect">Connect</button>
+        <button id="disconnect" disabled>Disconnect</button>
+    </div>
+    <div id="messages"></div>
+</div>
+
+<script>
+    let stompClient = null;
+    const statusDiv = document.getElementById('status');
+    const connectButton = document.getElementById('connect');
+    const disconnectButton = document.getElementById('disconnect');
+    const messagesDiv = document.getElementById('messages');
+
+    function addMessage(message) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+        messagesDiv.appendChild(messageElement);
+    }
+
+    function connect() {
+        try {
+            addMessage('Attempting to connect...');
+            const socket = new WebSocket('ws://localhost:8080/ws/shopping');
+            stompClient = Stomp.over(socket);
+
+            // STOMP 디버그 로깅 활성화
+            stompClient.debug = function(str) {
+                addMessage('Debug: ' + str);
+            };
+
+            stompClient.connect({},
+                function(frame) {
+                    statusDiv.textContent = 'Status: Connected';
+                    statusDiv.className = 'status connected';
+                    connectButton.disabled = true;
+                    disconnectButton.disabled = false;
+                    addMessage('Connected successfully');
+
+                    // 구독 예시
+                    stompClient.subscribe('/sub/test', function(message) {
+                        addMessage('Received: ' + message.body);
+                    });
+                },
+                function(error) {
+                    addMessage('Error: ' + error);
+                    disconnect();
+                }
+            );
+        } catch (err) {
+            addMessage('Connection error: ' + err.message);
+            disconnect();
+        }
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+            stompClient = null;
+        }
+        statusDiv.textContent = 'Status: Disconnected';
+        statusDiv.className = 'status disconnected';
+        connectButton.disabled = false;
+        disconnectButton.disabled = true;
+        addMessage('Disconnected');
+    }
+
+    // 이벤트 리스너 등록
+    connectButton.addEventListener('click', connect);
+    disconnectButton.addEventListener('click', disconnect);
+
+    // 디버그 로깅 활성화
+    window.addEventListener('load', function() {
+        addMessage('Page loaded. Click Connect to start WebSocket connection.');
+    });
+</script>
+</body>
+</html>

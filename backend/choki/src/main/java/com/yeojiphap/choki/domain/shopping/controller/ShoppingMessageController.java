@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import com.yeojiphap.choki.domain.shopping.dto.AddProductToCartRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.ChildPointDto;
 import com.yeojiphap.choki.domain.shopping.dto.DeleteProductFromCartReqeustDto;
+import com.yeojiphap.choki.domain.shopping.dto.HelpMessageDto;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingService;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingWebSocketService;
 import com.yeojiphap.choki.global.auth.jwt.JWTUtil;
@@ -74,12 +75,20 @@ public class ShoppingMessageController {
 	}
 
 	// 장보기 종료 메세지
-	@MessageMapping("/shopping/finish")
-	public void sendFinishMessage(){
+	@MessageMapping("/shopping/finish/{shoppingId}")
+	public void sendFinishMessage(@DestinationVariable String shoppingId){
 		// log
 		log.info("장보기 종료");
 
-		//
+		// 완료 처리 수행하기
+		shoppingService.completeShopping(shoppingId);
 	}
 
+	// 부모의 도움 메세지 전송
+	@MessageMapping("/shopping/message")
+	public void sendHelpMessage(HelpMessageDto helpMessageDto){
+		log.info("도움 메세지 전달");
+
+		shoppingWebSocketService.sendHelpMessage(helpMessageDto);
+	}
 }

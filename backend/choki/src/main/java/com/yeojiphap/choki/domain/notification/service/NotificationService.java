@@ -2,7 +2,6 @@ package com.yeojiphap.choki.domain.notification.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.yeojiphap.choki.domain.notification.Repository.NotificationRepository;
 import com.yeojiphap.choki.domain.notification.dto.NotificationResponseDto;
 import com.yeojiphap.choki.domain.notification.entity.Notification;
+import com.yeojiphap.choki.global.auth.util.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +19,9 @@ public class NotificationService {
 	private final NotificationRepository notificationRepository;
 
 	// 부모의 특정 아이에 대한 모든 알림을 가져오는 함수
-	public List<NotificationResponseDto> getNotifications(String parentId, Long childId) {
+	public List<NotificationResponseDto> getNotifications(Long childId) {
+		String parentId = SecurityUtil.getCurrentUserId();
+
 		List<Notification> notifications = new ArrayList<>();
 		notifications.addAll(notificationRepository.findAllByParentId(parentId, childId));
 
@@ -39,7 +41,7 @@ public class NotificationService {
 
 	// 알림 추가
 	@Transactional
-	public void addNotfication(Notification notification) {
+	public void addNotification(Notification notification) {
 		notificationRepository.save(notification);
 	}
 

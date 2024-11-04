@@ -12,6 +12,7 @@ import com.yeojiphap.choki.domain.shopping.dto.AddProductToCartRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.AddProductToCartResponseDto;
 import com.yeojiphap.choki.domain.shopping.dto.ChildPointDto;
 import com.yeojiphap.choki.domain.shopping.dto.DeleteProductFromCartReqeustDto;
+import com.yeojiphap.choki.domain.shopping.dto.HelpMessageDto;
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.domain.User;
 import com.yeojiphap.choki.domain.user.service.UserService;
@@ -48,7 +49,7 @@ public class ShoppingWebSocketService {
 				.build();
 
 			// 알림 추가
-			notificationService.addNotfication(notification);
+			notificationService.addNotification(notification);
 			// FCM 보내야겠지?
 
 		}
@@ -76,5 +77,10 @@ public class ShoppingWebSocketService {
 	// 아이의 위치를 전송
 	public void sendChildPoint(ChildPointDto childPointDto) {
 		simpMessagingTemplate.convertAndSend("/sub/shopping/" + childPointDto.getShoppingId(), childPointDto);
+	}
+
+	// 헬프 메시지 전송
+	public void sendHelpMessage(HelpMessageDto helpMessageDto) {
+		simpMessagingTemplate.convertAndSend("/sub/shopping/" + helpMessageDto.getShoppingId(), helpMessageDto);
 	}
 }
