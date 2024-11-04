@@ -5,14 +5,9 @@ import mapboxgl from 'mapbox-gl';
 interface GlobeViewProps {
 	mapContainerRef: React.RefObject<HTMLDivElement>;
 	setMap: (map: mapboxgl.Map) => void;
-	setIsGlobeView: (value: boolean) => void;
 }
 
-const GlobeView: React.FC<GlobeViewProps> = ({
-	mapContainerRef,
-	setMap,
-	setIsGlobeView,
-}) => {
+const GlobeView: React.FC<GlobeViewProps> = ({ mapContainerRef, setMap }) => {
 	const rotationFrameRef = useRef<number>();
 
 	useEffect(() => {
