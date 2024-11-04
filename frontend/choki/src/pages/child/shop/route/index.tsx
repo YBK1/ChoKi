@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 
-const DynamicMap = dynamic(() => import('@/components/test/Map'), {
+const DynamicMap = dynamic(() => import('@/components/navigation/Map'), {
 	ssr: false,
 });
 

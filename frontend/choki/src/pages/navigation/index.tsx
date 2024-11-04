@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 
 // Dynamically import the Map component to ensure it runs only on the client side
-const DynamicMap = dynamic(() => import('@/components/test/Map'), {
+const DynamicMap = dynamic(() => import('@/components/navigation/Map'), {
 	ssr: false,
 });
 
