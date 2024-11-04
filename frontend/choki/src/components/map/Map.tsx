@@ -11,7 +11,11 @@ type MapProps = {
 	showDestinationSearch?: boolean;
 };
 
-const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
+const Map = ({
+	showRouteRecorder = true,
+	showPolyline = true,
+	showDestinationSearch = true,
+}: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
 	const [finalRoute, setFinalRoute] = useState<{ lat: number; lng: number }[]>(
@@ -20,7 +24,9 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 
 	return (
 		<div style={{ height: '100vh', width: '100%', position: 'relative' }}>
-			{mapInstance && <DestinationSearch map={mapInstance} />}
+			{mapInstance && showDestinationSearch && (
+				<DestinationSearch map={mapInstance} />
+			)}
 			<MapContainer onMapLoad={setMapInstance} />
 			{mapInstance && <UserLocationMarker map={mapInstance} />}
 			{mapInstance && showPolyline && (
@@ -49,4 +55,5 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 		</div>
 	);
 };
+
 export default Map;
