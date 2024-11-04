@@ -1,41 +1,49 @@
 // components/Map.tsx
-import { useEffect, useRef } from 'react';
-import Script from 'next/script';
+import { useState } from 'react';
+import MapContainer from './MapContainer';
+import UserLocationMarker from './UserLocationMarker';
+import RoutePolyline from './RoutePolyline';
+import RouteRecorder from './RouteRecorder';
 
-const Map = ({ onMapLoad }: { onMapLoad: (map: any) => void }) => {
-	const mapRef = useRef<HTMLDivElement>(null);
+type MapProps = {
+	showRouteRecorder?: boolean;
+	showPolyline?: boolean;
+};
 
-	useEffect(() => {
-		if (window && (window as any).kakao) {
-			const kakao = (window as any).kakao;
-			kakao.maps.load(() => {
-				if (mapRef.current) {
-					const center = new kakao.maps.LatLng(37.5665, 126.978);
-					const mapInstance = new kakao.maps.Map(mapRef.current, {
-						center: center,
-						level: 1,
-					});
-
-					mapInstance.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
-
-					onMapLoad(mapInstance); // Pass the map instance to the parent component
-				}
-			});
-		}
-	}, [onMapLoad]);
+const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
+	const [mapInstance, setMapInstance] = useState<any>(null);
+	const [polyline, setPolyline] = useState<any>(null);
+	const [finalRoute, setFinalRoute] = useState<{ lat: number; lng: number }[]>(
+		[],
+	);
 
 	return (
 		<div style={{ height: '100vh', width: '100%' }}>
-			<Script
-				src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=20b43e8fdaab65a54210734664cc541e&autoload=false"
-				strategy="lazyOnload"
-				onLoad={() => {
-					if (window && (window as any).Kakao) {
-						(window as any).Kakao.init('20b43e8fdaab65a54210734664cc541e');
-					}
-				}}
-			/>
-			<div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+			<MapContainer onMapLoad={setMapInstance} />
+			{mapInstance && <UserLocationMarker map={mapInstance} />}
+			{mapInstance && showPolyline && (
+				<RoutePolyline
+					map={mapInstance}
+					finalRoute={finalRoute}
+					polyline={polyline}
+					setPolyline={setPolyline}
+				/>
+			)}
+			{showRouteRecorder && (
+				<div
+					style={{
+						position: 'absolute',
+						bottom: '10px',
+						left: '50%',
+						transform: 'translateX(-50%)',
+						zIndex: 10,
+						padding: '10px',
+						borderRadius: '5px',
+					}}
+				>
+					<RouteRecorder setFinalRoute={setFinalRoute} />
+				</div>
+			)}
 		</div>
 	);
 };

@@ -1,14 +1,13 @@
 import dynamic from 'next/dynamic';
 
-// Dynamically import the Map component to ensure it runs only on the client side
-const DynamicMap = dynamic(() => import('@/components/test/Map'), {
+const DynamicMap = dynamic(() => import('@/components/map/Map'), {
 	ssr: false,
 });
 
 const MapPage = () => {
 	return (
 		<div style={{ height: '100vh', width: '100%' }}>
-			<DynamicMap />
+			<DynamicMap showRouteRecorder={false} showPolyline={false} />
 		</div>
 	);
 };
