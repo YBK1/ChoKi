@@ -9,8 +9,8 @@ export default function index() {
 	return (
 		<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow background min-h-screen">
 			{/* 안내 */}
-			<div className="relative w-full h-[180px] rounded-b-3xl bg-light_yellow_dark shadow-xl">
-				<h1 className="text-xl font-normal mt-10 ml-8">
+			<div className="relative w-full h-[190px] rounded-b-3xl bg-light_yellow_dark shadow-xl mb-4">
+				<h1 className="text-2xl font-normal mt-14 ml-8">
 					안녕하세요 민주님,
 					<br />
 					오늘도 아이들과 함께 파이팅!
@@ -18,17 +18,17 @@ export default function index() {
 				<Image
 					src={dog_character}
 					alt="dog_character"
-					className="absolute right-4 top-4 px-1 translate-y-1/2"
+					className="absolute right-4 top-14 px-1 translate-y-1/2"
 				/>
-				<div className="absolute top-10 right-2">
+				<div className="absolute top-14 right-2">
 					<Image src={code_information} alt="code_information" />
 				</div>
 			</div>
 
 			{/* 내용 */}
-			<div className="flex flex-col justify-center items-center gap-4 mt-11">
+			<div className="flex flex-col justify-center items-center gap-4 mt-12">
 				{/* 아이 선택 */}
-				<div className="w-[350px] h-[270px] bg-white rounded-3xl shadow-sm border-4 border-light_yellow_side mb-2">
+				<div className="w-[350px] h-[280px] bg-white rounded-3xl shadow-sm border-4 border-light_yellow_side mb-5">
 					<h2 className="text-lg font-bold mt-8 ml-7 mb-4">
 						오늘은 어떤 아이에게
 						<br />
@@ -50,7 +50,7 @@ export default function index() {
 
 				{/* 경로 등록하기 */}
 				<Link href="parents/route/create">
-					<div className="relative w-[350px] h-[180px] bg-white p-6 rounded-3xl shadow-sm border-4 border-light_blue_side">
+					<div className="relative w-[350px] h-[190px] bg-white p-6 rounded-3xl shadow-sm border-4 border-light_blue_side">
 						<h2 className="text-xl font-bold mb-2 mt-4 relative z-10">
 							경로 등록하기
 						</h2>
