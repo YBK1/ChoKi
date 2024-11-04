@@ -39,7 +39,7 @@ export default function DonePage() {
 					</p>
 					<CommonButton
 						size="medium"
-						color="white"
+						color={isParent ? 'white' : 'orange'}
 						onClick={() => {}}
 						text={isParent ? '초대코드 생성' : '초대코드 입력'}
 					/>
