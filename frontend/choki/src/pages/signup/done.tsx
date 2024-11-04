@@ -184,7 +184,7 @@ export default function DonePage() {
 							<CommonButton
 								size="medium"
 								color="white"
-								onClick={() => router.push('/main')}
+								onClick={() => router.push('/parents')}
 								text="메인 페이지로 이동"
 							/>
 						)}
