@@ -9,8 +9,6 @@ const config: Config = {
 	theme: {
 		extend: {
 			colors: {
-				background: 'var(--background)',
-				foreground: 'var(--foreground)',
 				black: '#000000',
 				white: '#FFFFFF',
 				ligin_yellow_nav: '#FFF5B9',
@@ -35,7 +33,22 @@ const config: Config = {
 				light_blue_btn: '#C4E1F6',
 			},
 			fontFamily: {
-				pretendard: ['pretendard', 'sans-serif'], // Pretendard 폰트 추가
+				pretendard: ['pretendard', 'sans-serif'],
+			},
+			keyframes: {
+				'fade-up': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px) translateX(-50%)',
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0) translateX(-50%)',
+					},
+				},
+			},
+			animation: {
+				'fade-up': 'fade-up 0.3s ease-out forwards',
 			},
 		},
 	},
