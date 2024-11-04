@@ -52,7 +52,7 @@ const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 	}, [watchId]);
 
 	return (
-		<div style={{ display: 'flex', gap: '10px' }}>
+		<div style={{ display: 'flex', gap: '40px' }}>
 			<div
 				onClick={startRecording}
 				style={{
@@ -63,7 +63,7 @@ const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 					padding: 0,
 				}}
 			>
-				<Image src={startButton} alt="Start Recording" width={50} height={50} />
+				<Image src={startButton} alt="Start Recording" width={70} height={70} />
 			</div>
 			<div
 				onClick={stopRecording}
@@ -75,7 +75,7 @@ const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 					padding: 0,
 				}}
 			>
-				<Image src={stopButton} alt="Stop Recording" width={50} height={50} />
+				<Image src={stopButton} alt="Stop Recording" width={70} height={70} />
 			</div>
 		</div>
 	);
