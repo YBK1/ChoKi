@@ -4,6 +4,7 @@ import CallIcon from '@/assets/icons/call_icon.svg';
 export default function Button({
 	size = 'medium',
 	color = 'orange',
+	onClick,
 	text,
 }: ButtonProps) {
 	// 기본 버튼 스타일
@@ -15,7 +16,7 @@ export default function Button({
 		small: 'px-4 py-1 text-sm rounded-full',
 		small_mid: 'w-[126px] h-[44px] text-base rounded-[22px]',
 		medium: 'w-[240px] h-[50px] text-base rounded-[15px]',
-		large: 'w-[315px] h-[65px] text-lg rounded-[20px]',
+		large: 'w-[315px] h-[50px] text-lg rounded-[20px]',
 		call_large: 'w-[315px] h-[65px] text-lg rounded-[20px]',
 	};
 
@@ -49,6 +50,7 @@ export default function Button({
 
 	return (
 		<button
+			onClick={onClick}
 			className={`
         ${baseStyle}
         ${sizeStyles[size]}

@@ -1,9 +1,12 @@
-import Button from '@/components/Common/Button/Button';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+
 export default function Home() {
-	return (
-		<>
-			<Button size="large" color="red" text="로그인" />
-			<Button size="call_large" color="white_call" text="아이에게 전화걸기" />
-		</>
-	);
+	const router = useRouter();
+	// 초기 진입시 로그인 페이지로 이동
+	useEffect(() => {
+		router.push('/login');
+	}, [router]);
+
+	return <div></div>;
 }

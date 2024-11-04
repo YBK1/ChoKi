@@ -1,5 +1,5 @@
 // components/Map.tsx
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Script from 'next/script';
 
 const Map = ({ onMapLoad }: { onMapLoad: (map: any) => void }) => {
@@ -10,7 +10,7 @@ const Map = ({ onMapLoad }: { onMapLoad: (map: any) => void }) => {
 			const kakao = (window as any).kakao;
 			kakao.maps.load(() => {
 				if (mapRef.current) {
-					const center = new kakao.maps.LatLng(37.5665, 126.978); // Default center (Seoul)
+					const center = new kakao.maps.LatLng(37.5665, 126.978);
 					const mapInstance = new kakao.maps.Map(mapRef.current, {
 						center: center,
 						level: 1,
