@@ -30,6 +30,7 @@ const RouteRecorder: React.FC<RouteRecorderProps> = ({ map }) => {
 	const startRecording = () => {
 		if (!isRecording && map) {
 			setIsRecording(true);
+			console.log('기록 시작');
 			recordingIntervalRef.current = setInterval(() => {
 				navigator.geolocation.getCurrentPosition(
 					position => {

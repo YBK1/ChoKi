@@ -1,9 +1,15 @@
 // components/Map.tsx
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
+import RouteRecorder from './RouteRecorder';
 
-const Map = ({ onMapLoad }: { onMapLoad: (map: any) => void }) => {
+const Map = () => {
 	const mapRef = useRef<HTMLDivElement>(null);
+	const [mapInstance, setMapInstance] = useState<any>(null);
+	const [polyline, setPolyline] = useState<any>(null);
+	const [finalRoute, setFinalRoute] = useState<{ lat: number; lng: number }[]>(
+		[],
+	);
 
 	useEffect(() => {
 		if (window && (window as any).kakao) {
@@ -11,18 +17,70 @@ const Map = ({ onMapLoad }: { onMapLoad: (map: any) => void }) => {
 			kakao.maps.load(() => {
 				if (mapRef.current) {
 					const center = new kakao.maps.LatLng(37.5665, 126.978);
-					const mapInstance = new kakao.maps.Map(mapRef.current, {
+					const map = new kakao.maps.Map(mapRef.current, {
 						center: center,
-						level: 1,
+						level: 4,
 					});
 
-					mapInstance.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
+					map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP);
+					setMapInstance(map);
+					navigator.geolocation.getCurrentPosition(
+						position => {
+							const { latitude, longitude } = position.coords;
+							const userLocation = new kakao.maps.LatLng(latitude, longitude);
+							map.setCenter(userLocation);
+							const markerImage = new kakao.maps.MarkerImage(
+								'/choki192x192.png',
+								new kakao.maps.Size(30, 30),
+								{ offset: new kakao.maps.Point(25, 50) },
+							);
 
-					onMapLoad(mapInstance); // Pass the map instance to the parent component
+							const marker = new kakao.maps.Marker({
+								position: userLocation,
+								image: markerImage,
+							});
+
+							marker.setMap(map);
+						},
+						error => {
+							console.error('유저 위치 가져오는 중 오류:', error);
+						},
+						{ enableHighAccuracy: true },
+					);
 				}
 			});
 		}
-	}, [onMapLoad]);
+	}, []);
+
+	useEffect(() => {
+		if (mapInstance && finalRoute.length > 0) {
+			const kakao = (window as any).kakao;
+
+			const path = finalRoute.map(
+				point => new kakao.maps.LatLng(point.lat, point.lng),
+			);
+
+			if (polyline) {
+				polyline.setMap(null);
+			}
+
+			const newPolyline = new kakao.maps.Polyline({
+				path: path,
+				strokeWeight: 5,
+				strokeColor: '#FF0000',
+				strokeOpacity: 0.7,
+				strokeStyle: 'solid',
+			});
+
+			newPolyline.setMap(mapInstance);
+			setPolyline(newPolyline);
+
+			// Pan to the latest position
+			if (path.length > 0) {
+				mapInstance.panTo(path[path.length - 1]);
+			}
+		}
+	}, [finalRoute, mapInstance]);
 
 	return (
 		<div style={{ height: '100vh', width: '100%' }}>
@@ -36,6 +94,19 @@ const Map = ({ onMapLoad }: { onMapLoad: (map: any) => void }) => {
 				}}
 			/>
 			<div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+			<div
+				style={{
+					position: 'absolute',
+					bottom: '10px',
+					left: '50%',
+					transform: 'translateX(-50%)',
+					zIndex: 10,
+					padding: '10px',
+					borderRadius: '5px',
+				}}
+			>
+				<RouteRecorder setFinalRoute={setFinalRoute} />
+			</div>
 		</div>
 	);
 };
