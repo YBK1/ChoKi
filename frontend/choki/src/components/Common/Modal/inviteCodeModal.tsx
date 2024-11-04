@@ -1,24 +1,22 @@
 import React from 'react';
 
-const inviteCodeModal = ({ size = 'medium', children }: ModalProps) => {
-	const sizeStyles = {
-		small: 'w-[300PX] h-[300px]',
-		medium: 'w-[300px] h-[500px]',
-		large: 'w-[300px] h-[700px]',
-	};
+interface ModalProps {
+	children: React.ReactNode;
+}
 
+const InviteCodeModal = ({ children }: ModalProps) => {
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center">
 			{/* Modal */}
 			<div
-				className={`
+				className="
           relative 
           bg-white 
           rounded-lg 
           shadow-lg 
-          ${sizeStyles[size]}
           p-6
-        `}
+        "
+				style={{ width: '316px', height: '464px' }}
 			>
 				{/* Content */}
 				<div className="h-full w-full">{children}</div>
@@ -27,4 +25,4 @@ const inviteCodeModal = ({ size = 'medium', children }: ModalProps) => {
 	);
 };
 
-export default inviteCodeModal;
+export default InviteCodeModal;
