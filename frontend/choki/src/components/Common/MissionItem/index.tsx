@@ -25,9 +25,9 @@ export default function MissionItem({
 	return (
 		<button
 			onClick={onClick}
-			className="w-[330px] bg-white rounded-2xl shadow-sm p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors"
+			className="w-[330px] p-2 bg-white rounded-2xl shadow-sm flex items-center gap-4 hover:bg-gray-50 transition-colors  mb-3"
 		>
-			<div className="flex items-center justify-center">
+			<div className="flex items-center justify-center ml-4">
 				<Image
 					src={image}
 					alt={content}
@@ -36,7 +36,7 @@ export default function MissionItem({
 					className="object-contain"
 				/>
 			</div>
-			<span className="text-lg font-medium ml-4">{content}</span>
+			<span className="text-lg font-semibold ml-6">{content}</span>
 		</button>
 	);
 }
