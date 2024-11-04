@@ -2,6 +2,8 @@ type ButtonSize = 'small' | 'medium' | 'large' | 'small_mid' | 'call_large';
 type ButtonColor = 'orange' | 'white' | 'blue' | 'gray' | 'red' | 'white_call';
 type ModalSize = 'small' | 'medium' | 'large';
 type InputType = 'text' | 'password';
+type MissionType = 'SHOP' | 'RECYCLE' | 'EXTRA_MISSION';
+
 // 버튼 Props
 interface ButtonProps {
 	size: ButtonSize;
@@ -53,4 +55,8 @@ interface PostcodeOptions {
 	onclose?: () => void;
 	width: string;
 	height: string;
+}
+interface Mission {
+	type: MissionType;
+	content: string;
 }
