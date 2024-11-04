@@ -17,13 +17,17 @@ public class Mission {
     @Id
     private ObjectId id;
 
+    private Long parentId;
+
+    private Long childId;
+
     private String content;
 
     private int exp;
 
     private Status status;
 
-    private LocalDateTime completedAt;
+    private String completedAt;
 
     private String afterImg;
 

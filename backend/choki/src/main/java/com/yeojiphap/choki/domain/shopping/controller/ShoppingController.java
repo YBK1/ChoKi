@@ -27,7 +27,12 @@ public class ShoppingController {
 
 	@PostMapping("/create")
 	public ApiResponse create(@RequestBody ShoppingCreateRequestDto shoppingCreateRequestDto) {
+		// 장보기를 생성한다.
 		shoppingService.createShopping(shoppingCreateRequestDto);
+		// 미션도 생성해야 함
+		// missionService....
+		// FCM도 만들어야 겠지?;;
+
 		return ApiResponse.success(HttpStatus.CREATED, "장보기 생성 성공");
 	}
 

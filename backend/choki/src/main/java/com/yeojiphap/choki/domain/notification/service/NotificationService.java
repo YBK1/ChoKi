@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.yeojiphap.choki.domain.notification.Repository.NotificationRepository;
 import com.yeojiphap.choki.domain.notification.dto.NotificationResponseDto;
@@ -37,11 +38,13 @@ public class NotificationService {
 	}
 
 	// 알림 추가
+	@Transactional
 	public void addNotfication(Notification notification) {
 		notificationRepository.save(notification);
 	}
 
 	// 알림 삭제
+	@Transactional
 	public void deleteNotification(Long id) {
 		notificationRepository.deleteById(id);
 	}
