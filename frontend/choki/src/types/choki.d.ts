@@ -25,7 +25,10 @@ interface ModalProps {
 	size: ModalSize;
 	children: React.ReactNode;
 }
-
+// 초대코드 모달 Props
+interface InviteCodeModalProps {
+	children: React.ReactNode;
+}
 // 회원 가입시 비밀번호 통합 관리
 interface PasswordForm {
 	password: string;
