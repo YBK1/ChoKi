@@ -2,6 +2,8 @@ type ButtonSize = 'small' | 'medium' | 'large' | 'small_mid' | 'call_large';
 type ButtonColor = 'orange' | 'white' | 'blue' | 'gray' | 'red' | 'white_call';
 type ModalSize = 'small' | 'medium' | 'large';
 type InputType = 'text' | 'password';
+type MissionType = 'SHOP' | 'RECYCLE' | 'EXTRA_MISSION';
+
 // 버튼 Props
 interface ButtonProps {
 	size: ButtonSize;
@@ -35,4 +37,10 @@ interface PasswordForm {
 	passwordConfirm: string;
 	isMatch: boolean;
 	message: string;
+}
+
+// 미션 타입
+interface Mission {
+	type: MissionType;
+	content: string;
 }
