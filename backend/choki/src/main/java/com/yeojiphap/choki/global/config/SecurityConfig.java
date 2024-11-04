@@ -57,7 +57,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
 
-                        configuration.setAllowedOriginPatterns(Arrays.asList("https://k11c102.p.ssafy.io","http://localhost:5173"));
+                        configuration.setAllowedOriginPatterns(Arrays.asList("https://k11c102.p.ssafy.io","http://localhost:5173", "https://dapi.kakao.com/"));
                         configuration.setAllowedMethods(Collections.singletonList("*")); //get,put,post 모든 요청에 대한 허가
                         configuration.setAllowCredentials(true); //credential 가져올 수 있도록 설정
                         configuration.setAllowedHeaders(Collections.singletonList("*")); //어떤 헤더를 가져올지 설정
