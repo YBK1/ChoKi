@@ -27,7 +27,10 @@ export default function SignupPage() {
 	const Router = useRouter();
 	const handleSignup = () => {
 		// TODO - 회원가입 로직 구현
-		Router.push('/signup/done');
+		Router.push({
+			pathname: '/signup/done',
+			query: { isParent: isParent },
+		});
 	};
 	// 필드 이름을 매개변수로 받아서 해당 필드를 업데이트하는 함수
 	const handlePasswordChange =
