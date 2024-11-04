@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import MapIcon from '../../assets/icons/map_icon_blurry.svg';
 import Image from 'next/image';
 
@@ -8,6 +9,7 @@ type DestinationSearchProps = {
 
 const DestinationSearch = ({ map }: DestinationSearchProps) => {
 	const [destination, setDestination] = useState<string>('');
+	const router = useRouter();
 
 	const handleSearch = () => {
 		if (!map || !destination) return;
@@ -30,6 +32,10 @@ const DestinationSearch = ({ map }: DestinationSearchProps) => {
 		});
 	};
 
+	const goToPreviousPage = () => {
+		router.push('/parents');
+	};
+
 	return (
 		<div
 			style={{
@@ -48,6 +54,7 @@ const DestinationSearch = ({ map }: DestinationSearchProps) => {
 			}}
 		>
 			<button
+				onClick={goToPreviousPage}
 				style={{
 					position: 'absolute',
 					top: '15px',
