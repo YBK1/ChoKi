@@ -8,6 +8,7 @@ import DestinationSearch from './DestinationSearch';
 type MapProps = {
 	showRouteRecorder?: boolean;
 	showPolyline?: boolean;
+	showDestinationSearch?: boolean;
 };
 
 const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
