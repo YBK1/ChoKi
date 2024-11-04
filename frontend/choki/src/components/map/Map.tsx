@@ -5,7 +5,12 @@ import UserLocationMarker from './UserLocationMarker';
 import RoutePolyline from './RoutePolyline';
 import RouteRecorder from './RouteRecorder';
 
-const Map = () => {
+type MapProps = {
+	showRouteRecorder?: boolean;
+	showPolyline?: boolean;
+};
+
+const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
 	const [finalRoute, setFinalRoute] = useState<{ lat: number; lng: number }[]>(
@@ -16,7 +21,7 @@ const Map = () => {
 		<div style={{ height: '100vh', width: '100%' }}>
 			<MapContainer onMapLoad={setMapInstance} />
 			{mapInstance && <UserLocationMarker map={mapInstance} />}
-			{mapInstance && (
+			{mapInstance && showPolyline && (
 				<RoutePolyline
 					map={mapInstance}
 					finalRoute={finalRoute}
@@ -24,19 +29,21 @@ const Map = () => {
 					setPolyline={setPolyline}
 				/>
 			)}
-			<div
-				style={{
-					position: 'absolute',
-					bottom: '10px',
-					left: '50%',
-					transform: 'translateX(-50%)',
-					zIndex: 10,
-					padding: '10px',
-					borderRadius: '5px',
-				}}
-			>
-				<RouteRecorder setFinalRoute={setFinalRoute} />
-			</div>
+			{showRouteRecorder && (
+				<div
+					style={{
+						position: 'absolute',
+						bottom: '10px',
+						left: '50%',
+						transform: 'translateX(-50%)',
+						zIndex: 10,
+						padding: '10px',
+						borderRadius: '5px',
+					}}
+				>
+					<RouteRecorder setFinalRoute={setFinalRoute} />
+				</div>
+			)}
 		</div>
 	);
 };
