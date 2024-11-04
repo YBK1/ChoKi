@@ -53,4 +53,8 @@ public class User {
         this.tel = tel;
         this.role = role;
     }
+
+    public void assignFamily(Family family) {
+        this.family = family;
+    }
 }
