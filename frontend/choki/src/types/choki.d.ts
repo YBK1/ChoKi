@@ -36,3 +36,21 @@ interface PasswordForm {
 	isMatch: boolean;
 	message: string;
 }
+
+interface AddressData {
+	address: string;
+	zonecode: string;
+}
+
+interface PostcodeResult {
+	address: string;
+	zonecode: string;
+	// 다음(카카오)에서 제공하는 다른 주소 정보들도 필요하다면 여기에 추가
+}
+
+interface PostcodeOptions {
+	oncomplete: (data: PostcodeResult) => void;
+	onclose?: () => void;
+	width: string;
+	height: string;
+}
