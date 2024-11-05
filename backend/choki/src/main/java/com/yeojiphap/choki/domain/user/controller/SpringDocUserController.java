@@ -57,4 +57,27 @@ public interface SpringDocUserController {
     })
     public ApiResponse createFamily();
 
+    @Operation(
+            summary = "초대 코드 조회",
+            description = "가족 초대를 위한 초대 코드를 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "초대 코드 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": null,
+                                      "data": {
+                                        "inviteCode": "123456"
+                                      }
+                                    }"""
+                            )
+                    )
+            ),
+    })
+    public ApiResponse getInviteCode();
 }
