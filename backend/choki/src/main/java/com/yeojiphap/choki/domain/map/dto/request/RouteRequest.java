@@ -4,5 +4,5 @@ import com.yeojiphap.choki.domain.map.domain.Location;
 
 import java.util.List;
 
-public record RouteRequest(Location startPoint, Location destination, List<Location>routes) {
+public record RouteRequest(Location destination, List<Location>routes) {
 }
