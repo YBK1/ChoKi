@@ -3,7 +3,7 @@ import React from 'react';
 import UnityViewer from '@/components/Unity/UnityVierwer';
 
 const UnityPage: React.FC = () => {
-  return <UnityViewer />;
+	return <UnityViewer />;
 };
 
 export default UnityPage;
