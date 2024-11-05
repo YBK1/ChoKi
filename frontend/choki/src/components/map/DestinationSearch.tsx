@@ -9,27 +9,66 @@ type DestinationSearchProps = {
 
 const DestinationSearch = ({ map }: DestinationSearchProps) => {
 	const [destination, setDestination] = useState<string>('');
+	const [searchResults, setSearchResults] = useState<any[]>([]);
 	const router = useRouter();
+
+	const calculateDistance = (
+		lat1: number,
+		lon1: number,
+		lat2: number,
+		lon2: number,
+	) => {
+		const R = 6371;
+		const dLat = ((lat2 - lat1) * Math.PI) / 180;
+		const dLon = ((lon2 - lon1) * Math.PI) / 180;
+		const a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos((lat1 * Math.PI) / 180) *
+				Math.cos((lat2 * Math.PI) / 180) *
+				Math.sin(dLon / 2) *
+				Math.sin(dLon / 2);
+		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		return R * c;
+	};
 
 	const handleSearch = () => {
 		if (!map || !destination) return;
 
 		const kakao = (window as any).kakao;
 		const places = new kakao.maps.services.Places();
+		const mapCenter = map.getCenter();
 
 		places.keywordSearch(destination, (result: any, status: any) => {
 			if (status === kakao.maps.services.Status.OK) {
-				const location = new kakao.maps.LatLng(result[0].y, result[0].x);
-				map.setCenter(location);
-
-				const marker = new kakao.maps.Marker({
-					position: location,
+				result.forEach((place: any) => {
+					const distance = calculateDistance(
+						mapCenter.getLat(),
+						mapCenter.getLng(),
+						parseFloat(place.y),
+						parseFloat(place.x),
+					);
+					place.distance = distance;
 				});
-				marker.setMap(map);
+
+				result.sort((a: any, b: any) => a.distance - b.distance);
+
+				setSearchResults(result);
 			} else {
 				console.error('위치 검색 실패:', status);
 			}
 		});
+	};
+
+	const handleSelect = (place: any) => {
+		const location = new kakao.maps.LatLng(place.y, place.x);
+		map.setCenter(location);
+
+		const marker = new kakao.maps.Marker({
+			position: location,
+		});
+		marker.setMap(map);
+
+		setSearchResults([]);
 	};
 
 	const goToPreviousPage = () => {
@@ -110,6 +149,34 @@ const DestinationSearch = ({ map }: DestinationSearchProps) => {
 					/>
 				</div>
 			</div>
+
+			{searchResults.length > 0 && (
+				<ul
+					style={{
+						marginTop: '10px',
+						listStyleType: 'none',
+						padding: 0,
+						maxHeight: '150px',
+						overflowY: 'auto',
+						border: '1px solid #ccc',
+						borderRadius: '10px',
+					}}
+				>
+					{searchResults.map((place, index) => (
+						<li
+							key={index}
+							onClick={() => handleSelect(place)}
+							style={{
+								padding: '10px',
+								cursor: 'pointer',
+								borderBottom: '1px solid #eee',
+							}}
+						>
+							{place.place_name} - {place.distance.toFixed(2)} km
+						</li>
+					))}
+				</ul>
+			)}
 
 			<div
 				style={{
