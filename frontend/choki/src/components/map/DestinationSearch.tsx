@@ -73,7 +73,7 @@ const DestinationSearch = ({ map }: DestinationSearchProps) => {
 				<Image src="/icons/back.png" alt="Back" width={7} height={7} />
 			</button>
 
-			<h2 style={{ margin: '50px 0 0', fontSize: '25px', fontWeight: 'bold' }}>
+			<h2 style={{ margin: '40px 0 0', fontSize: '20px', fontWeight: 'bold' }}>
 				경로 등록하기
 			</h2>
 
