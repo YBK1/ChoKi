@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import CommonButton from '@/components/Common/Button';
 import CommonInput from '@/components/Common/Input';
 import SearchIcon from '@/../public/icons/search_icon.png';
 import { useRouter } from 'next/router';
 import BackIcon from '@/assets/icons/back_icon.svg';
 import Image from 'next/image';
+import AddressSearch from '@/components/AddressSearch/AddressSearch';
 interface PasswordForm {
 	password: string;
 	passwordConfirm: string;
@@ -22,9 +23,29 @@ export default function SignupPage() {
 	});
 	const [isParent, setIsParent] = useState<boolean>(true); // 부모/자녀 토글 상태 관리
 	const [nickname, setNickname] = useState<string>('');
-	const [address, setAddress] = useState<string>('');
+
 	const [phone, setPhone] = useState<string>('');
+	// 우편번호 상태
+	// const [setZonecode] = useState<string>('');
+	// 주소 상태
+	const [address, setAddress] = useState<string>('');
 	const Router = useRouter();
+	const [isAddressSearchOpen, setIsAddressSearchOpen] =
+		useState<boolean>(false);
+
+	// 주소 선택 시 처리
+	// 주소 검색 모달 열기
+	const handleAddressSearch = useCallback(() => {
+		setIsAddressSearchOpen(true);
+	}, []);
+
+	// 주소 선택 시 처리
+	const handleAddress = useCallback((data: AddressData) => {
+		setAddress(data.address);
+		// setZonecode(data.zonecode);
+		setIsAddressSearchOpen(false); // 모달 닫기
+	}, []);
+
 	const handleSignup = () => {
 		// TODO - 회원가입 로직 구현
 		Router.push({
@@ -126,21 +147,34 @@ export default function SignupPage() {
 				}
 			/>
 
-			<div className="relative">
-				<CommonInput
-					type="text"
-					placeholder="주소"
-					value={address}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-						setAddress(e.target.value)
-					}
-				/>
-
-				<Image
-					src={SearchIcon}
-					alt="Search Icon"
-					className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
-				/>
+			{/* 주소 입력 부분 */}
+			<div className="w-full max-w-[315px] space-y-2">
+				{/* <div className="relative">
+					<CommonInput
+						type="text"
+						placeholder="우편번호"
+						value={zonecode}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setZonecode(e.target.value)
+						}
+					/>
+				</div> */}
+				<div className="relative">
+					<CommonInput
+						type="text"
+						placeholder="주소"
+						value={address}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setAddress(e.target.value)
+						}
+					/>
+					<div
+						className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+						onClick={handleAddressSearch}
+					>
+						<Image src={SearchIcon} alt="Search Icon" className="w-6 h-6" />
+					</div>
+				</div>
 			</div>
 
 			<CommonInput
@@ -159,6 +193,16 @@ export default function SignupPage() {
 					onClick={handleSignup}
 				/>
 			</div>
+
+			{/* 주소 검색 모달 */}
+			{isAddressSearchOpen && (
+				<AddressSearch
+					onComplete={handleAddress}
+					onClose={() => {
+						setIsAddressSearchOpen(false);
+					}}
+				/>
+			)}
 		</div>
 	);
 }
