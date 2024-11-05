@@ -37,11 +37,7 @@ public class MapService {
     }
 
     private Location getUserLocation(User user) {
-        return Location.builder()
-                .buildingName(user.getAddress())
-                .latitude(user.getLatitude())
-                .longitude(user.getLongitude())
-                .build();
+        return new Location(user.getAddress(), user.getLatitude(),user.getLongitude());
     }
 
 }
