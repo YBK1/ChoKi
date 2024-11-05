@@ -52,7 +52,7 @@ export default function NotificationPage() {
 						key={notification.id}
 						className="flex items-center p-4 shadow-sm"
 					>
-						<div className="relative flex items-center justify-center">
+						<div className="relative flex items-center justify-center min-w-[60px] min-h-[60px]">
 							<Image
 								src={MISSION_IMAGES[notification.type]}
 								alt={notification.type}
@@ -66,8 +66,9 @@ export default function NotificationPage() {
 							<span className="text-base">{notification.content}</span>
 							<span className="text-sm text-gray-400">{notification.time}</span>
 						</div>
-
-						<Image src={right_arrow} alt="detail" width={24} height={24} />
+						<div className="min-w-[24px] min-h-[24px]">
+							<Image src={right_arrow} alt="detail" width={24} height={24} />
+						</div>
 					</div>
 				))}
 			</div>
