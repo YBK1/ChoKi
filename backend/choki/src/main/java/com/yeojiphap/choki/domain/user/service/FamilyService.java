@@ -10,8 +10,6 @@ import com.yeojiphap.choki.global.auth.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class FamilyService {
@@ -28,6 +26,11 @@ public class FamilyService {
         user.assignFamily(family);
         userRepository.save(user);
 
+        return new InviteCodeResponse(family.getInviteCode());
+    }
+
+    public InviteCodeResponse getInviteCode() {
+        Family family = familyRepository.findByUsers_UserId((SecurityUtil.getCurrentUserId())).orElseThrow();
         return new InviteCodeResponse(family.getInviteCode());
     }
 
