@@ -64,7 +64,7 @@ export default function index() {
 									<span className="text-gray-600">닉네임:</span>
 									<span>일 잘하는 애기</span>
 								</div>
-								<div className="flex items-center gap-2">
+								<div className="flex items-start gap-2">
 									<span className="text-gray-600 min-w-10">주소:</span>
 									<span className="max-w-30 break-words">
 										서울특별시 강남구 테헤란로 426
