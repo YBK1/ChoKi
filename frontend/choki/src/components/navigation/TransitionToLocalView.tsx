@@ -90,7 +90,7 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 					type: 'line',
 					source: 'line',
 					paint: {
-						'line-color': 'green',
+						'line-color': 'orange',
 						'line-width': 6,
 						'line-opacity': 0.4,
 					},
@@ -101,7 +101,7 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 					type: 'line',
 					source: 'line',
 					paint: {
-						'line-color': 'green',
+						'line-color': 'orange',
 						'line-width': 6,
 						'line-dasharray': [0, 4, 3],
 					},
