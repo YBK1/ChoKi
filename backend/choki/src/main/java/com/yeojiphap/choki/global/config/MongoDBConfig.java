@@ -7,10 +7,10 @@ import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
-@EnableMongoRepositories(basePackages = "com.yeojiphap.choki.domain")
+// @EnableMongoRepositories(basePackages = "com.yeojiphap.choki.domain")
 public class MongoDBConfig {
-	@Bean
-	MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
-		return new MongoTransactionManager(dbFactory);
-	}
+	// @Bean
+	// MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
+	// 	return new MongoTransactionManager(dbFactory);
+	// }
 }

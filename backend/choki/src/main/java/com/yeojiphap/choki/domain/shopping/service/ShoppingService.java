@@ -48,29 +48,34 @@ public class ShoppingService {
 		// 미션을 먼저 생성해야 함
 		ObjectId missionId = missionService.addShoppingMission(createRequestDto);
 
-		Shopping shopping = Shopping.builder()
-			.startPoint(createRequestDto.getStartPoint())
-			.destination(createRequestDto.getDestination())
-			.route(Route.builder().route(createRequestDto.getRoute()).build())
-			.shoppingList(createRequestDto.getShoppingList().stream()
-				.map(barcodeItem -> {
-					// 바코드 값만 들어온 request를 실제 상품 값으로 조회해서 저장
-					ProductDto productDto = searchProductByBarcode(Long.toString(barcodeItem.getBarcode()));
+		try{
+			Shopping shopping = Shopping.builder()
+				.startPoint(createRequestDto.getStartPoint())
+				.destination(createRequestDto.getDestination())
+				.route(Route.builder().route(createRequestDto.getRoute()).build())
+				.shoppingList(createRequestDto.getShoppingList().stream()
+					.map(barcodeItem -> {
+						// 바코드 값만 들어온 request를 실제 상품 값으로 조회해서 저장
+						ProductDto productDto = searchProductByBarcode(Long.toString(barcodeItem.getBarcode()));
 
-					return Product.builder()
-						.barcode(Long.toString(barcodeItem.getBarcode()))
-						.quantity(barcodeItem.getQuantity())
-						.productName(productDto.getProductName())
-						.category(productDto.getCategory())
-						.image(productDto.getImage())
-						.build();
-				}).collect(Collectors.toList()))
-			.cartItem(new ArrayList<>())
-			// 매핑되는 미션을 포함해서 저장해야 함
-			.missionId(missionId)
-			.build();
+						return Product.builder()
+							.barcode(Long.toString(barcodeItem.getBarcode()))
+							.quantity(barcodeItem.getQuantity())
+							.productName(productDto.getProductName())
+							.category(productDto.getCategory())
+							.image(productDto.getImage())
+							.build();
+					}).collect(Collectors.toList()))
+				.cartItem(new ArrayList<>())
+				// 매핑되는 미션을 포함해서 저장해야 함
+				.missionId(missionId)
+				.build();
 
-		shoppingRepository.save(shopping);
+			shoppingRepository.save(shopping);
+		}catch(Exception e){
+			// 트랜잭션 원칙 적용위해서 삭제 해줘야 함
+			missionService.deleteMission(missionId);
+		}
 
 	}
 

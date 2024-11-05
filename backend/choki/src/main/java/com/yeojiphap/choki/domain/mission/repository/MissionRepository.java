@@ -11,7 +11,5 @@ import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.domain.Status;
 
 @Repository
-public interface MissionRepository extends MongoRepository<Mission, String> {
-	Optional<Mission> findById(ObjectId id);
-	List<Mission> findAllByChildIdAndStatus(Long childId, Status status);
+public interface MissionRepository extends MongoRepository<Mission, String>, CustomMissionRepository {
 }

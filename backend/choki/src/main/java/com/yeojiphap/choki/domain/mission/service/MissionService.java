@@ -21,7 +21,7 @@ public class MissionService {
 
 	// 미션 조회하기
 	public Mission getMission(ObjectId id) {
-		return missionRepository.findById(id).orElse(null);
+		return missionRepository.findById(id);
 	}
 
 	// 장보기 미션 저장하기
@@ -39,13 +39,18 @@ public class MissionService {
 			.comment(null)
 			.build();
 
-		Mission savedMission = missionRepository.save(mission);
+		Mission savedMission = missionRepository.saveMission(mission);
 		return savedMission.getId();
 	}
 
 	// 미션 저장하기
 	public void addMission(Mission mission) {
 		missionRepository.save(mission);
+	}
+
+	// 미션 삭제하기
+	public void deleteMission(ObjectId id) {
+		missionRepository.deleteMission(id);
 	}
 
 	// 아이 기준 미션 목록 조회하기
