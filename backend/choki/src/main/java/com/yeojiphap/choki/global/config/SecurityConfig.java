@@ -84,7 +84,7 @@ public class SecurityConfig {
                         .requestMatchers("/ws/shopping/**").permitAll()
                         .requestMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
                         .permitAll()
-                        .requestMatchers("/api/login", "/", "/api/user/signup", "/api/reissue").permitAll()
+                        .requestMatchers("/api/user/login", "/", "/api/user/signup", "/api/reissue").permitAll()
                         .requestMatchers("/parents/**").permitAll()
                         .requestMatchers("https://dapi.kakao.com/**").permitAll()
                         .anyRequest().authenticated());
