@@ -3,6 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import TransitionToLocalView from './TransitionToLocalView';
 import CurrentLocationButton from './CurrentLocationButton';
+import TimeDistanceTracker from './TimeDistanceTracker';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
@@ -82,6 +83,7 @@ const MapComponent = () => {
 					<CurrentLocationButton map={map} />
 				</>
 			)}
+			<TimeDistanceTracker />
 		</div>
 	);
 };
