@@ -32,6 +32,10 @@ export default function SignupPage() {
 	const Router = useRouter();
 	const [isAddressSearchOpen, setIsAddressSearchOpen] =
 		useState<boolean>(false);
+	const [location, setLocation] = useState<{
+		latitude?: number;
+		longitude?: number;
+	}>({});
 
 	// 주소 선택 시 처리
 	// 주소 검색 모달 열기
@@ -42,6 +46,12 @@ export default function SignupPage() {
 	// 주소 선택 시 처리
 	const handleAddress = useCallback((data: AddressData) => {
 		setAddress(data.address);
+		if (data.latitude && data.longitude) {
+			setLocation({
+				latitude: data.latitude,
+				longitude: data.longitude,
+			});
+		}
 		// setZonecode(data.zonecode);
 		setIsAddressSearchOpen(false); // 모달 닫기
 	}, []);
@@ -203,6 +213,13 @@ export default function SignupPage() {
 					}}
 				/>
 			)}
+			{
+				<p>
+					위도: {location.latitude}
+					<br />
+					경도: {location.longitude}
+				</p>
+			}
 		</div>
 	);
 }
