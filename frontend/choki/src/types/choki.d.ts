@@ -4,7 +4,7 @@ type ModalSize = 'small' | 'medium' | 'large';
 type InputType = 'text' | 'password';
 // 목적지 검색 input
 type DestinationSearchProps = {
-	map: any;
+	map: KakaoMap | null;
 };
 
 // 카카오맵 종합 props

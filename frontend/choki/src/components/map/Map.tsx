@@ -18,9 +18,7 @@ const Map = ({
 
 	return (
 		<div style={{ height: '100vh', width: '100%', position: 'relative' }}>
-			{mapInstance && showDestinationSearch && (
-				<DestinationSearch map={mapInstance} />
-			)}
+			{mapInstance && showDestinationSearch && <DestinationSearch />}
 			<MapContainer onMapLoad={setMapInstance} />
 			{mapInstance && <UserLocationMarker map={mapInstance} />}
 			{mapInstance && showPolyline && (
