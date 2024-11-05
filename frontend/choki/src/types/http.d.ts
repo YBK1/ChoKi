@@ -2,13 +2,13 @@
 
 type role = 'PARENT' | 'CHILD';
 interface SignupRequest {
-	userId: 'string';
-	userPassword: 'string';
-	nickname: 'string';
-	address: 'string';
-	latitude: 0;
-	longitude: 0;
-	name: 'string';
-	tel: 'string';
+	userId: string;
+	userPassword: string;
+	nickname: string;
+	address: string;
+	latitude: number;
+	longitude: number;
+	name: string;
+	tel: string;
 	role: role;
 }
