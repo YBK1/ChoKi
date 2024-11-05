@@ -12,3 +12,8 @@ interface SignupRequest {
 	tel: string;
 	role: role;
 }
+
+interface LoginRequest {
+	userId: string;
+	userPassword: string;
+}

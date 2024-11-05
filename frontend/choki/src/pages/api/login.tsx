@@ -1,7 +1,8 @@
-// 회원가입
 import axios from 'axios';
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL;
+
+// 회원가입
 export const registerUser = async ({
 	userId,
 	userPassword,
@@ -13,21 +14,25 @@ export const registerUser = async ({
 	tel,
 	role,
 }: SignupRequest) => {
-	try {
-		const response = await axios.post(`${baseURL}/api/register`, {
-			userId,
-			userPassword,
-			nickname,
-			address,
-			latitude,
-			longitude,
-			name,
-			tel,
-			role,
-		});
-		return response.data;
-	} catch (error) {
-		console.error('Error registering user:', error);
-		throw error;
-	}
+	const response = await axios.post(`${baseURL}/api/user/signup`, {
+		userId,
+		userPassword,
+		nickname,
+		address,
+		latitude,
+		longitude,
+		name,
+		tel,
+		role,
+	});
+	return response.data;
+};
+
+// 로그인
+export const loginUser = async ({ userId, userPassword }: LoginRequest) => {
+	const response = await axios.post(`${baseURL}/api/user/login`, {
+		userId,
+		userPassword,
+	});
+	return response.data;
 };
