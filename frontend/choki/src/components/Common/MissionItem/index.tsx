@@ -1,20 +1,12 @@
 // components/Common/MissionItem/index.tsx
 import Image from 'next/image';
-import shopIcon from '@/assets/icons/basket_icon.svg';
-import recycleIcon from '@/assets/icons/recycling_icon.svg';
-import extraMissionIcon from '@/assets/icons/other_icon.svg';
+import { MISSION_IMAGES } from '@/constants/mission';
 
 interface MissionItemProps {
 	type: MissionType;
 	content: string;
 	onClick?: () => void;
 }
-
-const MISSION_IMAGES: Record<MissionType, string> = {
-	SHOP: shopIcon,
-	RECYCLE: recycleIcon,
-	EXTRA_MISSION: extraMissionIcon,
-};
 
 export default function MissionItem({
 	type,
