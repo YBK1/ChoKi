@@ -81,9 +81,9 @@ const MapComponent = () => {
 			) : (
 				<>
 					<CurrentLocationButton map={map} />
+					<TimeDistanceTracker />
 				</>
 			)}
-			<TimeDistanceTracker />
 		</div>
 	);
 };

@@ -58,7 +58,6 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 					essential: true,
 				});
 
-				// Add the animated line
 				const geojson: GeoJSON.FeatureCollection<GeoJSON.Geometry> = {
 					type: 'FeatureCollection',
 					features: [
@@ -107,7 +106,7 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 					},
 				});
 
-				// Animation logic
+				// 애니메이션
 				const dashArraySequence = [
 					[0, 4, 3],
 					[0.5, 4, 2.5],
@@ -146,7 +145,6 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 
 				animateDashArray(0);
 
-				// Load additional layers
 				SkyLayer(map);
 				ThreeDBuildingsLayer(map);
 				MapStyles(map);
