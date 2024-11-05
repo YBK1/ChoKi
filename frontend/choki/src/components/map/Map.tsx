@@ -12,9 +12,9 @@ const Map = ({
 }: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
-	const [finalRoute, setFinalRoute] = useState<{ lat: number; lng: number }[]>(
-		[],
-	);
+	const [finalRoute, setFinalRoute] = useState<
+		{ latitude: number; longitude: number }[]
+	>([]);
 
 	return (
 		<div style={{ height: '100vh', width: '100%', position: 'relative' }}>

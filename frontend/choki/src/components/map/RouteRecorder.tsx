@@ -6,7 +6,9 @@ import stopButton from '../../assets/icons/finish_btn.svg';
 const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 	const [isRecording, setIsRecording] = useState(false);
 	const [watchId, setWatchId] = useState<number | null>(null);
-	const [route, setRoute] = useState<{ lat: number; lng: number }[]>([]);
+	const [route, setRoute] = useState<{ latitude: number; longitude: number }[]>(
+		[],
+	);
 
 	const startRecording = () => {
 		setIsRecording(true);
@@ -17,7 +19,7 @@ const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 			position => {
 				const { latitude, longitude } = position.coords;
 				console.log(`위도: ${latitude}, 경도: ${longitude}`);
-				const newPoint = { lat: latitude, lng: longitude };
+				const newPoint = { latitude: latitude, longitude: longitude };
 
 				setRoute(prevRoute => [...prevRoute, newPoint]);
 			},

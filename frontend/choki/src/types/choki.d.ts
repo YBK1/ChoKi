@@ -22,14 +22,14 @@ type MapContainerProps = {
 // 카카오맵 위에 선 그리는 props
 type RoutePolylineProps = {
 	map: any;
-	finalRoute: { lat: number; lng: number }[];
+	finalRoute: { latitude: number; longitude: number }[];
 	setPolyline: (polyline: any) => void;
 	polyline: any;
 };
 
 // 카카오맵 경로 기록하는 props
 type RouteRecorderProps = {
-	setFinalRoute: (route: { lat: number; lng: number }[]) => void;
+	setFinalRoute: (route: { latitude: number; longitude: number }[]) => void;
 };
 
 // 카카오맵 유저 표시 props
