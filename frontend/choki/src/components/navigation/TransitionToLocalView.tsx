@@ -50,7 +50,6 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 					});
 				}
 
-				// Fly to user's location with a zoomed-in view
 				map.flyTo({
 					center: userLocation,
 					zoom: 18,
@@ -59,60 +58,98 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 					essential: true,
 				});
 
-				// Load and add the dotted line route
-				map.loadImage(
-					'https://docs.mapbox.com/mapbox-gl-js/assets/pattern-dot.png',
-					(error, image) => {
-						if (error || !image) {
-							console.error('Error loading pattern image:', error);
-							return;
-						}
-
-						if (!map.hasImage('pattern-dot')) {
-							map.addImage('pattern-dot', image);
-						}
-
-						// Add the GeoJSON source for the route
-						map.addSource('route-data', {
-							type: 'geojson',
-							data: {
-								type: 'Feature',
-								properties: {},
-								geometry: {
-									type: 'LineString',
-									coordinates: [
-										[126.8124, 35.2014], // 국가대표짬뽕 수완본점
-										[126.8189, 35.1976], // Intermediate Point
-										[126.8235, 35.1941], // Intermediate Point
-										[126.8271, 35.1898], // Intermediate Point
-										[126.8334, 35.1808], // Intermediate Point
-										[126.8463, 35.1711], // 광주송정역
-									],
-								},
+				// Add the animated line
+				const geojson: GeoJSON.FeatureCollection<GeoJSON.Geometry> = {
+					type: 'FeatureCollection',
+					features: [
+						{
+							type: 'Feature',
+							properties: {},
+							geometry: {
+								type: 'LineString',
+								coordinates: [
+									[126.8124, 35.2014], // 국가대표짬뽕 수완본점
+									[126.8189, 35.1976],
+									[126.8235, 35.1941],
+									[126.8271, 35.1898],
+									[126.8334, 35.1808],
+									[126.8463, 35.1711], // 광주송정역
+								],
 							},
-						});
+						},
+					],
+				};
 
-						// Add the line layer with the dotted pattern
-						map.addLayer({
-							id: 'dotted-route-line',
-							type: 'line',
-							source: 'route-data',
-							layout: {
-								'line-join': 'round',
-								'line-cap': 'round',
-							},
-							paint: {
-								'line-pattern': 'pattern-dot',
-								'line-width': 10,
-							},
-						});
+				map.addSource('line', {
+					type: 'geojson',
+					data: geojson,
+				});
 
-						// Apply additional map layers
-						SkyLayer(map);
-						ThreeDBuildingsLayer(map);
-						MapStyles(map);
+				map.addLayer({
+					id: 'line-background',
+					type: 'line',
+					source: 'line',
+					paint: {
+						'line-color': 'green',
+						'line-width': 6,
+						'line-opacity': 0.4,
 					},
-				);
+				});
+
+				map.addLayer({
+					id: 'line-dashed',
+					type: 'line',
+					source: 'line',
+					paint: {
+						'line-color': 'green',
+						'line-width': 6,
+						'line-dasharray': [0, 4, 3],
+					},
+				});
+
+				// Animation logic
+				const dashArraySequence = [
+					[0, 4, 3],
+					[0.5, 4, 2.5],
+					[1, 4, 2],
+					[1.5, 4, 1.5],
+					[2, 4, 1],
+					[2.5, 4, 0.5],
+					[3, 4, 0],
+					[0, 0.5, 3, 3.5],
+					[0, 1, 3, 3],
+					[0, 1.5, 3, 2.5],
+					[0, 2, 3, 2],
+					[0, 2.5, 3, 1.5],
+					[0, 3, 3, 1],
+					[0, 3.5, 3, 0.5],
+				];
+
+				let step = 0;
+
+				function animateDashArray(timestamp: number): void {
+					const newStep: number = Math.floor(
+						(timestamp / 50) % dashArraySequence.length,
+					);
+
+					if (newStep !== step) {
+						map?.setPaintProperty(
+							'line-dashed',
+							'line-dasharray',
+							dashArraySequence[newStep] as number[],
+						);
+						step = newStep;
+					}
+
+					requestAnimationFrame(animateDashArray);
+				}
+
+				animateDashArray(0);
+
+				// Load additional layers
+				SkyLayer(map);
+				ThreeDBuildingsLayer(map);
+				MapStyles(map);
 			});
 		}, 2500);
 	}, [map, userLocation, setIsGlobeView]);
