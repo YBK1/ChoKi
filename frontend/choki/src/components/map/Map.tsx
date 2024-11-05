@@ -5,12 +5,6 @@ import RoutePolyline from './RoutePolyline';
 import RouteRecorder from './RouteRecorder';
 import DestinationSearch from './DestinationSearch';
 
-type MapProps = {
-	showRouteRecorder?: boolean;
-	showPolyline?: boolean;
-	showDestinationSearch?: boolean;
-};
-
 const Map = ({
 	showRouteRecorder = true,
 	showPolyline = true,

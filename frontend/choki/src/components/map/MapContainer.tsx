@@ -2,10 +2,6 @@
 import { useEffect, useRef } from 'react';
 import Script from 'next/script';
 
-type MapContainerProps = {
-	onMapLoad: (map: any) => void;
-};
-
 const MapContainer = ({ onMapLoad }: MapContainerProps) => {
 	const mapRef = useRef<HTMLDivElement>(null);
 

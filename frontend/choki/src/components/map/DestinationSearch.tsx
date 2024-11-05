@@ -3,10 +3,6 @@ import { useRouter } from 'next/router';
 import MapIcon from '../../assets/icons/map_icon_blurry.svg';
 import Image from 'next/image';
 
-type DestinationSearchProps = {
-	map: any;
-};
-
 const DestinationSearch = ({ map }: DestinationSearchProps) => {
 	const [destination, setDestination] = useState<string>('');
 	const [searchResults, setSearchResults] = useState<any[]>([]);

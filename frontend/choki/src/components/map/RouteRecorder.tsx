@@ -3,10 +3,6 @@ import Image from 'next/image';
 import startButton from '../../assets/icons/start_btn.svg';
 import stopButton from '../../assets/icons/finish_btn.svg';
 
-type RouteRecorderProps = {
-	setFinalRoute: (route: { lat: number; lng: number }[]) => void;
-};
-
 const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 	const [isRecording, setIsRecording] = useState(false);
 	const [watchId, setWatchId] = useState<number | null>(null);

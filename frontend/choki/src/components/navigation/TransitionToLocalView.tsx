@@ -1,14 +1,7 @@
 import { useCallback } from 'react';
-import mapboxgl from 'mapbox-gl';
 import SkyLayer from './SkyLayer';
 import ThreeDBuildingsLayer from './3DBuildingsLayer';
 import MapStyles from './MapStyles';
-
-interface TransitionToLocalViewProps {
-	map: mapboxgl.Map | null;
-	userLocation: [number, number] | null;
-	setIsGlobeView: (value: boolean) => void;
-}
 
 const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 	map,
