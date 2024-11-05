@@ -5,20 +5,27 @@ import RoutePolyline from './RoutePolyline';
 import RouteRecorder from './RouteRecorder';
 import DestinationSearch from './DestinationSearch';
 
-const Map = ({
-	showRouteRecorder = true,
-	showPolyline = true,
-	showDestinationSearch = true,
-}: MapProps) => {
+const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
 	const [finalRoute, setFinalRoute] = useState<
 		{ latitude: number; longitude: number }[]
 	>([]);
+	const [showDestinationSearch, setShowDestinationSearch] = useState(false);
+
+	const handleRecordingFinished = () => {
+		setShowDestinationSearch(true);
+	};
+
+	const onClose = () => {
+		setShowDestinationSearch(false);
+	};
 
 	return (
 		<div style={{ height: '100vh', width: '100%', position: 'relative' }}>
-			{mapInstance && showDestinationSearch && <DestinationSearch />}
+			{mapInstance && showDestinationSearch && (
+				<DestinationSearch onClose={onClose} />
+			)}
 			<MapContainer onMapLoad={setMapInstance} />
 			{mapInstance && <UserLocationMarker map={mapInstance} />}
 			{mapInstance && showPolyline && (
@@ -41,7 +48,10 @@ const Map = ({
 						borderRadius: '5px',
 					}}
 				>
-					<RouteRecorder setFinalRoute={setFinalRoute} />
+					<RouteRecorder
+						setFinalRoute={setFinalRoute}
+						onRecordingFinish={handleRecordingFinished}
+					/>
 				</div>
 			)}
 		</div>

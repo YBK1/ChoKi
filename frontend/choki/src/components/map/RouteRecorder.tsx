@@ -3,7 +3,10 @@ import Image from 'next/image';
 import startButton from '../../assets/icons/start_btn.svg';
 import stopButton from '../../assets/icons/finish_btn.svg';
 
-const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
+const RouteRecorder = ({
+	setFinalRoute,
+	onRecordingFinish,
+}: RouteRecorderProps) => {
 	const [isRecording, setIsRecording] = useState(false);
 	const [watchId, setWatchId] = useState<number | null>(null);
 	const [route, setRoute] = useState<{ latitude: number; longitude: number }[]>(
@@ -41,6 +44,7 @@ const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 
 		console.log('최종 경로:', route);
 		setFinalRoute(route);
+		onRecordingFinish();
 	};
 
 	useEffect(() => {

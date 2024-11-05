@@ -30,6 +30,7 @@ type RoutePolylineProps = {
 // 카카오맵 경로 기록하는 props
 type RouteRecorderProps = {
 	setFinalRoute: (route: { latitude: number; longitude: number }[]) => void;
+	onRecordingFinish: () => void;
 };
 
 // 카카오맵 유저 표시 props

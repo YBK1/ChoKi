@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import MapIcon from '../../assets/icons/map_icon_blurry.svg';
 import Image from 'next/image';
+import MapIcon from '../../assets/icons/map_icon_blurry.svg';
 
-const DestinationSearch = () => {
+const DestinationSearch = ({ onClose }: { onClose: () => void }) => {
 	const [destination, setDestination] = useState<string>('');
 	const router = useRouter();
 
@@ -28,6 +28,21 @@ const DestinationSearch = () => {
 				overflow: 'hidden',
 			}}
 		>
+			<button
+				onClick={onClose}
+				style={{
+					position: 'absolute',
+					top: '15px',
+					right: '15px',
+					backgroundColor: 'transparent',
+					border: 'none',
+					fontSize: '20px',
+					cursor: 'pointer',
+				}}
+			>
+				&times;
+			</button>
+
 			<button
 				onClick={goToPreviousPage}
 				style={{
@@ -77,8 +92,8 @@ const DestinationSearch = () => {
 					}}
 				>
 					<Image
-						src="/icons/search_icon.png"
-						alt="Search Icon"
+						src="/icons/plus_btn.png"
+						alt="Add Icon"
 						width={24}
 						height={24}
 					/>
