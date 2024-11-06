@@ -29,14 +29,6 @@ export default function Index() {
 	const handleNext = () => setCurrentStep(prev => prev + 1);
 	const handlePrev = () => setCurrentStep(prev => prev - 1);
 
-	// 심부름 종류 선택 핸들러
-	const handleErrandSelect = (errand: string) => {
-		setSelectedErrand(errand);
-		if (errand === '장보기') {
-			handleNext();
-		}
-	};
-
 	// 각 단계별 컴포넌트
 	const StepOne = () => (
 		<div className="flex flex-col h-full">
@@ -118,7 +110,39 @@ export default function Index() {
 		);
 	};
 
-	const StepThree = () => <div className="flex flex-col h-full"></div>;
+	const StepThree = () => {
+		return (
+			<div className="flex flex-col h-full">
+				<h2 className="text-xl font-bold text-center">장바구니 설정</h2>
+				<div className="relative mb-4">
+					<input
+						type="text"
+						className="w-full p-2 border rounded"
+						placeholder="물건을 검색하세요"
+					/>
+					<button className="absolute right-2 top-1/2 transform -translate-y-1/2">
+						🔍
+					</button>
+				</div>
+				<div className="text-sm mb-4">찾고 있는 물건이 없나요? ➕</div>
+
+				<div className="flex justify-between mt-4">
+					<button
+						className="px-4 py-2 rounded bg-gray-100 text-gray-500"
+						onClick={handlePrev}
+					>
+						이전
+					</button>
+					<button
+						className="px-4 py-2 rounded bg-orange-400 text-white"
+						onClick={handleNext}
+					>
+						완료
+					</button>
+				</div>
+			</div>
+		);
+	};
 
 	// 각 단계별 모달 사이즈 정의
 	const getModalSize = (step: number) => {
