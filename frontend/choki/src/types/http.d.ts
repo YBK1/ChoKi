@@ -1,5 +1,4 @@
 //http 관련 타입, Request, Response 뒤에 붙이기
-
 type role = 'PARENT' | 'CHILD';
 interface SignupRequest {
 	userId: string;
@@ -16,7 +15,6 @@ interface SignupRequest {
 interface LoginRequest {
 	userId: string;
 	userPassword: string;
-	//Response 뒤에 붙이기
 }
 // export interface BaseResponse<T> {
 // 	status: number;
@@ -24,7 +22,7 @@ interface LoginRequest {
 // 	data: T;
 // }
 
-export interface NotificationResponse {
+interface NotificationResponse {
 	childId: number;
 	content: string;
 	type: MissionType;
