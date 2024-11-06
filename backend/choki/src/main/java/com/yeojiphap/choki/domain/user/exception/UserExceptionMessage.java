@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum UserExceptionMessage {
     USER_NOT_FOUND("해당 유저가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
-    INVALID_USER_ROLE("허용되지 않은 유저의 요청입니다.", HttpStatus.BAD_REQUEST);
+    INVALID_USER_ROLE("허용되지 않은 유저의 요청입니다.", HttpStatus.FORBIDDEN);
 
     private final String message;
     private final HttpStatus status;

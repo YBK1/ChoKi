@@ -1,5 +1,6 @@
 package com.yeojiphap.choki.global;
 
+import com.yeojiphap.choki.domain.user.exception.InvalidUserRoleException;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.global.auth.exception.ExpiredRefreshTokenException;
 import com.yeojiphap.choki.global.auth.exception.InvalidRefreshTokenException;
@@ -18,6 +19,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpiredRefreshTokenException.class)
     public ApiResponse<Void> handleExpiredRefreshTokenException(ExpiredRefreshTokenException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
+
+    // 403 - Forbidden
+    @ExceptionHandler(InvalidUserRoleException.class)
+    public ApiResponse<Void> handleInvalidUserRoleException(InvalidUserRoleException e) {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 

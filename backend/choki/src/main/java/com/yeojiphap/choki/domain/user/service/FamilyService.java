@@ -52,6 +52,10 @@ public class FamilyService {
 
         List<User> children = familyRepository.getChildren(user.getFamily().getId());
 
+        if (children.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
         return children.stream()
                 .map(ChildResponseDto::from)
                 .toList();
