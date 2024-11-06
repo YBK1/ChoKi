@@ -18,7 +18,7 @@ export const saveRoute = async (
 		};
 
 		const response = await axios.post(
-			`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/route/save`,
+			`${process.env.NEXT_PUBLIC_API_URL}/api/route/save`,
 			requestBody,
 		);
 

@@ -18,6 +18,8 @@ const DestinationSearch = ({
 			return;
 		}
 
+		console.log('경로 저장 요청 보냄');
+
 		navigator.geolocation.getCurrentPosition(
 			async position => {
 				const { latitude, longitude } = position.coords;
