@@ -19,5 +19,6 @@ export const joinFamily = async (
 	const response = await axiosInstance.post('/api/family/invite-code/accept', {
 		inviteCode,
 	});
+	console.log('joinFamily response', response);
 	return response.data;
 };
