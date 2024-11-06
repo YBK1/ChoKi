@@ -2,6 +2,7 @@ package com.yeojiphap.choki.domain.shopping.controller;
 
 import com.yeojiphap.choki.domain.mission.service.MissionService;
 import com.yeojiphap.choki.domain.shopping.dto.ProductCompareRequestDto;
+import com.yeojiphap.choki.domain.shopping.dto.ProductNameSearchDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,9 +39,9 @@ public class ShoppingController implements SpringDocShoppingController{
 	}
 
 	// 상품 이름으로 검색
-	@GetMapping("/item")
-	public ApiResponse searchByName(@RequestParam("itemName") String itemName, Pageable pageable) {
-		return ApiResponse.success(HttpStatus.OK, shoppingService.searchProductByName(itemName, pageable), "상품 조회 성공");
+	@PostMapping("/item/search")
+	public ApiResponse searchByName(@RequestBody ProductNameSearchDto productNameSearchDto) {
+		return ApiResponse.success(HttpStatus.OK, shoppingService.searchProductByName(productNameSearchDto), "상품 조회 성공");
 	}
 
 	// 상품 바코드로 검색

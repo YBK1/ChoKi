@@ -1,5 +1,6 @@
 package com.yeojiphap.choki.domain.shopping.controller;
 
+import com.yeojiphap.choki.domain.shopping.dto.ProductNameSearchDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -67,7 +68,7 @@ public interface SpringDocShoppingController {
 			)
 		),
 	})
-	public ApiResponse searchByName(@RequestParam("itemName") String itemName, Pageable pageable);
+	public ApiResponse searchByName(@RequestBody ProductNameSearchDto productNameSearchDto);
 
 	@Operation(
 		summary = "바코드로 상품 정보 조회",
