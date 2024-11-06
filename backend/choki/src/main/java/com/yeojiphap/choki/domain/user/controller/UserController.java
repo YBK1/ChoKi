@@ -2,7 +2,6 @@ package com.yeojiphap.choki.domain.user.controller;
 
 import com.yeojiphap.choki.domain.user.dto.TokenResponse;
 import com.yeojiphap.choki.domain.user.dto.signUpRequest;
-import com.yeojiphap.choki.domain.user.service.FamilyService;
 import com.yeojiphap.choki.domain.user.service.UserService;
 import com.yeojiphap.choki.global.ApiResponse;
 import com.yeojiphap.choki.global.auth.service.CookieService;
@@ -19,7 +18,6 @@ import static com.yeojiphap.choki.domain.user.message.UserSuccessMessage.*;
 public class UserController implements SpringDocUserController {
     private final UserService userService;
     private final CookieService cookieService;
-    private final FamilyService familyService;
 
     @PostMapping("/signup")
     public ApiResponse signup(@RequestBody signUpRequest signUpRequest,  HttpServletResponse response) {
@@ -27,15 +25,5 @@ public class UserController implements SpringDocUserController {
         response.setHeader("access", tokenResponse.accessToken());
         response.addCookie(cookieService.createCookie("refresh", tokenResponse.refreshToken()));
         return ApiResponse.success(HttpStatus.CREATED, SIGN_UP_SUCCESS.getMessage());
-    }
-
-    @PostMapping("/family")
-    public ApiResponse createFamily() {
-        return ApiResponse.success(HttpStatus.CREATED, familyService.createFamily(), FAMILY_CREATION_SUCCESS.getMessage());
-    }
-
-    @GetMapping("/invite-code")
-    public ApiResponse getInviteCode() {
-        return ApiResponse.success(HttpStatus.OK, familyService.getInviteCode());
     }
 }
