@@ -29,6 +29,7 @@ type RoutePolylineProps = {
 
 // 카카오맵 경로 기록하는 props
 type RouteRecorderProps = {
+	map: any;
 	setFinalRoute: (route: { latitude: number; longitude: number }[]) => void;
 	onRecordingFinish: () => void;
 };

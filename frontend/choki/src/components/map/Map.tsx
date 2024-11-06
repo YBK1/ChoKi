@@ -3,7 +3,7 @@ import MapContainer from './MapContainer';
 import UserLocationMarker from './UserLocationMarker';
 import RoutePolyline from './RoutePolyline';
 import RouteRecorder from './RouteRecorder';
-import DestinationSearch from './DestinationSearch';
+import DestinationSearch from './SetDestination';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
@@ -76,6 +76,7 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 					}}
 				>
 					<RouteRecorder
+						map={mapInstance}
 						setFinalRoute={setFinalRoute}
 						onRecordingFinish={handleRecordingFinished}
 					/>
