@@ -1,25 +1,21 @@
 package com.yeojiphap.choki.global.auth.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yeojiphap.choki.domain.user.domain.Role;
-import com.yeojiphap.choki.global.auth.dto.CustomUserDetails;
-import com.yeojiphap.choki.global.auth.repository.RefreshRepository;
 import com.yeojiphap.choki.global.auth.service.CookieService;
 import com.yeojiphap.choki.global.auth.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -57,40 +53,38 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //유저 정보
         String username = authentication.getName();
-
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
 
         //토큰 생성
-        String access = jwtUtil.createJwt("access", username, Role.valueOf(role), 600000L);
+        String access = jwtUtil.createJwt("access", username, Role.valueOf(role), 86400000L);
         String refresh = jwtUtil.createJwt("refresh", username, Role.valueOf(role), 86400000L);
 
         tokenService.addRefreshToken(username, refresh, 86400000L);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("role", role);
+
+        Map<String, Object> responseData = new LinkedHashMap<>();
+        responseData.put("status", HttpStatus.OK.value());
+        responseData.put("message", "로그인 성공");
+        responseData.put("data", data);
 
         // 응답 상태 설정
         response.setStatus(HttpStatus.OK.value());
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        // JSON 응답 문자열 생성
-        String jsonResponse = String.format(
-                "{ \"status\": %d, \"message\": \"%s\" }",
-                HttpStatus.OK.value(),
-                "로그인 성공"
-        );
-
-        // 응답 전송
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(responseData);
         response.getWriter().write(jsonResponse);
 
         //응답 설정
         response.setHeader("access", access);
         response.addCookie(cookieService.createCookie("refresh", refresh));
-        response.setStatus(HttpStatus.OK.value());
 
         System.out.println("refresh: " + refresh);
         System.out.println("access: " + access);
+        System.out.println("role: " + role);
     }
 
     @Override
