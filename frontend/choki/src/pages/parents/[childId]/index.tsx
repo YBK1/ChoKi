@@ -23,10 +23,19 @@ export default function Index() {
 	const handleCloseModal = () => {
 		setIsModalOpen(false);
 		setCurrentStep(1);
+		setSelectedErrand('');
 	};
 
 	const handleNext = () => setCurrentStep(prev => prev + 1);
 	const handlePrev = () => setCurrentStep(prev => prev - 1);
+
+	// 심부름 종류 선택 핸들러
+	const handleErrandSelect = (errand: string) => {
+		setSelectedErrand(errand);
+		if (errand === '장보기') {
+			handleNext();
+		}
+	};
 
 	// 각 단계별 컴포넌트
 	const StepOne = () => (
@@ -35,7 +44,7 @@ export default function Index() {
 			<div className="flex-1">
 				<select
 					className="w-full p-2 border rounded"
-					onChange={e => setSelectedErrand(e.target.value)}
+					onChange={e => handleErrandSelect(e.target.value)}
 					value={selectedErrand}
 				>
 					<option value="">심부름 종류를 선택하세요</option>
@@ -77,6 +86,26 @@ export default function Index() {
 				return 'medium';
 			default:
 				return 'medium';
+		}
+	};
+
+	// 현재 단계와 선택된 심부름에 따른 컨텐츠 렌더링
+	const renderContent = () => {
+		if (currentStep === 1) {
+			return <StepOne />;
+		}
+
+		if (selectedErrand === '장보기') {
+			switch (currentStep) {
+				case 2:
+					return <StepTwo />;
+				case 3:
+					return <StepThree />;
+				default:
+					return null;
+			}
+		} else {
+			return;
 		}
 	};
 
@@ -172,7 +201,9 @@ export default function Index() {
 					isOpen={isModalOpen}
 					onClose={handleCloseModal}
 					size={getModalSize(currentStep)}
-				></CommonModal>
+				>
+					{renderContent()}
+				</CommonModal>
 			</div>
 		</>
 	);
