@@ -1,6 +1,6 @@
-package com.yeojiphap.choki.domain.user.repository;
+package com.yeojiphap.choki.domain.family.repository;
 
-import com.yeojiphap.choki.domain.user.domain.Family;
+import com.yeojiphap.choki.domain.family.domain.Family;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
