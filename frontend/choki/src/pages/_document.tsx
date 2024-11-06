@@ -6,11 +6,11 @@ export default function Document() {
 			<Head>
 				<link rel="manifest" href="/manifest.json" />
 				<link rel="icon" href="/public/choki512x512.png" />
-				<script
+				<Script
 					type="text/javascript"
 					src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=20b43e8fdaab65a54210734664cc541e&autoload=false`}
 					defer
-				></script>
+				></Script>
 				<Script
 					src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
 					strategy="beforeInteractive"
