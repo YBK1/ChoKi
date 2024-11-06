@@ -1,9 +1,55 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import MapIcon from '../../assets/icons/map_icon_blurry.svg';
+import { saveRoute } from '@/lib/api/navigation';
 
-const DestinationSearch = ({ onClose }: { onClose: () => void }) => {
+const DestinationSearch = ({
+	onClose,
+	route,
+}: {
+	onClose: () => void;
+	route: { latitude: number; longitude: number }[];
+}) => {
 	const [destination, setDestination] = useState<string>('');
+
+	const handleAddClick = async () => {
+		if (destination.trim() === '') {
+			alert('목적지를 입력해주세요.');
+			return;
+		}
+
+		navigator.geolocation.getCurrentPosition(
+			async position => {
+				const { latitude, longitude } = position.coords;
+
+				const dataToSend = {
+					route,
+					destination: {
+						latitude,
+						longitude,
+						buildingName: destination,
+					},
+				};
+				console.log('최종 데이터:', dataToSend);
+
+				try {
+					const response = await saveRoute(route, {
+						latitude,
+						longitude,
+						buildingName: destination,
+					});
+
+					console.log('경로 저장 성공:', response);
+				} catch (error) {
+					console.error('경로 저장 실패:', error);
+				}
+			},
+			error => {
+				console.error('현재 위치 정보 가져오는 데 실패:', error);
+			},
+			{ enableHighAccuracy: true },
+		);
+	};
 
 	return (
 		<div
@@ -56,13 +102,17 @@ const DestinationSearch = ({ onClose }: { onClose: () => void }) => {
 					}}
 				/>
 
-				<div
+				<button
+					onClick={handleAddClick}
 					style={{
 						position: 'absolute',
 						top: '50%',
 						right: '10px',
 						transform: 'translateY(-50%)',
+						background: 'none',
+						border: 'none',
 						cursor: 'pointer',
+						padding: 0,
 					}}
 				>
 					<Image
@@ -71,7 +121,7 @@ const DestinationSearch = ({ onClose }: { onClose: () => void }) => {
 						width={24}
 						height={24}
 					/>
-				</div>
+				</button>
 			</div>
 
 			<div

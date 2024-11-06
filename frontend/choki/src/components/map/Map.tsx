@@ -31,7 +31,7 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 	return (
 		<div style={{ height: '100vh', width: '100%', position: 'relative' }}>
 			{mapInstance && showDestinationSearch && (
-				<DestinationSearch onClose={onClose} />
+				<DestinationSearch onClose={onClose} route={finalRoute} />
 			)}
 			<button
 				onClick={goToPreviousPage}
