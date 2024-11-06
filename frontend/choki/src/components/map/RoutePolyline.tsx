@@ -11,7 +11,7 @@ const RoutePolyline = ({
 			const kakao = (window as any).kakao;
 
 			const path = finalRoute.map(
-				point => new kakao.maps.LatLng(point.lat, point.lng),
+				point => new kakao.maps.LatLng(point.latitude, point.longitude),
 			);
 
 			if (polyline) {
