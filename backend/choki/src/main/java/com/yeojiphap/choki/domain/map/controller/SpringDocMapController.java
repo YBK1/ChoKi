@@ -44,14 +44,20 @@ public interface SpringDocMapController {
                                       "data": {
                                           "routes": [
                                             {
-                                              "buildingName": "Building A",
-                                              "latitude": 37.5665,
-                                              "longitude": 126.9780
+                                              "destination": {
+                                                "buildingName": "Library",
+                                                "latitude": 37.5665,
+                                                "longitude": 126.978
+                                              },
+                                              "objectId": "672b6fbd29765e734a94dafb"
                                             },
                                             {
-                                              "buildingName": "Building B",
-                                              "latitude": 37.5675,
-                                              "longitude": 126.9785
+                                              "destination": {
+                                                "buildingName": "Library",
+                                                "latitude": 37.5665,
+                                                "longitude": 126.978
+                                              },
+                                              "objectId": "672b6fbd29765e734a94dafb"
                                             }
                                           ]
                                         }
@@ -60,5 +66,5 @@ public interface SpringDocMapController {
                             ))
             )
     })
-    public ApiResponse getGuidedRoute();
+    public ApiResponse getGuidedRoutes();
 }
