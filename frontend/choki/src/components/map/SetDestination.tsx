@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import MapIcon from '../../assets/icons/map_icon_blurry.svg';
 import { saveRoute } from '@/lib/api/navigation';
-import SuccessModal from './SuccessModal';
+import SuccessModal from '../Common/Modal/RouteSaveSuccessModal';
 
 const SetDestination = ({
 	onClose,
