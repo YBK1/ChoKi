@@ -1,5 +1,7 @@
 package com.yeojiphap.choki.global;
 
+import com.yeojiphap.choki.domain.character.exception.AnimalNotFoundException;
+import com.yeojiphap.choki.domain.collected.exception.AnimalAlreadyExistException;
 import com.yeojiphap.choki.domain.user.exception.InvalidUserRoleException;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.global.auth.exception.ExpiredRefreshTokenException;
@@ -22,6 +24,11 @@ public class GlobalExceptionHandler {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 
+    @ExceptionHandler(AnimalAlreadyExistException.class)
+    public ApiResponse<Void> handleAnimalAlreadyExistException(AnimalAlreadyExistException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
+
     // 403 - Forbidden
     @ExceptionHandler(InvalidUserRoleException.class)
     public ApiResponse<Void> handleInvalidUserRoleException(InvalidUserRoleException e) {
@@ -39,4 +46,8 @@ public class GlobalExceptionHandler {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 
+    @ExceptionHandler(AnimalNotFoundException.class)
+    public ApiResponse<Void> handleAnimalNotFoundException(AnimalNotFoundException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
 }

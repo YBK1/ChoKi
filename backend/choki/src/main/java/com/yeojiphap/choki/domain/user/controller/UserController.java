@@ -26,4 +26,9 @@ public class UserController implements SpringDocUserController {
         response.addCookie(cookieService.createCookie("refresh", tokenResponse.refreshToken()));
         return ApiResponse.success(HttpStatus.CREATED, SIGN_UP_SUCCESS.getMessage());
     }
+
+    @GetMapping("/child/{userId}")
+    public ApiResponse getChildInfo(@PathVariable Long userId) {
+        return ApiResponse.success(HttpStatus.OK, userService.getChildInfo(userId), GET_CHILD_INFO_SUCCESS.getMessage());
+    }
 }
