@@ -44,7 +44,7 @@ export default function Index() {
 			<div className="flex-1">
 				<select
 					className="w-full p-2 border rounded"
-					onChange={e => handleErrandSelect(e.target.value)}
+					onChange={e => setSelectedErrand(e.target.value)}
 					value={selectedErrand}
 				>
 					<option value="">심부름 종류를 선택하세요</option>
@@ -72,7 +72,51 @@ export default function Index() {
 		</div>
 	);
 
-	const StepTwo = () => <div className="flex flex-col h-full"></div>;
+	const StepTwo = () => {
+		const [selectedDestination, setSelectedDestination] = useState('');
+
+		// 예시 장소 리스트
+		const destinations = [
+			{ id: 1, buildingName: '승필 백화점' },
+			{ id: 2, buildingName: '호현 카페' },
+			{ id: 3, buildingName: '민주 구멍가게' },
+		];
+
+		return (
+			<div className="flex flex-col h-full">
+				<h2 className="text-xl font-bold mb-4">경로 설정</h2>
+				<div className="flex-1">
+					<select
+						className="w-full p-2 border rounded"
+						onChange={e => setSelectedDestination(e.target.value)}
+						value={selectedDestination}
+					>
+						<option value="">목적지를 선택하세요</option>
+						{destinations.map(destination => (
+							<option key={destination.id} value={destination.buildingName}>
+								{destination.buildingName}
+							</option>
+						))}
+					</select>
+				</div>
+				<div className="flex justify-between mt-auto">
+					<button
+						className="px-4 py-2 rounded bg-gray-100 text-gray-500"
+						onClick={handlePrev}
+					>
+						이전
+					</button>
+					<button
+						className="px-4 py-2 rounded bg-orange-400 text-white"
+						onClick={handleNext}
+						disabled={!selectedDestination}
+					>
+						다음
+					</button>
+				</div>
+			</div>
+		);
+	};
 
 	const StepThree = () => <div className="flex flex-col h-full"></div>;
 
