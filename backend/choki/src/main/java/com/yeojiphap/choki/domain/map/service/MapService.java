@@ -3,7 +3,7 @@ package com.yeojiphap.choki.domain.map.service;
 import com.yeojiphap.choki.domain.map.domain.GuidedRoute;
 import com.yeojiphap.choki.domain.map.domain.Location;
 import com.yeojiphap.choki.domain.map.dto.request.RouteRequest;
-import com.yeojiphap.choki.domain.map.dto.response.GuidedRouteList;
+import com.yeojiphap.choki.domain.map.dto.response.GuidedRoutes;
 import com.yeojiphap.choki.domain.map.repository.GuidedRouteRepository;
 import com.yeojiphap.choki.domain.user.domain.User;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
@@ -35,12 +35,12 @@ public class MapService {
         return GUIDED_ROUTE_SAVE_SUCCESS.getMessage();
     }
 
-    public GuidedRouteList getGuidedRoutes() {
+    public GuidedRoutes getGuidedRoutes() {
         List<GuidedRoute> guidedRoutes = guidedRouteRepository.findByUserId(SecurityUtil.getCurrentUserId());
         List<Location> routeList = guidedRoutes.stream()
                 .map(GuidedRoute::getDestination)
                 .toList();
-        return new GuidedRouteList(routeList);
+        return new GuidedRoutes(routeList);
     }
 
     private User findCurrentUser() {
