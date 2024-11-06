@@ -30,4 +30,35 @@ public interface SpringDocMapController {
     })
     public ApiResponse saveGuidedRoute(RouteRequest request);
 
+    @Operation(
+            summary = "예습 경로 목록 조회",
+            description = "저장되어있는 예습 경로 목록을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "가이드 경로 목록 조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 201,
+                                      "message": "가이드 경로 목록 조회 성공",
+                                      "data": {
+                                          "routes": [
+                                            {
+                                              "buildingName": "Building A",
+                                              "latitude": 37.5665,
+                                              "longitude": 126.9780
+                                            },
+                                            {
+                                              "buildingName": "Building B",
+                                              "latitude": 37.5675,
+                                              "longitude": 126.9785
+                                            }
+                                          ]
+                                        }
+                                    }
+                                    """
+                            ))
+            )
+    })
+    public ApiResponse getGuidedRoute();
 }
