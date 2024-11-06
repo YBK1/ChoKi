@@ -1,15 +1,9 @@
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 import Image from 'next/image';
 import MapIcon from '../../assets/icons/map_icon_blurry.svg';
 
 const DestinationSearch = ({ onClose }: { onClose: () => void }) => {
 	const [destination, setDestination] = useState<string>('');
-	const router = useRouter();
-
-	const goToPreviousPage = () => {
-		router.push('/parents');
-	};
 
 	return (
 		<div
@@ -41,26 +35,6 @@ const DestinationSearch = ({ onClose }: { onClose: () => void }) => {
 				}}
 			>
 				&times;
-			</button>
-
-			<button
-				onClick={goToPreviousPage}
-				style={{
-					position: 'absolute',
-					top: '15px',
-					left: '15px',
-					backgroundColor: '#e0e0e0',
-					border: 'none',
-					fontSize: '20px',
-					cursor: 'pointer',
-					borderRadius: '5px',
-					padding: '10px',
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-				}}
-			>
-				<Image src="/icons/back.png" alt="Back" width={7} height={7} />
 			</button>
 
 			<h2 style={{ margin: '40px 0 0', fontSize: '20px', fontWeight: 'bold' }}>

@@ -4,6 +4,8 @@ import UserLocationMarker from './UserLocationMarker';
 import RoutePolyline from './RoutePolyline';
 import RouteRecorder from './RouteRecorder';
 import DestinationSearch from './DestinationSearch';
+import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
@@ -12,9 +14,14 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 		{ latitude: number; longitude: number }[]
 	>([]);
 	const [showDestinationSearch, setShowDestinationSearch] = useState(false);
+	const router = useRouter();
 
 	const handleRecordingFinished = () => {
 		setShowDestinationSearch(true);
+	};
+
+	const goToPreviousPage = () => {
+		router.push('/parents');
 	};
 
 	const onClose = () => {
@@ -26,6 +33,26 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 			{mapInstance && showDestinationSearch && (
 				<DestinationSearch onClose={onClose} />
 			)}
+			<button
+				onClick={goToPreviousPage}
+				style={{
+					position: 'absolute',
+					top: '15px',
+					left: '15px',
+					backgroundColor: '#e0e0e0',
+					border: 'none',
+					fontSize: '20px',
+					cursor: 'pointer',
+					borderRadius: '5px',
+					padding: '10px',
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+					zIndex: 5,
+				}}
+			>
+				<Image src="/icons/back.png" alt="Back" width={7} height={7} />
+			</button>
 			<MapContainer onMapLoad={setMapInstance} />
 			{mapInstance && <UserLocationMarker map={mapInstance} />}
 			{mapInstance && showPolyline && (
