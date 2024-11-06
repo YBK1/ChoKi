@@ -7,6 +7,7 @@ import level_icon from '@/assets/icons/level.svg';
 import mission_plus from '@/assets/icons/mission_plus.svg';
 import CommonModal from '@/components/Common/Modal';
 import { useState } from 'react';
+import { searchItem } from '@/lib/api/searchItem';
 
 export default function Index() {
 	const missions: Mission[] = [
@@ -111,6 +112,32 @@ export default function Index() {
 	};
 
 	const StepThree = () => {
+		const [searchTerm, setSearchTerm] = useState('');
+
+		// 검색 처리 함수
+		const handleSearch = async () => {
+			try {
+				const result = await searchItem(searchTerm);
+				console.log('검색 결과:', result);
+				// 여기서 검색 결과를 활용하여 UI를 업데이트할 수 있습니다
+			} catch (error) {
+				console.error('검색 중 오류 발생:', error);
+				// 에러 처리
+			}
+		};
+
+		// 입력 변경 핸들러
+		const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+			setSearchTerm(e.target.value);
+		};
+
+		// 검색어 입력 후 엔터 키 처리
+		const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (e.key === 'Enter') {
+				handleSearch();
+			}
+		};
+
 		return (
 			<div className="flex flex-col h-full">
 				<h2 className="text-xl font-bold text-center">장바구니 설정</h2>
@@ -119,8 +146,14 @@ export default function Index() {
 						type="text"
 						className="w-full p-2 border rounded"
 						placeholder="물건을 검색하세요"
+						value={searchTerm}
+						onChange={handleInputChange}
+						onKeyPress={handleKeyPress}
 					/>
-					<button className="absolute right-2 top-1/2 transform -translate-y-1/2">
+					<button
+						className="absolute right-2 top-1/2 transform -translate-y-1/2"
+						onClick={handleSearch}
+					>
 						🔍
 					</button>
 				</div>
