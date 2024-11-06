@@ -38,6 +38,30 @@ type UserLocationMarkerProps = {
 	map: any;
 };
 type MissionType = 'SHOP' | 'RECYCLE' | 'EXTRA_MISSION';
+type KakaoMaps = {
+	load: () => void;
+	services: {
+		Geocoder: {
+			new (): {
+				addressSearch: (
+					address: string,
+					callback: (
+						result: Array<{
+							x: string;
+							y: string;
+						}>,
+						status: string,
+					) => void,
+				) => void;
+			};
+		};
+		Status: {
+			OK: string;
+			ZERO_RESULT: string;
+			ERROR: string;
+		};
+	};
+};
 
 // 버튼 Props
 interface ButtonProps {
@@ -88,6 +112,8 @@ interface TransitionToLocalViewProps {
 interface AddressData {
 	address: string;
 	zonecode: string;
+	latitude?: number; // 위도 추가
+	longitude?: number; // 경도 추가
 }
 
 interface PostcodeResult {
@@ -95,7 +121,10 @@ interface PostcodeResult {
 	zonecode: string;
 	// 다음(카카오)에서 제공하는 다른 주소 정보들도 필요하다면 여기에 추가
 }
-
+interface AddressSearchProps {
+	onComplete: (data: AddressData) => void;
+	onClose: () => void;
+}
 interface PostcodeOptions {
 	oncomplete: (data: PostcodeResult) => void;
 	onclose?: () => void;

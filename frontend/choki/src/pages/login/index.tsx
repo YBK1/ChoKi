@@ -4,14 +4,33 @@ import CommonButton from '@/components/Common/Button';
 import CommonInput from '@/components/Common/Input';
 import Image from 'next/image';
 import MainLogo from '@/assets/icons/choki_icon.svg';
+import { loginUser } from '@/lib/api/login';
 
 export default function LoginPage() {
 	const router = useRouter();
 	const [id, setId] = useState('');
 	const [password, setPassword] = useState('');
-	const handleLogin = () => {
-		// TODO - 로그인 로직 구현
+
+	const postLoginData = async (userId: string, userPassword: string) => {
+		try {
+			const response = await loginUser({ userId, userPassword });
+			return response;
+		} catch (error) {
+			console.error('Error logging in:', error);
+		}
 	};
+
+	const handleLogin = async () => {
+		const response = await postLoginData(id, password);
+		if (response?.role === 'PARENT') {
+			router.push('/parents');
+		} else if (response?.role === 'CHILD') {
+			router.push('/child');
+		} else {
+			alert('로그인에 문제가 발생했습니다.');
+		}
+	};
+
 	return (
 		<div className="bg-light_yellow_mid flex flex-col items-center h-screen pt-[20vh]">
 			{/* Logo Container */}
