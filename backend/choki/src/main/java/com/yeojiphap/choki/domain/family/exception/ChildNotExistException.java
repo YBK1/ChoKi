@@ -1,4 +1,4 @@
-package com.yeojiphap.choki.domain.user.exception;
+package com.yeojiphap.choki.domain.family.exception;
 
 import org.springframework.http.HttpStatus;
 

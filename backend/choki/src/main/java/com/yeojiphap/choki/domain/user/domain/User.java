@@ -1,13 +1,13 @@
 package com.yeojiphap.choki.domain.user.domain;
 
-import com.yeojiphap.choki.domain.base.BaseEntity;
+import com.yeojiphap.choki.domain.family.domain.Family;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class User extends BaseEntity {
+public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

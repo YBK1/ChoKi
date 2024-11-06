@@ -1,9 +1,11 @@
 package com.yeojiphap.choki.domain.user.controller;
 
+import com.yeojiphap.choki.domain.user.dto.TokenResponse;
 import com.yeojiphap.choki.domain.user.dto.signUpRequest;
-import com.yeojiphap.choki.domain.user.service.FamilyService;
 import com.yeojiphap.choki.domain.user.service.UserService;
 import com.yeojiphap.choki.global.ApiResponse;
+import com.yeojiphap.choki.global.auth.service.CookieService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,26 +17,13 @@ import static com.yeojiphap.choki.domain.user.message.UserSuccessMessage.*;
 @RequiredArgsConstructor
 public class UserController implements SpringDocUserController {
     private final UserService userService;
-    private final FamilyService familyService;
+    private final CookieService cookieService;
 
     @PostMapping("/signup")
-    public ApiResponse signup(@RequestBody signUpRequest signUpRequest) {
-        return ApiResponse.success(HttpStatus.CREATED, userService.signUp(signUpRequest));
-    }
-
-    @PostMapping("/family")
-    public ApiResponse createFamily() {
-        return ApiResponse.success(HttpStatus.CREATED, familyService.createFamily(), FAMILY_CREATION_SUCCESS.getMessage());
-    }
-
-    @GetMapping("/invite-code")
-    public ApiResponse getInviteCode() {
-        return ApiResponse.success(HttpStatus.OK, familyService.getInviteCode());
-    }
-
-    // 부모가 자녀 조회하는 API
-    @GetMapping("/family/info")
-    public ApiResponse getFamily() {
-        return ApiResponse.success(HttpStatus.OK, familyService.getChildInfoByFamilyId(), GET_CHILD_INFO_SUCCESS.getMessage());
+    public ApiResponse signup(@RequestBody signUpRequest signUpRequest,  HttpServletResponse response) {
+        TokenResponse tokenResponse = userService.signUp(signUpRequest);
+        response.setHeader("access", tokenResponse.accessToken());
+        response.addCookie(cookieService.createCookie("refresh", tokenResponse.refreshToken()));
+        return ApiResponse.success(HttpStatus.CREATED, SIGN_UP_SUCCESS.getMessage());
     }
 }
