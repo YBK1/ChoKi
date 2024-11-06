@@ -60,3 +60,10 @@ interface Mission {
 	type: MissionType;
 	content: string;
 }
+
+// Unity 인터페이스
+interface Window {
+	UnityLoader: any; // Unity 로더 타입
+	unityInstance: any; // Unity 인스턴스 타입
+	receiveDataFromUnity: (data: string) => void; // Unity에서 데이터를 받을 함수 타입
+}
