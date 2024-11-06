@@ -20,37 +20,35 @@ const SetDestination = ({
 
 		console.log('경로 저장 요청 보냄');
 
-		navigator.geolocation.getCurrentPosition(
-			async position => {
-				const { latitude, longitude } = position.coords;
+		if (route.length === 0) {
+			console.error('경로 데이터가 없습니다.');
+			alert('경로 데이터가 없어 목적지를 설정할 수 없습니다.');
+			return;
+		}
 
-				const dataToSend = {
-					route,
-					destination: {
-						latitude,
-						longitude,
-						buildingName: destination,
-					},
-				};
-				console.log('최종 데이터:', dataToSend);
-
-				try {
-					const response = await saveRoute(route, {
-						latitude,
-						longitude,
-						buildingName: destination,
-					});
-
-					console.log('경로 저장 성공:', response);
-				} catch (error) {
-					console.error('경로 저장 실패:', error);
-				}
+		const lastPoint = route[route.length - 1];
+		const dataToSend = {
+			route,
+			destination: {
+				latitude: lastPoint.latitude,
+				longitude: lastPoint.longitude,
+				buildingName: destination,
 			},
-			error => {
-				console.error('현재 위치 정보 가져오는 데 실패:', error);
-			},
-			{ enableHighAccuracy: true },
-		);
+		};
+
+		console.log('최종 데이터:', dataToSend);
+
+		try {
+			const response = await saveRoute(route, {
+				latitude: lastPoint.latitude,
+				longitude: lastPoint.longitude,
+				buildingName: destination,
+			});
+
+			console.log('경로 저장 성공:', response);
+		} catch (error) {
+			console.error('경로 저장 실패:', error);
+		}
 	};
 
 	return (
