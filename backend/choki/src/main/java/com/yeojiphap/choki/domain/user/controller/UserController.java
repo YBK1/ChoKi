@@ -31,4 +31,10 @@ public class UserController implements SpringDocUserController {
     public ApiResponse getInviteCode() {
         return ApiResponse.success(HttpStatus.OK, familyService.getInviteCode());
     }
+
+    // 부모가 자녀 조회하는 API
+    @GetMapping("/family/info")
+    public ApiResponse getFamily() {
+        return ApiResponse.success(HttpStatus.OK, familyService.getChildInfoByFamilyId(), GET_CHILD_INFO_SUCCESS.getMessage());
+    }
 }

@@ -1,5 +1,6 @@
 package com.yeojiphap.choki.domain.user.domain;
 
+import com.yeojiphap.choki.domain.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +12,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @Builder
-public class Family {
+public class Family extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
