@@ -1,5 +1,6 @@
 package com.yeojiphap.choki.domain.user.domain;
 
+import com.yeojiphap.choki.domain.family.domain.Family;
 import jakarta.persistence.*;
 import lombok.*;
 
