@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MapController implements SpringDocMapController{
     private final MapService mapService;
 
-    @PostMapping("/route/save")
+    @PostMapping("/route")
     public ApiResponse saveGuidedRoute(@RequestBody RouteRequest request){
         return ApiResponse.success(HttpStatus.CREATED, mapService.saveGuidedRoute(request));
     }
