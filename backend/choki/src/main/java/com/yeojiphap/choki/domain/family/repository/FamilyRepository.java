@@ -13,5 +13,7 @@ public interface FamilyRepository extends JpaRepository<Family, Long> {
     Optional<Family> findByUsers_UserId(String userId);
 
     @Query("SELECT u FROM User u WHERE u.family.id = :familyId AND u.role = 'CHILD'")
-    public List<User> getChildren(@Param("familyId") Long familyId);
+    List<User> getChildren(@Param("familyId") Long familyId);
+
+    Optional<Family> findByInviteCode(String inviteCode);
 }
