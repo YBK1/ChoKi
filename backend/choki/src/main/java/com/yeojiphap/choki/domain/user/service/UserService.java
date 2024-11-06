@@ -1,5 +1,7 @@
 package com.yeojiphap.choki.domain.user.service;
 
+import java.util.Optional;
+
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.dto.TokenResponse;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
