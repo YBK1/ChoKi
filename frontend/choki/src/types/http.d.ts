@@ -19,6 +19,9 @@ interface LoginRequest {
 interface LoginResponse {
 	role: string;
 }
+interface InviteCodeResponse {
+	inviteCode: string;
+}
 // export interface BaseResponse<T> {
 // 	status: number;
 // 	message: string;
