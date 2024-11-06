@@ -1,10 +1,10 @@
-package com.yeojiphap.choki.domain.user.service;
+package com.yeojiphap.choki.domain.family.service;
 
-import com.yeojiphap.choki.domain.user.domain.Family;
+import com.yeojiphap.choki.domain.family.domain.Family;
 import com.yeojiphap.choki.domain.user.domain.User;
-import com.yeojiphap.choki.domain.user.dto.InviteCodeResponse;
+import com.yeojiphap.choki.domain.family.dto.InviteCodeResponse;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
-import com.yeojiphap.choki.domain.user.repository.FamilyRepository;
+import com.yeojiphap.choki.domain.family.repository.FamilyRepository;
 import com.yeojiphap.choki.domain.user.repository.UserRepository;
 import com.yeojiphap.choki.global.auth.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
