@@ -16,4 +16,5 @@ public class Product {
 	private String productName;
 	private String image;
 	private Long quantity;
+	private CartItem cartItem;
 }

@@ -36,11 +36,17 @@ public class MissionService {
 			.completedAt(null)
 			.afterImg(null)
 			.missionType(MissionType.SHOP)
+			.shoppingId(null)
 			.comment(null)
 			.build();
 
 		Mission savedMission = missionRepository.saveMission(mission);
 		return savedMission.getId();
+	}
+
+	// 장보기 미션에 장보기 할당하기
+	public void allocateShoppingMission(ObjectId missionId, ObjectId shoppingId){
+		missionRepository.updateShoppingId(missionId, shoppingId);
 	}
 
 	// 미션 저장하기
@@ -64,9 +70,15 @@ public class MissionService {
 				.completedAt(mission.getCompletedAt())
 				.image(mission.getAfterImg())
 				.type(mission.getMissionType())
+				.shoppingId(mission.getShoppingId().toString())
 				.build())
 			.toList();
 
 		return missionResponseDtos;
+	}
+
+	// 미션 완료 처리 하기
+	public void setMissionStatusPending(ObjectId missionId){
+		missionRepository.setMissionStatusPending(missionId);
 	}
 }

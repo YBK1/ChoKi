@@ -10,8 +10,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class AddProductToCartRequestDto {
-	private ObjectId shoppingId;
-	private Long barcode;
+	private String shoppingId;
+	private String listBarcode;
+	private String barcode;
 	private Long quantity;
 	private String comment;
 }

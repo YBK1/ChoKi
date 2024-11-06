@@ -40,4 +40,10 @@ public class UserService {
         tokenService.addRefreshToken(username, refresh, 86400000L);
         return new TokenResponse(access, refresh);
     }
+
+    // 아이디로 유저 정보 조회하기
+    public User findById(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        return user.orElse(null);
+    }
 }

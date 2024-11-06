@@ -1,22 +1,18 @@
 package com.yeojiphap.choki.domain.shopping.controller;
 
-import java.security.Principal;
-
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 
 import com.yeojiphap.choki.domain.shopping.dto.AddProductToCartRequestDto;
+import com.yeojiphap.choki.domain.shopping.dto.ChangeQuantityRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.ChildPointDto;
-import com.yeojiphap.choki.domain.shopping.dto.DeleteProductFromCartReqeustDto;
+import com.yeojiphap.choki.domain.shopping.dto.DeleteProductFromCartRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.HelpMessageDto;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingService;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingWebSocketService;
-import com.yeojiphap.choki.global.auth.jwt.JWTUtil;
-import com.yeojiphap.choki.global.auth.util.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,16 +27,16 @@ public class ShoppingMessageController {
 	// /sub/shopping/{id}
 	// 사용자가 웹소켓 구독할 경우 ( 다른 사람이 이 주소로 보내는 메세지를 나한테도 주세요하고 신청했을 때 )
 	@SubscribeMapping("/shopping/{shoppingId}")  // 특정 방에 대한 구독 처리
-	public void handleSubscribe(@DestinationVariable String shoppingId, @Header("Authorization") String token) {
+	public void handleSubscribe(@DestinationVariable String shoppingId, @Header("access") String access) {
 		// 로그
 		log.info("SUBSCRIBING 구독함!!");
 		// 장보기 시작
-		shoppingWebSocketService.startShopping(shoppingId);
+		shoppingWebSocketService.startShopping(shoppingId, access);
 	}
 
 	// (/pub/shopping/product/add)
 	@MessageMapping("/shopping/product/add")
-	public void sendCartAddMessage(AddProductToCartRequestDto addProductToCartRequestDto) {
+	public void sendAddCartItem(AddProductToCartRequestDto addProductToCartRequestDto) {
 		// log
 		log.info("상품 추가 메세지 보냄!!");
 
@@ -50,16 +46,28 @@ public class ShoppingMessageController {
 		shoppingWebSocketService.sendAddProductMessage(addProductToCartRequestDto);
 	}
 
+	// (/pub/shopping/product/quantity)
+	@MessageMapping("/shopping/product/quantity")
+	public void changeQuantityOfCartItem(ChangeQuantityRequestDto changeQuantityRequestDto) {
+		// log
+		log.info("상품 수량 변경 메세지 보냄!!");
+
+		// 장바구니 DB 정보 업데이트 ( 변경 )
+		shoppingService.changeQuantityOfCartItem(changeQuantityRequestDto);
+		// sub로 메세지를 전송
+		shoppingWebSocketService.sendChangeQuantityMessage(changeQuantityRequestDto);
+	}
+
 	// (/pub/shopping/product/delete)
 	@MessageMapping("/shopping/product/delete")
-	public void sendCartDeleteMessage(DeleteProductFromCartReqeustDto deleteProductFromCartReqeustDto) {
+	public void sendCartDeleteMessage(DeleteProductFromCartRequestDto deleteProductFromCartRequestDto) {
 		// log
 		log.info("상품 삭제 메세지 보냄!!");
 
 		// 장바구니 DB 정보 업데이트 ( 삭제 )
-		shoppingService.deleteProductFromShopping(deleteProductFromCartReqeustDto);
+		shoppingService.deleteProductFromShopping(deleteProductFromCartRequestDto);
 		// sub로 메세지를 전송
-		shoppingWebSocketService.sendDeleteProductMessage(deleteProductFromCartReqeustDto);
+		shoppingWebSocketService.sendDeleteProductMessage(deleteProductFromCartRequestDto);
 	}
 
 	// (/pub/shopping/point)
@@ -82,6 +90,9 @@ public class ShoppingMessageController {
 
 		// 완료 처리 수행하기
 		shoppingService.completeShopping(shoppingId);
+
+		// 완료 메세지 전송
+		shoppingWebSocketService.sendFinishMessage(shoppingId);
 	}
 
 	// 부모의 도움 메세지 전송

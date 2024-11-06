@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/notification")
-public class NotificationController {
+public class NotificationController implements SpringDocNotificationController{
 	private final NotificationService notificationService;
 
 	@GetMapping("/{childId}")
