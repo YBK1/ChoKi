@@ -1,5 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
+import { setAccessToken } from '@/lib/utils/localUtils'; // setAccessToken 함수 import
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -26,6 +27,13 @@ export const registerUser = async ({
 		tel,
 		role,
 	});
+
+	// 응답 헤더에서 Access 토큰을 가져와 로컬 스토리지에 저장
+	const accessToken = response.headers['access'];
+	if (accessToken) {
+		setAccessToken(accessToken);
+	}
+
 	return response.data;
 };
 
@@ -50,6 +58,12 @@ export const loginUser = async ({
 			},
 		});
 		console.log('loginUser response', response);
+
+		// 응답 헤더에서 Access 토큰을 가져와 로컬 스토리지에 저장
+		const accessToken = response.headers['access'];
+		if (accessToken) {
+			setAccessToken(accessToken);
+		}
 
 		// response.data를 LoginResponse 타입으로 반환
 		return response.data.data as LoginResponse;
