@@ -7,7 +7,11 @@ const DynamicMap = dynamic(() => import('@/components/map/Map'), {
 const MapPage = () => {
 	return (
 		<div style={{ height: '100vh', width: '100%' }}>
-			<DynamicMap showRouteRecorder={false} showPolyline={false} />
+			<DynamicMap
+				showRouteRecorder={false}
+				showPolyline={false}
+				showDestinationSearch={false}
+			/>
 		</div>
 	);
 };

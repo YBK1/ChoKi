@@ -3,14 +3,15 @@ import Image from 'next/image';
 import startButton from '../../assets/icons/start_btn.svg';
 import stopButton from '../../assets/icons/finish_btn.svg';
 
-type RouteRecorderProps = {
-	setFinalRoute: (route: { lat: number; lng: number }[]) => void;
-};
-
-const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
+const RouteRecorder = ({
+	setFinalRoute,
+	onRecordingFinish,
+}: RouteRecorderProps) => {
 	const [isRecording, setIsRecording] = useState(false);
 	const [watchId, setWatchId] = useState<number | null>(null);
-	const [route, setRoute] = useState<{ lat: number; lng: number }[]>([]);
+	const [route, setRoute] = useState<{ latitude: number; longitude: number }[]>(
+		[],
+	);
 
 	const startRecording = () => {
 		setIsRecording(true);
@@ -21,7 +22,7 @@ const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 			position => {
 				const { latitude, longitude } = position.coords;
 				console.log(`위도: ${latitude}, 경도: ${longitude}`);
-				const newPoint = { lat: latitude, lng: longitude };
+				const newPoint = { latitude: latitude, longitude: longitude };
 
 				setRoute(prevRoute => [...prevRoute, newPoint]);
 			},
@@ -43,6 +44,7 @@ const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 
 		console.log('최종 경로:', route);
 		setFinalRoute(route);
+		onRecordingFinish();
 	};
 
 	useEffect(() => {
@@ -52,7 +54,7 @@ const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 	}, [watchId]);
 
 	return (
-		<div style={{ display: 'flex', gap: '10px' }}>
+		<div style={{ display: 'flex', gap: '40px' }}>
 			<div
 				onClick={startRecording}
 				style={{
@@ -63,7 +65,7 @@ const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 					padding: 0,
 				}}
 			>
-				<Image src={startButton} alt="Start Recording" width={50} height={50} />
+				<Image src={startButton} alt="Start Recording" width={70} height={70} />
 			</div>
 			<div
 				onClick={stopRecording}
@@ -75,7 +77,7 @@ const RouteRecorder = ({ setFinalRoute }: RouteRecorderProps) => {
 					padding: 0,
 				}}
 			>
-				<Image src={stopButton} alt="Stop Recording" width={50} height={50} />
+				<Image src={stopButton} alt="Stop Recording" width={70} height={70} />
 			</div>
 		</div>
 	);
