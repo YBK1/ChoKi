@@ -17,7 +17,7 @@ export default function DonePage() {
 	const router = useRouter();
 	const isParent = router.query.isParent === 'true';
 	const [doneStep, setDonStep] = useState(0);
-	const [inviteCode, setInviteCode] = useState('123456');
+	const [inviteCode, setInviteCode] = useState('');
 	const [showToast, setShowToast] = useState(false);
 	const [code, setCode] = useState(['', '', '', '', '', '']); // 6자리 코드
 	const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
