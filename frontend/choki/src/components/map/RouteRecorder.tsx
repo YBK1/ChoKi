@@ -65,7 +65,13 @@ const RouteRecorder = ({
 					padding: 0,
 				}}
 			>
-				<Image src={startButton} alt="Start Recording" width={70} height={70} />
+				<Image
+					src={startButton}
+					alt="Start Recording"
+					width={70}
+					height={70}
+					priority
+				/>
 			</div>
 			<div
 				onClick={stopRecording}
