@@ -4,6 +4,7 @@ import java.security.Principal;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageDeliveryException;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -47,14 +48,18 @@ public class CustomChannelInterceptor implements ChannelInterceptor {
 	// 	return message;
 	// }
 
-	@Override
-	public Message<?> preSend(Message<?> message, MessageChannel channel) {
-		StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-
-		if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-			log.debug("STOMP Connect attempt");
-		}
-
-		return message;
-	}
+	// @Override
+	// public Message<?> preSend(Message<?> message, MessageChannel channel) {
+	// 	StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(
+	// 		message, StompHeaderAccessor.class);
+	//
+	// 	if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+	// 		String accessToken = accessor.getFirstNativeHeader("access");
+	// 		// 여기서 토큰 검증
+	// 		if (!isValidToken(accessToken)) {
+	// 			throw new MessageDeliveryException("Invalid token");
+	// 		}
+	// 	}
+	// 	return message;
+	// }
 }

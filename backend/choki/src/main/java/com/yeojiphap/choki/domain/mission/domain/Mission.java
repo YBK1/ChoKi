@@ -33,5 +33,7 @@ public class Mission {
 
     private MissionType missionType;
 
+    private ObjectId shoppingId;
+
     private String comment;
 }

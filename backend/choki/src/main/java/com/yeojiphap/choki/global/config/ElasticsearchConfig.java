@@ -51,10 +51,5 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
 		} catch (Exception e) {
 			throw new RuntimeException("SSL 컨텍스트 생성 실패", e);
 		}
-
-		// return ClientConfiguration.builder()
-		// 	.connectedTo(esHost)
-		// 	.withBasicAuth(username, password)
-		// 	.build();
 	}
 }
