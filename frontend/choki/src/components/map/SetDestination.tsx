@@ -3,7 +3,7 @@ import Image from 'next/image';
 import MapIcon from '../../assets/icons/map_icon_blurry.svg';
 import { saveRoute } from '@/lib/api/navigation';
 
-const DestinationSearch = ({
+const SetDestination = ({
 	onClose,
 	route,
 }: {
@@ -80,6 +80,7 @@ const DestinationSearch = ({
 					border: 'none',
 					fontSize: '20px',
 					cursor: 'pointer',
+					zIndex: '11',
 				}}
 			>
 				&times;
@@ -145,4 +146,4 @@ const DestinationSearch = ({
 	);
 };
 
-export default DestinationSearch;
+export default SetDestination;
