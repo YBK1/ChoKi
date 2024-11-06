@@ -133,6 +133,37 @@ export default function Index() {
 		}
 	};
 
+	const ErrandConfirmation = () => (
+		<div className="flex flex-col h-full">
+			<h2 className="text-xl font-bold mb-4">
+				김애기에게 다음의
+				<br />
+				심부름을 부여하시겠어요?
+			</h2>
+			<div className="flex-1">
+				<input
+					type="text"
+					className="w-full p-2 border rounded"
+					value={selectedErrand}
+					readOnly
+				/>
+			</div>
+			<div className="flex justify-between mt-auto gap-2">
+				<button
+					className="flex-1 px-4 py-2 rounded bg-gray-100 text-gray-500"
+					onClick={handlePrev}
+				>
+					이전
+				</button>
+				<button
+					className="flex-1 px-4 py-2 rounded bg-orange-400 text-white"
+					onClick={handleCloseModal}
+				>
+					완료
+				</button>
+			</div>
+		</div>
+	);
 	// 현재 단계와 선택된 심부름에 따른 컨텐츠 렌더링
 	const renderContent = () => {
 		if (currentStep === 1) {
@@ -149,7 +180,7 @@ export default function Index() {
 					return null;
 			}
 		} else {
-			return;
+			return <ErrandConfirmation />;
 		}
 	};
 
