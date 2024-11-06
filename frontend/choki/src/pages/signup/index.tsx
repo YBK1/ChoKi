@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import BackIcon from '@/assets/icons/back_icon.svg';
 import Image from 'next/image';
 import AddressSearch from '@/components/AddressSearch/AddressSearch';
-import { registerUser } from '../api/login';
+import { registerUser } from '../../lib/api/login';
 
 export default function SignupPage() {
 	const [id, setId] = useState<string>('');

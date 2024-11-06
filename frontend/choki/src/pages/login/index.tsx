@@ -4,7 +4,7 @@ import CommonButton from '@/components/Common/Button';
 import CommonInput from '@/components/Common/Input';
 import Image from 'next/image';
 import MainLogo from '@/assets/icons/choki_icon.svg';
-import { loginUser } from '@/pages/api/login';
+import { loginUser } from '@/lib/api/login';
 
 export default function LoginPage() {
 	const router = useRouter();
