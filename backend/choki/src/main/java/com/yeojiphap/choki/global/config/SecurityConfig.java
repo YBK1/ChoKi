@@ -87,7 +87,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/user/login", "/", "/api/user/signup", "/api/reissue").permitAll()
                         .requestMatchers("/parents/**").permitAll()
                         .requestMatchers("https://dapi.kakao.com/**").permitAll()
-                    .requestMatchers("/**").permitAll()
+                    // .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated());
 
         http
