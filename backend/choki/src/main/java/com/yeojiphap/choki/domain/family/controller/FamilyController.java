@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.yeojiphap.choki.domain.family.message.FamilySuccessMessage.FAMILY_CREATION_SUCCESS;
+import static com.yeojiphap.choki.domain.family.message.FamilySuccessMessage.GET_CHILD_INFO_SUCCESS;
 
 @RestController
 @RequestMapping("/api/family")
@@ -25,5 +26,10 @@ public class FamilyController implements SpringDocFamilyController{
     @GetMapping("/invite-code")
     public ApiResponse getInviteCode() {
         return ApiResponse.success(HttpStatus.OK, familyService.getInviteCode());
+    }
+
+    @GetMapping("/info")
+    public ApiResponse getFamily() {
+        return ApiResponse.success(HttpStatus.OK, familyService.getChildInfoByFamilyId(), GET_CHILD_INFO_SUCCESS.getMessage());
     }
 }
