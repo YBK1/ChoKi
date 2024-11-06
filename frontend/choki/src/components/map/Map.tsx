@@ -3,7 +3,7 @@ import MapContainer from './MapContainer';
 import UserLocationMarker from './UserLocationMarker';
 import RoutePolyline from './RoutePolyline';
 import RouteRecorder from './RouteRecorder';
-import DestinationSearch from './DestinationSearch';
+import SetDestination from './SetDestination';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
@@ -13,11 +13,11 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 	const [finalRoute, setFinalRoute] = useState<
 		{ latitude: number; longitude: number }[]
 	>([]);
-	const [showDestinationSearch, setShowDestinationSearch] = useState(false);
+	const [showSetDestination, setShowSetDestination] = useState(false);
 	const router = useRouter();
 
 	const handleRecordingFinished = () => {
-		setShowDestinationSearch(true);
+		setShowSetDestination(true);
 	};
 
 	const goToPreviousPage = () => {
@@ -25,13 +25,13 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 	};
 
 	const onClose = () => {
-		setShowDestinationSearch(false);
+		setShowSetDestination(false);
 	};
 
 	return (
 		<div style={{ height: '100vh', width: '100%', position: 'relative' }}>
-			{mapInstance && showDestinationSearch && (
-				<DestinationSearch onClose={onClose} route={finalRoute} />
+			{mapInstance && showSetDestination && (
+				<SetDestination onClose={onClose} route={finalRoute} />
 			)}
 			<button
 				onClick={goToPreviousPage}
@@ -76,6 +76,7 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 					}}
 				>
 					<RouteRecorder
+						map={mapInstance}
 						setFinalRoute={setFinalRoute}
 						onRecordingFinish={handleRecordingFinished}
 					/>

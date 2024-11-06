@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from '@/lib/api/axiosInstance';
 
 export const saveRoute = async (
 	routes: { latitude: number; longitude: number }[],
@@ -17,10 +17,7 @@ export const saveRoute = async (
 			})),
 		};
 
-		const response = await axios.post(
-			`${process.env.NEXT_PUBLIC_API_URL}/api/route/save`,
-			requestBody,
-		);
+		const response = await axiosInstance.post('/api/route', requestBody);
 
 		return response.data;
 	} catch (error) {
