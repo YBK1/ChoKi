@@ -11,3 +11,13 @@ export const getInviteCode = async (): Promise<InviteCodeResponse> => {
 	const response = await axiosInstance.get('/api/family/invite-code');
 	return response.data;
 };
+
+// 초대 코드 입력
+export const joinFamily = async (
+	inviteCode: string,
+): Promise<JoinFamilyResponse> => {
+	const response = await axiosInstance.post('/api/family/invite-code/accept', {
+		inviteCode,
+	});
+	return response.data;
+};

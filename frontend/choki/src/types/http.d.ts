@@ -22,6 +22,10 @@ interface LoginResponse {
 interface InviteCodeResponse {
 	inviteCode: string;
 }
+interface JoinFamilyResponse {
+	invite_code: string;
+}
+
 // export interface BaseResponse<T> {
 // 	status: number;
 // 	message: string;
