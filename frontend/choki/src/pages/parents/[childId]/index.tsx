@@ -29,7 +29,39 @@ export default function Index() {
 	const handlePrev = () => setCurrentStep(prev => prev - 1);
 
 	// 각 단계별 컴포넌트
-	const StepOne = () => <div className="flex flex-col h-full"></div>;
+	const StepOne = () => (
+		<div className="flex flex-col h-full">
+			<h2 className="text-xl font-bold mb-4">심부름 부여하기</h2>
+			<div className="flex-1">
+				<select
+					className="w-full p-2 border rounded"
+					onChange={e => setSelectedErrand(e.target.value)}
+					value={selectedErrand}
+				>
+					<option value="">심부름 종류를 선택하세요</option>
+					<option value="장보기">장보기</option>
+					<option value="재활용">재활용</option>
+					<option value="기타">기타</option>
+				</select>
+			</div>
+			<div className="flex justify-between mt-auto">
+				<button
+					className="px-4 py-2 rounded bg-gray-100 text-gray-500"
+					onClick={handleCloseModal}
+				>
+					이전
+				</button>
+				{selectedErrand && (
+					<button
+						className="px-4 py-2 rounded bg-orange-400 text-white"
+						onClick={handleNext}
+					>
+						다음
+					</button>
+				)}
+			</div>
+		</div>
+	);
 
 	const StepTwo = () => <div className="flex flex-col h-full"></div>;
 
