@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "회원 컨트롤러", description = "회원 생성, 조회, 삭제 등 회원을 관리하는 클래스")
@@ -31,7 +32,7 @@ public interface SpringDocUserController {
                     )
             ),
     })
-    public ApiResponse signup(@RequestBody signUpRequest signUpRequest);
+    public ApiResponse signup(@RequestBody signUpRequest signUpRequest,  HttpServletResponse response);
 
     @Operation(
             summary = "가족 생성",
