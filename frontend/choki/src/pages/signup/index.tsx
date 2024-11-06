@@ -6,12 +6,7 @@ import { useRouter } from 'next/router';
 import BackIcon from '@/assets/icons/back_icon.svg';
 import Image from 'next/image';
 import AddressSearch from '@/components/AddressSearch/AddressSearch';
-interface PasswordForm {
-	password: string;
-	passwordConfirm: string;
-	isMatch: boolean;
-	message: string;
-}
+import { registerUser } from '@/lib/api/login';
 
 export default function SignupPage() {
 	const [id, setId] = useState<string>('');
@@ -21,39 +16,89 @@ export default function SignupPage() {
 		isMatch: true,
 		message: '',
 	});
-	const [isParent, setIsParent] = useState<boolean>(true); // 부모/자녀 토글 상태 관리
+	const [isParent, setIsParent] = useState<boolean>(true);
 	const [nickname, setNickname] = useState<string>('');
-
 	const [phone, setPhone] = useState<string>('');
-	// 우편번호 상태
-	// const [setZonecode] = useState<string>('');
-	// 주소 상태
+	const [name, setName] = useState<string>('');
 	const [address, setAddress] = useState<string>('');
 	const Router = useRouter();
 	const [isAddressSearchOpen, setIsAddressSearchOpen] =
 		useState<boolean>(false);
+	const [location, setLocation] = useState<{
+		latitude?: number;
+		longitude?: number;
+	}>({});
 
-	// 주소 선택 시 처리
-	// 주소 검색 모달 열기
+	const postUserData = async (
+		userId: string,
+		userPassword: string,
+		nickname: string,
+		address: string,
+		latitude: number | undefined,
+		longitude: number | undefined,
+		name: string,
+		tel: string,
+		role: 'PARENT' | 'CHILD',
+	) => {
+		// latitude와 longitude가 undefined일 경우 0으로 대체
+		const safeLatitude = latitude ?? 0;
+		const safeLongitude = longitude ?? 0;
+		try {
+			const response = await registerUser({
+				userId,
+				userPassword,
+				nickname,
+				address,
+				latitude: safeLatitude,
+				longitude: safeLongitude,
+				name,
+				tel,
+				role,
+			});
+			return response;
+		} catch (error) {
+			console.error('Error registering user:', error);
+			throw error;
+		}
+	};
+
 	const handleAddressSearch = useCallback(() => {
 		setIsAddressSearchOpen(true);
 	}, []);
 
-	// 주소 선택 시 처리
 	const handleAddress = useCallback((data: AddressData) => {
 		setAddress(data.address);
-		// setZonecode(data.zonecode);
-		setIsAddressSearchOpen(false); // 모달 닫기
+		if (data.latitude && data.longitude) {
+			setLocation({
+				latitude: data.latitude,
+				longitude: data.longitude,
+			});
+		}
+		setIsAddressSearchOpen(false);
 	}, []);
 
-	const handleSignup = () => {
-		// TODO - 회원가입 로직 구현
-		Router.push({
-			pathname: '/signup/done',
-			query: { isParent: isParent },
-		});
+	const handleSignup = async () => {
+		try {
+			await postUserData(
+				id,
+				passwordForm.password,
+				nickname,
+				address,
+				location.latitude,
+				location.longitude,
+				name,
+				phone,
+				isParent ? 'PARENT' : 'CHILD',
+			);
+			Router.push({
+				pathname: '/signup/done',
+				query: { isParent },
+			});
+		} catch (error) {
+			console.error('회원가입에 실패했습니다:', error);
+		}
 	};
-	// 필드 이름을 매개변수로 받아서 해당 필드를 업데이트하는 함수
+
 	const handlePasswordChange =
 		(field: 'password' | 'passwordConfirm') =>
 		(e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -75,7 +120,7 @@ export default function SignupPage() {
 		};
 
 	return (
-		<div className="bg-light_yellow_mid flex flex-col items-center h-screen px-4 py-6 gap-8">
+		<div className="bg-light_yellow_mid flex flex-col items-center h-screen px-4 py-6 gap-5">
 			<div className="flex items-center justify-center w-full relative mb-8">
 				<Image
 					src={BackIcon}
@@ -102,9 +147,6 @@ export default function SignupPage() {
 					value={passwordForm.password}
 					onChange={handlePasswordChange('password')}
 				/>
-				{/* {passwordForm.isMatch && passwordForm.password && (
-					// <CheckIcon className="absolute right-2 top-1/2 transform -translate-y-1/2 text-orange-500" />
-				)} */}
 			</div>
 
 			<div className="relative">
@@ -114,9 +156,6 @@ export default function SignupPage() {
 					value={passwordForm.passwordConfirm}
 					onChange={handlePasswordChange('passwordConfirm')}
 				/>
-				{/* {passwordForm.isMatch && passwordForm.passwordConfirm && (
-					// <CheckIcon className="absolute right-2 top-1/2 transform -translate-y-1/2 text-orange-500" />
-				)} */}
 			</div>
 
 			<div className="flex w-[315px]">
@@ -146,19 +185,16 @@ export default function SignupPage() {
 					setNickname(e.target.value)
 				}
 			/>
+			<CommonInput
+				type="text"
+				placeholder="이름"
+				value={name}
+				onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+					setName(e.target.value)
+				}
+			/>
 
-			{/* 주소 입력 부분 */}
 			<div className="w-full max-w-[315px] space-y-2">
-				{/* <div className="relative">
-					<CommonInput
-						type="text"
-						placeholder="우편번호"
-						value={zonecode}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-							setZonecode(e.target.value)
-						}
-					/>
-				</div> */}
 				<div className="relative">
 					<CommonInput
 						type="text"
@@ -194,7 +230,6 @@ export default function SignupPage() {
 				/>
 			</div>
 
-			{/* 주소 검색 모달 */}
 			{isAddressSearchOpen && (
 				<AddressSearch
 					onComplete={handleAddress}
