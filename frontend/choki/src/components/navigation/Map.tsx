@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import GlobeView from './GlobeView';
 import TransitionToLocalView from './TransitionToLocalView';
 import CurrentLocationButton from './CurrentLocationButton';
+import TimeDistanceTracker from './TimeDistanceTracker';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
@@ -72,7 +72,6 @@ const MapComponent = () => {
 			<div ref={mapContainerRef} className="w-full h-full" />
 			{isGlobeView ? (
 				<>
-					<GlobeView mapContainerRef={mapContainerRef} setMap={setMap} />
 					<TransitionToLocalView
 						map={map}
 						userLocation={userLocation}
@@ -82,6 +81,7 @@ const MapComponent = () => {
 			) : (
 				<>
 					<CurrentLocationButton map={map} />
+					<TimeDistanceTracker />
 				</>
 			)}
 		</div>

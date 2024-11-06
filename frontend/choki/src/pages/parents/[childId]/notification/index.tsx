@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 import previous_icon from '@/assets/icons/previous.svg';
 import { MISSION_IMAGES } from '@/constants/mission';
-import type { NotificationResponse } from '@/types/http';
 import right_arrow from '@/assets/icons/right_arrow.svg';
 
 export default function NotificationPage() {

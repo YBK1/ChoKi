@@ -1,9 +1,5 @@
 import { useEffect } from 'react';
 
-type UserLocationMarkerProps = {
-	map: any;
-};
-
 const UserLocationMarker = ({ map }: UserLocationMarkerProps) => {
 	useEffect(() => {
 		if (!map || !navigator.geolocation) {

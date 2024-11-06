@@ -1,10 +1,6 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 
-interface CenterButtonProps {
-	map: mapboxgl.Map | null;
-}
-
 const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 	const [currentLocation, setCurrentLocation] = useState<
 		[number, number] | null
@@ -45,7 +41,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 					updateMarker(newLocation);
 				},
 				error => {
-					console.error('Error getting initial location:', error);
+					console.error('현재 위치 받아오는 중 오류 발생:', error);
 				},
 			);
 
@@ -57,7 +53,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 					updateMarker(newLocation);
 				},
 				error => {
-					console.error('Error watching location:', error);
+					console.error('위치 변화 감지 중 오류 발생:', error);
 				},
 				{
 					enableHighAccuracy: true,
@@ -67,7 +63,6 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 			);
 		}
 
-		// Cleanup
 		return () => {
 			if (watchId.current !== null) {
 				navigator.geolocation.clearWatch(watchId.current);
