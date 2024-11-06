@@ -1,5 +1,6 @@
 package com.yeojiphap.choki.domain.shopping.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -19,6 +20,7 @@ import lombok.Setter;
 @Setter
 @Document(indexName = "product")
 @Setting(replicas = 0)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProductDocument {
 	@Id
 	private String id;

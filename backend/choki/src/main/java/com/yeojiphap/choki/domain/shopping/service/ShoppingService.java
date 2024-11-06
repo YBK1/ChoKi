@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -127,7 +128,9 @@ public class ShoppingService {
 	}
 
 	// 이름 기반 상품 검색
-	public List<ProductDto> searchProductByName(String itemName, Pageable pageable){
+	public List<ProductDto> searchProductByName(ProductNameSearchDto productNameSearchDto){
+		String itemName = productNameSearchDto.getItemName();
+		Pageable pageable = PageRequest.of(productNameSearchDto.getPage(), productNameSearchDto.getSize());
 		// elasticsearch 검색
 		// Page<ProductDocument> pages = productRepository.findByNameContaining(itemName, pageable);
 		Page<ProductDocument> pages = productRepository.searchByName(itemName, pageable);
