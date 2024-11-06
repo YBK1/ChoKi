@@ -2,6 +2,7 @@ package com.yeojiphap.choki.domain.map.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,7 +12,7 @@ import java.util.List;
 @Getter
 public class GuidedRoute {
     @Id
-    private String id;
+    private ObjectId id;
     private String userId;
     private Location startPoint;
     private Location destination;
