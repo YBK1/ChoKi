@@ -10,6 +10,7 @@ export default function LoginPage() {
 	const router = useRouter();
 	const [id, setId] = useState('');
 	const [password, setPassword] = useState('');
+
 	const postLoginData = async (userId: string, userPassword: string) => {
 		try {
 			const response = await loginUser({ userId, userPassword });
@@ -18,20 +19,18 @@ export default function LoginPage() {
 			console.error('Error logging in:', error);
 		}
 	};
-	const handleLogin = () => {
-		postLoginData(id, password).then(response => {
-			//TODO - 서버에서 받은 부모, 아이 여부 정보로 대체 예정
-			if (response.status === 200) {
-				// 부모 페이지
-				router.push('/parents');
-			} else if (response.status === 201) {
-				// 아이 페이지
-				router.push('/child');
-			} else {
-				alert('로그인에 문제가 발생했습니다.');
-			}
-		});
+
+	const handleLogin = async () => {
+		const response = await postLoginData(id, password);
+		if (response?.role === 'PARENT') {
+			router.push('/parents');
+		} else if (response?.role === 'CHILD') {
+			router.push('/child');
+		} else {
+			alert('로그인에 문제가 발생했습니다.');
+		}
 	};
+
 	return (
 		<div className="bg-light_yellow_mid flex flex-col items-center h-screen pt-[20vh]">
 			{/* Logo Container */}

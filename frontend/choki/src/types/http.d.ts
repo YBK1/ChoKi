@@ -11,10 +11,13 @@ interface SignupRequest {
 	tel: string;
 	role: role;
 }
-
 interface LoginRequest {
 	userId: string;
 	userPassword: string;
+}
+
+interface LoginResponse {
+	role: string;
 }
 // export interface BaseResponse<T> {
 // 	status: number;
