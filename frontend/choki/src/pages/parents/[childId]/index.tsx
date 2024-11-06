@@ -5,20 +5,53 @@ import Link from 'next/link';
 import child_profile from '@/assets/icons/child_profile.svg';
 import level_icon from '@/assets/icons/level.svg';
 import mission_plus from '@/assets/icons/mission_plus.svg';
+import CommonModal from '@/components/Common/Modal';
+import { useState } from 'react';
 
-export default function index() {
-	// 임의 데이터
-	// Mission 타입 지정
+export default function Index() {
 	const missions: Mission[] = [
 		{ type: 'SHOP', content: '동네 마트 장보기' },
 		{ type: 'RECYCLE', content: '재활용 분리수거하기' },
 		{ type: 'EXTRA_MISSION', content: '양치하기' },
 	];
 
+	const [currentStep, setCurrentStep] = useState(1);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [selectedErrand, setSelectedErrand] = useState('');
+
+	const handleOpenModal = () => setIsModalOpen(true);
+	const handleCloseModal = () => {
+		setIsModalOpen(false);
+		setCurrentStep(1);
+	};
+
+	const handleNext = () => setCurrentStep(prev => prev + 1);
+	const handlePrev = () => setCurrentStep(prev => prev - 1);
+
+	// 각 단계별 컴포넌트
+	const StepOne = () => <div className="flex flex-col h-full"></div>;
+
+	const StepTwo = () => <div className="flex flex-col h-full"></div>;
+
+	const StepThree = () => <div className="flex flex-col h-full"></div>;
+
+	// 각 단계별 모달 사이즈 정의
+	const getModalSize = (step: number) => {
+		switch (step) {
+			case 1:
+				return 'small';
+			case 2:
+			case 3:
+				return 'medium';
+			default:
+				return 'medium';
+		}
+	};
+
 	return (
 		<>
 			<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow background min-h-screen">
-				{/* 알림 아이콘: 누르면 parents/${childId}/notification으로 이동 */}
+				{/* 알림 아이콘 */}
 				<div className="flex justify-end m-4">
 					<Link href="/parents/1/notification">
 						<div className="bg-white rounded-xl shadow-sm flex items-center justify-center">
@@ -78,7 +111,7 @@ export default function index() {
 						</div>
 					</div>
 				</div>
-				{/* 심부름 목록: 추가 버튼 누르면 모달 생성, 백엔드에게 받아온 진행중인 미션 목록 띄워주기 */}
+				{/* 심부름 목록 */}
 				<div>
 					<div className="flex ml-8 mb-4 gap-2">
 						<h2 className="text-lg font-bold">심부름 목록</h2>
@@ -86,7 +119,7 @@ export default function index() {
 							<Image
 								src={mission_plus}
 								alt="mission_plus"
-								// onClick={}
+								onClick={handleOpenModal}
 							/>
 						</button>
 					</div>
@@ -103,6 +136,11 @@ export default function index() {
 						))}
 					</div>
 				</div>
+				<CommonModal
+					isOpen={isModalOpen}
+					onClose={handleCloseModal}
+					size={getModalSize(currentStep)}
+				></CommonModal>
 			</div>
 		</>
 	);
