@@ -80,4 +80,43 @@ public interface SpringDocFamilyController {
             ),
     })
     public ApiResponse acceptInviteCode(@RequestBody InviteCodeDto request);
+
+    @Operation(
+            summary = "자녀들의 정보를 조회합니다.",
+            description = "현재 접속한 부모의 자녀들을 조회할 수 있습니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "자녀 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "자녀 조회 성공",
+                                      "data": {
+                                              “children” : [
+                                                  {
+                                                      “childId” : 1,
+                                                      “name” : “김애기”,
+                                                      “nickname”: “자녀닉네임”,
+                                                      “level”: 10,
+                                                      “address” : “광주광역시 삼전“
+                                                  },
+                                                  {
+                                                      “childId” : 2,
+                                                      “name” : “김자녀”,
+                                                      “nickname”: “자녀닉네임2”,
+                                                      “level”: 1,
+                                                      “address” : “광주광역시 삼전“
+                                                  },
+                                              ]
+                                          }
+                                    }"""
+                            )
+                    )
+            ),
+    })
+    public ApiResponse getChildrenInfoUsingFamily();
 }

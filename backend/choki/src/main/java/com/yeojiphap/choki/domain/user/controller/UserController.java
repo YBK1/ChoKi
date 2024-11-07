@@ -28,8 +28,19 @@ public class UserController implements SpringDocUserController {
         return ApiResponse.success(HttpStatus.CREATED, SIGN_UP_SUCCESS.getMessage());
     }
 
+    @GetMapping("/child/{userId}")
+    public ApiResponse getChildInfo(@PathVariable Long userId) {
+        return ApiResponse.success(HttpStatus.OK, userService.getChildInfo(userId), GET_CHILD_INFO_SUCCESS.getMessage());
+    }
+
+    @GetMapping("/mypage")
+    public ApiResponse myPage() {
+        return ApiResponse.success(HttpStatus.OK, userService.getUserDetailInfo(), GET_USER_DETAIL_INFO_SUCCESS.getMessage());
+    }
+
     @GetMapping("/validation/id")
     public ApiResponse checkUserId(@RequestParam String userId) {
         return ApiResponse.success(HttpStatus.OK, userService.validateUserId(new UserIdRequest(userId)));
+
     }
 }

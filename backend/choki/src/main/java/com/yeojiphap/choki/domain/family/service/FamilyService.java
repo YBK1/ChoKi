@@ -1,7 +1,7 @@
 package com.yeojiphap.choki.domain.family.service;
 
 import com.yeojiphap.choki.domain.family.domain.Family;
-import com.yeojiphap.choki.domain.family.dto.ChildResponseDto;
+import com.yeojiphap.choki.domain.family.dto.ChildrenResponseDto;
 import com.yeojiphap.choki.domain.family.exception.InvalidInviteCodeException;
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.domain.User;
@@ -53,7 +53,7 @@ public class FamilyService {
         return FAMILY_ASSIGN_SUCCESS.getMessage();
     }
 
-    public List<ChildResponseDto> getChildInfoByFamilyId() {
+    public List<ChildrenResponseDto> getChildInfoByFamilyId() {
         User user = findCurrentUser();
 
         if (!user.getRole().equals(Role.PARENT)) {
@@ -63,7 +63,7 @@ public class FamilyService {
         List<User> children = familyRepository.getChildren(user.getFamily().getId());
 
         return children.stream()
-                .map(ChildResponseDto::from)
+                .map(ChildrenResponseDto::from)
                 .toList();
     }
 

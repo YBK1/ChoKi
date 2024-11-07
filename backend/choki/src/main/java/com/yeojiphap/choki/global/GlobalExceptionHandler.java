@@ -1,5 +1,7 @@
 package com.yeojiphap.choki.global;
 
+import com.yeojiphap.choki.domain.character.exception.AnimalNotFoundException;
+import com.yeojiphap.choki.domain.collected.exception.AnimalAlreadyExistException;
 import com.yeojiphap.choki.domain.shopping.exception.BadRequestException;
 import com.yeojiphap.choki.domain.shopping.exception.ShoppingNotFoundException;
 import com.yeojiphap.choki.domain.family.exception.ChildNotExistException;
@@ -29,6 +31,11 @@ public class GlobalExceptionHandler {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 
+    @ExceptionHandler(AnimalAlreadyExistException.class)
+    public ApiResponse<Void> handleAnimalAlreadyExistException(AnimalAlreadyExistException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
+
     @ExceptionHandler(InvalidInviteCodeException.class)
     public ApiResponse<Void> handleInvalidInviteCodeException(InvalidInviteCodeException e) {
         return ApiResponse.error(e.getStatus(), e.getMessage());
@@ -48,6 +55,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundRefreshTokenException.class)
     public ApiResponse<Void> handleNotFoundRefreshTokenException(NotFoundRefreshTokenException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
+
+    @ExceptionHandler(AnimalNotFoundException.class)
+    public ApiResponse<Void> handleAnimalNotFoundException(AnimalNotFoundException e) {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 
