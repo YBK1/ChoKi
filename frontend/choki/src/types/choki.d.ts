@@ -144,3 +144,13 @@ interface Window {
 	unityInstance: any; // Unity 인스턴스 타입
 	receiveDataFromUnity: (data: string) => void; // Unity에서 데이터를 받을 함수 타입
 }
+
+// 카메라 인터페이스
+interface CamProps {
+	onCaptureChange: (captured: boolean) => void;
+}
+
+// 재활용 동물 대화 인터페이스
+interface AnimalSpeechProps {
+	isImageCaptured: boolean;
+}

@@ -2,10 +2,17 @@ import BottomNavbar from '@/components/Common/Navbar/BottomNavbar';
 import AnimalSpeech from '@/components/Recycle/AnimalSpeech';
 import Cam from '@/components/Recycle/Cam';
 import Button from '@/components/Common/Button';
+import { useState } from 'react';
 
 const RecyclePage = () => {
+	const [isImageCaptured, setIsImageCaptured] = useState<boolean>(false);
+
 	const handleComplete = () => {
 		console.log('엄마 분리수거 끝내써');
+	};
+
+	const handleCaptureChange = (captured: boolean) => {
+		setIsImageCaptured(captured);
 	};
 
 	return (
@@ -17,12 +24,12 @@ const RecyclePage = () => {
 		>
 			{/* Animal Speech Bubble */}
 			<div className="-mt-6 md:mt-0">
-				<AnimalSpeech />
+				<AnimalSpeech isImageCaptured={isImageCaptured} />
 			</div>
 
 			{/* Camera Capture Component */}
-			<div className="mb-8 w-full max-w-md">
-				<Cam />
+			<div className="mt-3 mb-8 w-full max-w-md">
+				<Cam onCaptureChange={handleCaptureChange} />
 			</div>
 
 			{/* Complete Button */}
