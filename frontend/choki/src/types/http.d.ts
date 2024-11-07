@@ -19,6 +19,18 @@ interface LoginRequest {
 interface LoginResponse {
 	role: string;
 }
+interface InviteCodeResponse {
+	inviteCode: string;
+}
+interface JoinFamilyResponse {
+	invite_code: string;
+}
+
+// export interface BaseResponse<T> {
+// 	status: number;
+// 	message: string;
+// 	data: T;
+// }
 
 interface NotificationResponse {
 	childId: number;

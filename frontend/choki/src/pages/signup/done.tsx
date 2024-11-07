@@ -10,27 +10,49 @@ import InviteCodeModal from '@/components/Common/Modal/inviteCodeModal';
 import CommonButton from '@/components/Common/Button';
 import DogCharacter from '@/assets/icons/dog_character.svg';
 import Image from 'next/image';
-
-const Toast = ({ message }: { message: string }) => (
-	<div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 animate-fade-up">
-		<div className="bg-black bg-opacity-80 text-white px-6 py-3 rounded-full shadow-lg">
-			{message}
-		</div>
-	</div>
-);
+import { createInviteCode, joinFamily } from '@/lib/api/inviteCode';
+import { Toast } from '@/components/Toast/Toast';
+// import { Input } from 'postcss';
 
 export default function DonePage() {
 	const router = useRouter();
 	const isParent = router.query.isParent === 'true';
 	const [doneStep, setDonStep] = useState(0);
-	const [inviteCode] = useState('123456');
+	const [inviteCode, setInviteCode] = useState('');
 	const [showToast, setShowToast] = useState(false);
 	const [code, setCode] = useState(['', '', '', '', '', '']); // 6자리 코드
 	const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-	const handleInviteCode = () => {
+	// 초대 코드 입력 API 연동
+
+	// 초대 코드 입력
+	const handleInviteCode = async () => {
+		try {
+			console.log('초대 코드 입력:', code.join(''));
+			const response = await joinFamily(code.join(''));
+			console.log('초대 코드 입력 결과:', response);
+		} catch (err) {
+			console.error('초대 코드 입력 실패:', err);
+		}
+		router.push('/child/mainPage');
+	};
+	const handleGoInviteCode = () => {
 		setDonStep(1);
 	};
+	// 초대 코드 생성
+	const handleCreateInviteCode = async () => {
+		try {
+			// 초대 코드 생성 API 호출
+			const response = await createInviteCode();
+			if (response.inviteCode) {
+				setInviteCode(response.inviteCode);
+			}
+		} catch (err) {
+			console.error('초대 코드 생성 실패:', err);
+		}
+		setDonStep(1);
+	};
+
 	useEffect(() => {
 		if (!isParent && doneStep === 1) {
 			inputRefs.current[0]?.focus();
@@ -120,7 +142,7 @@ export default function DonePage() {
 						<CommonButton
 							size="medium"
 							color={isParent ? 'white' : 'orange'}
-							onClick={handleInviteCode}
+							onClick={isParent ? handleCreateInviteCode : handleGoInviteCode}
 							text={isParent ? '초대코드 생성' : '초대코드 입력'}
 						/>
 					</div>

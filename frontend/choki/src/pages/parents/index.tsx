@@ -8,23 +8,35 @@ import { useState } from 'react';
 import DogCharacter from '@/assets/icons/dog_character.svg';
 import CommonModal from '@/components/Common/Modal';
 import CommonButton from '@/components/Common/Button';
-const Toast = ({ message }: { message: string }) => (
-	<div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 animate-fade-up">
-		<div className="bg-black bg-opacity-80 text-white px-6 py-3 rounded-full shadow-lg">
-			{message}
-		</div>
-	</div>
-);
+import { Toast } from '@/components/Toast/Toast';
+import { getInviteCode } from '@/lib/api/inviteCode';
+
 export default function ParentPages() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [inviteCode] = useState('123456');
+	const [inviteCode, setInviteCode] = useState('');
 	const [showToast, setShowToast] = useState(false);
-	const handleInviteCodeModal = () => {
+
+	// 초대 코드 가져오기
+	const fetchInviteCode = async () => {
+		try {
+			const response = await getInviteCode();
+			const code = response.inviteCode;
+			// console.log('초대 코드:', code);
+			setInviteCode(code);
+		} catch (err) {
+			console.error('초대 코드 가져오기 실패:', err);
+		}
+	};
+
+	const handleInviteCodeModal = async () => {
+		await fetchInviteCode(); // 모달 열기 전에 초대 코드 가져오기
 		setIsModalOpen(true);
 	};
+
 	const handleCloseModal = () => {
 		setIsModalOpen(false);
 	};
+
 	const handleCopyCode = async () => {
 		try {
 			await navigator.clipboard.writeText(inviteCode);
