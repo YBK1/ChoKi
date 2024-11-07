@@ -1,6 +1,8 @@
 package com.yeojiphap.choki.domain.collected.service;
 
 import com.yeojiphap.choki.domain.character.domain.Animal;
+import com.yeojiphap.choki.domain.character.dto.AnimalDto;
+import com.yeojiphap.choki.domain.character.dto.AnimalListDto;
 import com.yeojiphap.choki.domain.character.exception.AnimalNotFoundException;
 import com.yeojiphap.choki.domain.character.repository.AnimalRepository;
 import com.yeojiphap.choki.domain.collected.domain.Collected;
@@ -9,9 +11,12 @@ import com.yeojiphap.choki.domain.collected.repository.CollectedRepository;
 import com.yeojiphap.choki.domain.user.domain.User;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.domain.user.repository.UserRepository;
+import com.yeojiphap.choki.global.auth.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +40,21 @@ public class CollectedService {
                 .build();
 
         collectedRepository.save(collected);
+    }
+
+    @Transactional
+    public AnimalListDto getCollectedAnimals() {
+        User user = findCurrentUser();
+        List<Collected> collectedAnimals = collectedRepository.findByUser(user.getId());
+        List<AnimalDto> animalDtos = collectedAnimals.stream()
+                .map(collected -> AnimalDto.from(collected.getAnimal()))
+                .toList();
+
+        return new AnimalListDto(animalDtos);
+    }
+
+    private User findCurrentUser() {
+        return userRepository.findByUserId(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
     }
 
     private User findByUserId(Long id) {
