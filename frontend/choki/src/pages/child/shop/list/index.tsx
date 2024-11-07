@@ -11,8 +11,10 @@ export default function childShoppingPage() {
 			<div className="mt-8">
 				<Navbar />
 			</div>
-			<div>
-				<Modal>123</Modal>
+			<div className="flext flex-col items-center">
+				<Modal>
+					<h1 className="text-2xl font-bold">장바구니</h1>
+				</Modal>
 			</div>
 		</div>
 	);

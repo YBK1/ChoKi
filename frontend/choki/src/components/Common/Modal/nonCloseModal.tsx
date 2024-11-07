@@ -19,7 +19,7 @@ const InviteCodeModal = ({ children }: ModalProps) => {
 				style={{ width: '316px', height: '464px' }}
 			>
 				{/* Content */}
-				<div className="h-full w-full">{children}</div>
+				<div className="h-full w-full flex justify-center">{children}</div>
 			</div>
 		</div>
 	);
