@@ -8,6 +8,9 @@ const config: Config = {
 	],
 	theme: {
 		extend: {
+			backgroundImage: {
+				'custom-icon': "url('/src/assets/icons/mart_background.svg')",
+			},
 			colors: {
 				black: '#000000',
 				white: '#FFFFFF',

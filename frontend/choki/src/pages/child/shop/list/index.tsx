@@ -1,7 +1,17 @@
-export default function ShopList() {
+// import martBackground from '@/assets/icons/mart_background.svg';
+// import backgroundImage from '@/../public/icons/mart_background.svg';
+
+// import Modal from '@/components/Common/Modal/nonCloseModal';
+// import Navbar from '@/components/Common/Navbar/UpperNavbar';
+export default function childShoppingPage() {
 	return (
-		<div>
-			<h1>ShopList</h1>
+		<div
+			className="relative flex flex-col items-center w-full min-h-screen bg-cover bg-center"
+			style={{
+				backgroundImage: `url('/icons/mart_background.svg')`, // public 폴더 내 경로를 직접 지정
+			}}
+		>
+			{/* 콘텐츠 */}
 		</div>
 	);
 }
