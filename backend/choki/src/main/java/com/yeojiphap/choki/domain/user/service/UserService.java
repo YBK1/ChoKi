@@ -3,7 +3,6 @@ package com.yeojiphap.choki.domain.user.service;
 import com.yeojiphap.choki.domain.collected.domain.Collected;
 import com.yeojiphap.choki.domain.collected.repository.CollectedRepository;
 import com.yeojiphap.choki.domain.collected.service.CollectedService;
-import java.util.Optional;
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.dto.ChildResponseDto;
 import com.yeojiphap.choki.domain.user.dto.TokenResponse;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
