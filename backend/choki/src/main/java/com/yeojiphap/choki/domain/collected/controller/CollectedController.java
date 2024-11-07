@@ -13,7 +13,7 @@ import static com.yeojiphap.choki.domain.collected.message.CollectedSuccessMessa
 @RestController
 @RequestMapping("/api/collected")
 @RequiredArgsConstructor
-public class CollectedController {
+public class CollectedController implements SpringDocCollectedController{
     private final CollectedService collectedService;
 
     @GetMapping("/animal")
