@@ -1,8 +1,8 @@
 package com.yeojiphap.choki.domain.user.controller;
 
-import com.yeojiphap.choki.domain.user.dto.TokenResponse;
-import com.yeojiphap.choki.domain.user.dto.UserIdRequest;
-import com.yeojiphap.choki.domain.user.dto.signUpRequest;
+import com.yeojiphap.choki.domain.user.dto.response.TokenResponse;
+import com.yeojiphap.choki.domain.user.dto.request.UserIdRequest;
+import com.yeojiphap.choki.domain.user.dto.request.signUpRequest;
 import com.yeojiphap.choki.domain.user.service.UserService;
 import com.yeojiphap.choki.global.ApiResponse;
 import com.yeojiphap.choki.global.auth.service.CookieService;

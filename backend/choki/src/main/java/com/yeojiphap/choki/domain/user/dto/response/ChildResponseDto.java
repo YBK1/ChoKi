@@ -1,4 +1,4 @@
-package com.yeojiphap.choki.domain.user.dto;
+package com.yeojiphap.choki.domain.user.dto.response;
 
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.domain.User;

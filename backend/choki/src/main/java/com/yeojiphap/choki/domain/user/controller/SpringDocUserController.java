@@ -1,6 +1,6 @@
 package com.yeojiphap.choki.domain.user.controller;
 
-import com.yeojiphap.choki.domain.user.dto.signUpRequest;
+import com.yeojiphap.choki.domain.user.dto.request.signUpRequest;
 import com.yeojiphap.choki.global.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

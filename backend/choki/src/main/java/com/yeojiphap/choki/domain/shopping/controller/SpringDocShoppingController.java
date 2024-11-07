@@ -1,14 +1,11 @@
 package com.yeojiphap.choki.domain.shopping.controller;
 
 import com.yeojiphap.choki.domain.shopping.dto.ProductNameSearchDto;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.yeojiphap.choki.domain.shopping.dto.ProductCompareRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.ShoppingCreateRequestDto;
-import com.yeojiphap.choki.domain.user.dto.signUpRequest;
 import com.yeojiphap.choki.global.ApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
