@@ -74,6 +74,8 @@ export default function Index() {
 		>([]);
 		const [routeDetails, setRouteDetails] = useState<any>(null);
 		const mapRef = useRef<any>(null);
+		const polylineRef = useRef<any>(null);
+		const markersRef = useRef<any[]>([]);
 
 		// 예시 장소 리스트
 		// const destinations = [
@@ -83,10 +85,11 @@ export default function Index() {
 		// ];
 
 		useEffect(() => {
+			// 목적지 목록 가져오기
 			const fetchDestinations = async () => {
 				try {
 					const routeList = await getRouteList();
-					console.log('routeList:', routeList);
+					// 형식 변경
 					const formattedDestinations = routeList.map((route: any) => ({
 						objectId: route.objectId,
 						buildingName: route.destination.buildingName,
@@ -101,25 +104,51 @@ export default function Index() {
 		}, []);
 
 		useEffect(() => {
+			// 카카오맵 화면 띄우기
 			const kakao = (window as any).kakao;
-			if (kakao && kakao.maps) {
-				kakao.maps.load(() => {
-					const mapContainer = document.getElementById('map');
-					const mapOptions = {
-						center: new kakao.maps.LatLng(37.5665, 126.978),
-						level: 4,
-					};
-					const mapInstance = new kakao.maps.Map(mapContainer, mapOptions);
-					mapRef.current = mapInstance;
-				});
+			const initializeMap = (latitude: number, longitude: number) => {
+				if (kakao && kakao.maps) {
+					kakao.maps.load(() => {
+						const mapContainer = document.getElementById('map');
+						const mapOptions = {
+							center: new kakao.maps.LatLng(latitude, longitude),
+							level: 4,
+						};
+						const mapInstance = new kakao.maps.Map(mapContainer, mapOptions);
+						mapRef.current = mapInstance;
+
+						const markerPosition = new kakao.maps.LatLng(latitude, longitude);
+						const marker = new kakao.maps.Marker({
+							position: markerPosition,
+						});
+						marker.setMap(mapInstance);
+					});
+				}
+			};
+
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(
+					position => {
+						const { latitude, longitude } = position.coords;
+						initializeMap(latitude, longitude);
+					},
+					error => {
+						console.error('현재 위치 가져오기 실패핑:', error);
+						initializeMap(37.5665, 126.978);
+					},
+					{ enableHighAccuracy: true },
+				);
+			} else {
+				// 현재 위치 못가져오면 중심 서울로
+				initializeMap(37.5665, 126.978);
 			}
 		}, []);
 
+		// 목적지 선택 함수
 		const handleDestinationChange = async (
 			e: React.ChangeEvent<HTMLSelectElement>,
 		) => {
 			const destinationId = e.target.value;
-			console.log(destinationId);
 			setSelectedDestination(destinationId);
 
 			try {
@@ -133,6 +162,7 @@ export default function Index() {
 			}
 		};
 
+		// 경로 그리는 함수
 		const drawRoute = (details: any) => {
 			const kakao = (window as any).kakao;
 
@@ -140,6 +170,12 @@ export default function Index() {
 				console.error('Kakao Maps SDK is not loaded or map is not initialized');
 				return;
 			}
+
+			if (polylineRef.current) {
+				polylineRef.current.setMap(null);
+			}
+			markersRef.current.forEach(marker => marker.setMap(null));
+			markersRef.current = [];
 
 			const { startPoint, destination, routes } = details;
 
@@ -172,7 +208,9 @@ export default function Index() {
 				strokeOpacity: 0.7,
 				strokeStyle: 'solid',
 			});
+			polylineRef.current = polyline;
 
+			// 지도 축척
 			const bounds = new kakao.maps.LatLngBounds();
 			routePoints.forEach(point => bounds.extend(point));
 			mapRef.current.setBounds(bounds);
