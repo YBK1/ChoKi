@@ -19,7 +19,7 @@ export default function childShoppingPage() {
 			<div className="flex flex-col items-center">
 				<Modal>
 					<div className="flex flex-col items-center">
-						<h1 className="text-2xl font-bold">장바구니</h1>
+						<h1 className="text-2xl font-bold mb-6">장바구니</h1>
 						<ProductCard
 							role="CHILD"
 							ParentsShoppingItem={dumpItem}
