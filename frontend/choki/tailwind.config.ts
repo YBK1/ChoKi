@@ -1,5 +1,5 @@
 import type { Config } from 'tailwindcss';
-
+import tailwindScrollbar from 'tailwind-scrollbar';
 const config: Config = {
 	content: [
 		'./src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -55,7 +55,10 @@ const config: Config = {
 			},
 		},
 	},
-	plugins: [],
+	plugins: [tailwindScrollbar],
+	variants: {
+		scrollbar: ['rounded'],
+	},
 };
 
 export default config;

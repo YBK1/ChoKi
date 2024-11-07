@@ -10,13 +10,15 @@ const InviteCodeModal = ({ children }: ModalProps) => {
 			{/* Modal */}
 			<div
 				className="
-          relative 
-          bg-white 
-          rounded-2xl  /* 모서리를 더 둥글게 설정 */
-          shadow-lg 
-          p-6
-        "
-				style={{ width: '316px', height: '464px' }}
+					relative 
+					bg-white 
+					rounded-2xl
+					shadow-lg 
+					p-6
+					overflow-y-auto
+					scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-amber-500 scrollbar-track-gray-100
+				"
+				style={{ width: '316px', height: '464px', maxHeight: '80vh' }} // maxHeight 추가
 			>
 				{/* Content */}
 				<div className="h-full w-full flex justify-center">{children}</div>
