@@ -8,7 +8,7 @@ import Link from 'next/link';
 export default function UpperNavbar() {
 	return (
 		<>
-			<nav className="fixed top-5 z-50 w-full flex ml-10">
+			<nav className="top-5 z-50 w-full left-[50%]">
 				<div className="h-full flex justify-center items-center gap-5">
 					{/* 나가기 버튼 */}
 					<Link href="/child">
