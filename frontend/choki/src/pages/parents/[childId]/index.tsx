@@ -57,7 +57,7 @@ export default function Index() {
 				</button>
 				{selectedErrand && (
 					<button
-						className="px-4 py-2 rounded bg-orange-400 text-white"
+						className="px-4 py-2 rounded bg-orange_main text-white"
 						onClick={handleNext}
 					>
 						다음
@@ -259,53 +259,148 @@ export default function Index() {
 		);
 	};
 
-	const StepThree = () => {
-		const [searchTerm, setSearchTerm] = useState('');
+	const SearchContent = ({
+		onClose,
+		onItemSelect,
+	}: {
+		onClose: () => void;
+		onItemSelect: (item: any) => void;
+	}) => {
+		const [itemName, setItemName] = useState('');
+		const [searchResults, setSearchResults] = useState([]);
+		const PAGE_SIZE = 5;
 
-		// 검색 처리 함수
 		const handleSearch = async () => {
 			try {
-				const result = await searchItem(searchTerm);
-				console.log('검색 결과:', result);
-				// 여기서 검색 결과를 활용하여 UI를 업데이트할 수 있습니다
+				const result = await searchItem(itemName, 0, PAGE_SIZE);
+				setSearchResults(result || []);
+				console.log(result);
 			} catch (error) {
 				console.error('검색 중 오류 발생:', error);
-				// 에러 처리
-			}
-		};
-
-		// 입력 변경 핸들러
-		const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-			setSearchTerm(e.target.value);
-		};
-
-		// 검색어 입력 후 엔터 키 처리
-		const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-			if (e.key === 'Enter') {
-				handleSearch();
+				setSearchResults([]);
 			}
 		};
 
 		return (
 			<div className="flex flex-col h-full">
-				<h2 className="text-xl font-bold text-center">장바구니 설정</h2>
+				<h2 className="text-xl font-bold text-center m-4">검색 결과</h2>
 				<div className="relative mb-4">
 					<input
 						type="text"
 						className="w-full p-2 border rounded"
-						placeholder="물건을 검색하세요"
-						value={searchTerm}
-						onChange={handleInputChange}
-						onKeyPress={handleKeyPress}
+						placeholder="물품을 검색해보세요"
+						value={itemName}
+						onChange={e => setItemName(e.target.value)}
+						onKeyPress={e => e.key === 'Enter' && handleSearch()}
 					/>
 					<button
-						className="absolute right-2 top-1/2 transform -translate-y-1/2"
 						onClick={handleSearch}
+						className="absolute right-3 top-1/2 transform -translate-y-1/2"
 					>
 						🔍
 					</button>
 				</div>
-				<div className="text-sm mb-4">찾고 있는 물건이 없나요? ➕</div>
+
+				<div className="text-sm text-gray-500 mb-2">
+					찾고 있는 물건이 없나요? +
+				</div>
+
+				<div className="flex-1 overflow-y-auto space-y-2">
+					{searchResults.map((item: any, index: number) => (
+						<div
+							key={index}
+							className="flex items-center space-x-3 p-2 border rounded-lg"
+						>
+							<div className="w-16 h-16rounded-lg overflow-hidden">
+								<Image
+									src={item.image}
+									alt={item.productName || '상품 이미지'}
+									width={64}
+									height={64}
+									className="object-cover"
+								/>
+							</div>
+							<div className="flex-1">
+								<div className="font-medium">{item.productName}</div>
+							</div>
+							<button
+								onClick={() => {
+									onItemSelect(item);
+									onClose();
+								}}
+								className="px-4 py-2 bg-orange-100 text-orange_main rounded-lg text-sm"
+							>
+								담기
+							</button>
+						</div>
+					))}
+				</div>
+			</div>
+		);
+	};
+
+	// StepThree 컴포넌트 수정
+	const StepThree = () => {
+		const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+		const [selectedItems, setSelectedItems] = useState<any[]>([]);
+
+		const handleItemSelect = (item: any) => {
+			setSelectedItems(prev => [...prev, item]);
+		};
+
+		return (
+			<div className="flex flex-col h-full">
+				<h2 className="text-xl font-bold text-center m-4">장바구니 설정</h2>
+				<div className="relative mb-4">
+					<input
+						type="text"
+						className="w-full p-2 border rounded"
+						placeholder="물품을 검색해보세요"
+						onClick={() => setIsSearchModalOpen(true)}
+						readOnly
+					/>
+					<button
+						className="absolute right-2 top-1/2 transform -translate-y-1/2"
+						onClick={() => setIsSearchModalOpen(true)}
+					>
+						🔍
+					</button>
+				</div>
+
+				<div className="ml-2 mb-2">장바구니 목록</div>
+				<div className="flex-1 overflow-y-auto">
+					{selectedItems.map((item, index) => (
+						<div
+							key={index}
+							className="flex items-center space-x-3 p-2 border rounded-lg mb-2"
+						>
+							<div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
+								<Image
+									src={item.image}
+									alt={item.productName || '상품 이미지'}
+									width={48}
+									height={48}
+									className="object-cover"
+								/>
+							</div>
+							<div className="flex-1">
+								<div className="font-medium">{item.productName}</div>
+							</div>
+						</div>
+					))}
+				</div>
+
+				{/* 검색 모달 */}
+				<CommonModal
+					isOpen={isSearchModalOpen}
+					onClose={() => setIsSearchModalOpen(false)}
+					size="large"
+				>
+					<SearchContent
+						onClose={() => setIsSearchModalOpen(false)}
+						onItemSelect={handleItemSelect}
+					/>
+				</CommonModal>
 
 				<div className="flex justify-between mt-4">
 					<button
@@ -315,24 +410,24 @@ export default function Index() {
 						이전
 					</button>
 					<button
-						className="px-4 py-2 rounded bg-orange-400 text-white"
+						className="px-4 py-2 rounded bg-orange_main text-white"
 						onClick={handleNext}
 					>
-						완료
+						다음
 					</button>
 				</div>
 			</div>
 		);
 	};
-
 	// 각 단계별 모달 사이즈 정의
 	const getModalSize = (step: number) => {
 		switch (step) {
 			case 1:
 				return 'small';
 			case 2:
-			case 3:
 				return 'medium';
+			case 3:
+				return 'large';
 			default:
 				return 'medium';
 		}
@@ -361,7 +456,7 @@ export default function Index() {
 					이전
 				</button>
 				<button
-					className="flex-1 px-4 py-2 rounded bg-orange-400 text-white"
+					className="flex-1 px-4 py-2 rounded bg-orange_main text-white"
 					onClick={handleCloseModal}
 				>
 					완료
