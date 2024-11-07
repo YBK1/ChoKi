@@ -12,6 +12,7 @@ type MapProps = {
 	showRouteRecorder?: boolean;
 	showPolyline?: boolean;
 	showDestinationSearch?: boolean;
+	showPreviousButton?: boolean;
 };
 
 // 카카오맵 실제 지도 props
@@ -29,6 +30,7 @@ type RoutePolylineProps = {
 
 // 카카오맵 경로 기록하는 props
 type RouteRecorderProps = {
+	map: any;
 	setFinalRoute: (route: { latitude: number; longitude: number }[]) => void;
 	onRecordingFinish: () => void;
 };

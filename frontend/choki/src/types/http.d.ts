@@ -39,3 +39,10 @@ interface NotificationResponse {
 	id: number;
 	time: string;
 }
+
+interface ItemSearchResponse {
+	barcode: string;
+	category: string;
+	productName: string;
+	image: string;
+}

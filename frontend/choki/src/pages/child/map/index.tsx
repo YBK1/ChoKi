@@ -11,6 +11,7 @@ const MapPage = () => {
 				showRouteRecorder={false}
 				showPolyline={false}
 				showDestinationSearch={false}
+				showPreviousButton={false}
 			/>
 		</div>
 	);
