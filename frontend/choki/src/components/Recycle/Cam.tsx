@@ -47,18 +47,18 @@ const Cam = () => {
 	};
 
 	return (
-		<div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-lg transform transition-transform mx-auto w-[80%] max-w-lg">
+		<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg transform transition-transform mx-auto w-[80%] max-w-lg">
 			{/* 카메라 미리보기 */}
 			<div className="mb-4">
 				<video
 					ref={videoRef}
 					autoPlay
-					className="rounded-md shadow-md w-70 h-80 bg-gray-200"
+					className="rounded-md shadow-md w-auto h-80 bg-gray-200"
 				/>
 			</div>
 
 			{/* 촬영 버튼 */}
-			<div onClick={captureImage} className="cursor-pointer mt-2">
+			<div onClick={captureImage} className="cursor-pointer">
 				<Image
 					src="/icons/camera_icon.svg"
 					alt="Capture Image"

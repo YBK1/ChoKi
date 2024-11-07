@@ -10,29 +10,23 @@ const RecyclePage = () => {
 
 	return (
 		<div
+			className="min-h-screen bg-cover bg-center flex flex-col items-center justify-between pt-5 pb-20 px-4 sm:px-8"
 			style={{
 				backgroundImage: "url('/icons/recycle_background.svg')",
-				backgroundSize: 'cover',
-				backgroundPosition: 'center',
-				minHeight: '100vh',
-				flexDirection: 'column',
-				justifyContent: 'space-between',
-				alignItems: 'center',
-				paddingTop: '20px', // Adjust this value as needed to move components upwards
-				paddingBottom: '20px', // Adjust as needed for spacing at the bottom
 			}}
 		>
-			{/* Move AnimalSpeech Up */}
-			<div className="mb-6" style={{ marginTop: '-30px' }}>
+			{/* Animal Speech Bubble */}
+			<div className="mb-8 -mt-6 md:mt-0">
 				<AnimalSpeech />
 			</div>
 
-			{/* Move Camera Capture Component Up */}
-			<div className="mt-6" style={{ marginTop: '10px' }}>
+			{/* Camera Capture Component */}
+			<div className="mb-8 w-full max-w-md">
 				<Cam />
 			</div>
 
-			<div className="mt-6 flex justify-center">
+			{/* Complete Button */}
+			<div className="flex justify-center mt-[-40px] mb-8">
 				<Button
 					size="small"
 					color="orange"
