@@ -12,7 +12,7 @@ const InviteCodeModal = ({ children }: ModalProps) => {
 				className="
           relative 
           bg-white 
-          rounded-lg 
+          rounded-2xl  /* 모서리를 더 둥글게 설정 */
           shadow-lg 
           p-6
         "

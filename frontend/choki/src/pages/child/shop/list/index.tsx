@@ -1,5 +1,6 @@
 import Modal from '@/components/Common/Modal/nonCloseModal';
 import Navbar from '@/components/Common/Navbar/UpperNavbar';
+import ProductCard from '@/components/shop/ProductCard';
 export default function childShoppingPage() {
 	return (
 		<div
@@ -11,9 +12,12 @@ export default function childShoppingPage() {
 			<div className="mt-8">
 				<Navbar />
 			</div>
-			<div className="flext flex-col items-center">
+			<div className="flex flex-col items-center">
 				<Modal>
-					<h1 className="text-2xl font-bold">장바구니</h1>
+					<div className="flex flex-col items-center">
+						<h1 className="text-2xl font-bold">장바구니</h1>
+						<ProductCard />
+					</div>
 				</Modal>
 			</div>
 		</div>
