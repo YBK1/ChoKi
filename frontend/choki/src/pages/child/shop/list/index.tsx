@@ -1,8 +1,3 @@
-// import martBackground from '@/assets/icons/mart_background.svg';
-// import backgroundImage from '@/../public/icons/mart_background.svg';
-
-// import Modal from '@/components/Common/Modal/nonCloseModal';
-// import Navbar from '@/components/Common/Navbar/UpperNavbar';
 export default function childShoppingPage() {
 	return (
 		<div
