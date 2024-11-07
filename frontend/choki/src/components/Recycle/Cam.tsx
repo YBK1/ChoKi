@@ -48,34 +48,34 @@ const Cam = () => {
 
 	return (
 		<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg transform transition-transform mx-auto w-[80%] max-w-lg">
-			{/* 카메라 미리보기 */}
-			<div className="mb-4">
-				<video
-					ref={videoRef}
-					autoPlay
-					className="rounded-md shadow-md w-auto h-80 bg-gray-200"
-				/>
-			</div>
-
-			{/* 촬영 버튼 */}
-			<div onClick={captureImage} className="cursor-pointer">
-				<Image
-					src="/icons/camera_icon.svg"
-					alt="Capture Image"
-					width={50}
-					height={50}
-					className="hover:scale-110 transition-transform"
-				/>
-			</div>
-
-			{/* 찍힌 이미지 전시 */}
-			{capturedImage && (
-				<div className="mt-4">
-					<h3 className="text-center text-lg font-bold mb-2">촬영된 사진</h3>
+			{/* Camera Preview or Captured Image */}
+			<div className="mb-4 w-full flex justify-center">
+				{capturedImage ? (
 					<Image
 						src={capturedImage}
 						alt="Captured"
+						width={320}
+						height={240}
 						className="rounded-md shadow-md"
+					/>
+				) : (
+					<video
+						ref={videoRef}
+						autoPlay
+						className="rounded-md shadow-md w-auto h-80 bg-gray-200"
+					/>
+				)}
+			</div>
+
+			{/* Capture Button */}
+			{!capturedImage && (
+				<div onClick={captureImage} className="cursor-pointer">
+					<Image
+						src="/icons/camera_icon.svg"
+						alt="Capture Image"
+						width={50}
+						height={50}
+						className="hover:scale-110 transition-transform"
 					/>
 				</div>
 			)}
