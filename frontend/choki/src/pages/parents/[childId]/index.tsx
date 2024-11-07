@@ -8,7 +8,7 @@ import mission_plus from '@/assets/icons/mission_plus.svg';
 import CommonModal from '@/components/Common/Modal';
 import { useState, useEffect } from 'react';
 import { searchItem } from '@/lib/api/searchItem';
-import { getRouteList } from '@/lib/api/navigation';
+import { getRouteList, getRouteDetails } from '@/lib/api/navigation';
 
 export default function Index() {
 	const missions: Mission[] = [
@@ -71,6 +71,7 @@ export default function Index() {
 		const [destinations, setDestinations] = useState<
 			{ objectId: string; buildingName: string }[]
 		>([]);
+		const [routeDetails, setRouteDetails] = useState<any>(null);
 
 		// 예시 장소 리스트
 		// const destinations = [
@@ -90,12 +91,28 @@ export default function Index() {
 					}));
 					setDestinations(formattedDestinations);
 				} catch (error) {
-					console.error('Failed to fetch destinations:', error);
+					console.error('목적지 정보 가져오기 실패핑:', error);
 				}
 			};
 
 			fetchDestinations();
 		}, []);
+
+		const handleDestinationChange = async (
+			e: React.ChangeEvent<HTMLSelectElement>,
+		) => {
+			const destinationId = e.target.value;
+			console.log(destinationId);
+			setSelectedDestination(destinationId);
+
+			try {
+				const details = await getRouteDetails(destinationId);
+				setRouteDetails(details);
+				console.log('가져온 경로 상세정보:', details);
+			} catch (error) {
+				console.error('경로 상세정보 가져오기 실패핑:', error);
+			}
+		};
 
 		return (
 			<div className="flex flex-col h-full">
@@ -103,20 +120,49 @@ export default function Index() {
 				<div className="flex-1">
 					<select
 						className="w-full p-2 border rounded"
-						onChange={e => setSelectedDestination(e.target.value)}
+						onChange={handleDestinationChange}
 						value={selectedDestination}
 					>
 						<option value="">목적지를 선택하세요</option>
 						{destinations.map(destination => (
-							<option
-								key={destination.objectId}
-								value={destination.buildingName}
-							>
+							<option key={destination.objectId} value={destination.objectId}>
 								{destination.buildingName}
 							</option>
 						))}
 					</select>
 				</div>
+
+				{routeDetails && (
+					<div className="mt-4">
+						<h3 className="text-lg font-semibold">Route Details</h3>
+						<p>
+							<strong>Start Point:</strong>{' '}
+							{routeDetails.startPoint.buildingName}
+						</p>
+						<p>Latitude: {routeDetails.startPoint.latitude}</p>
+						<p>Longitude: {routeDetails.startPoint.longitude}</p>
+						<hr className="my-2" />
+						<p>
+							<strong>Destination:</strong>{' '}
+							{routeDetails.destination.buildingName}
+						</p>
+						<p>Latitude: {routeDetails.destination.latitude}</p>
+						<p>Longitude: {routeDetails.destination.longitude}</p>
+						<hr className="my-2" />
+						<h4 className="font-semibold">Intermediate Stops:</h4>
+						<ul>
+							{routeDetails.routes.map((route: any, index: number) => (
+								<li key={index}>
+									<p>
+										<strong>{route.buildingName}</strong>
+									</p>
+									<p>Latitude: {route.latitude}</p>
+									<p>Longitude: {route.longitude}</p>
+								</li>
+							))}
+						</ul>
+					</div>
+				)}
 				<div className="flex justify-between mt-auto">
 					<button
 						className="px-4 py-2 rounded bg-gray-100 text-gray-500"

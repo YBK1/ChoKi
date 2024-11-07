@@ -35,3 +35,15 @@ export const getRouteList = async () => {
 		throw error;
 	}
 };
+
+export const getRouteDetails = async (guidedRouteId: string) => {
+	try {
+		const response = await axiosInstance.get(
+			`/api/route/guide/${guidedRouteId}`,
+		);
+		return response.data;
+	} catch (error) {
+		console.error('상세 경로 정보 가져오기 실패핑:', error);
+		throw error;
+	}
+};
