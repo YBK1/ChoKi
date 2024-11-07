@@ -8,6 +8,7 @@ import com.yeojiphap.choki.domain.user.dto.response.ChildResponseDto;
 import com.yeojiphap.choki.domain.user.dto.response.TokenResponse;
 import com.yeojiphap.choki.domain.user.dto.response.UserResponseDto;
 import com.yeojiphap.choki.domain.user.dto.request.UserIdRequest;
+import com.yeojiphap.choki.domain.user.dto.*;
 import com.yeojiphap.choki.domain.user.exception.UserIdDuplicatedException;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.domain.user.message.UserSuccessMessage;
@@ -53,7 +54,6 @@ public class UserService {
 
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUserId(SecurityUtil.getCurrentUserId());
-
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
 
         return UserResponseDto.from(currentUser, collected);
@@ -87,5 +87,12 @@ public class UserService {
     public User findById(Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.orElse(null);
+    }
+
+    public OtherUserResponseDto getOtherUserInfo(String userId) {
+        User user = findByUserId(userId);
+        List<Collected> collected = collectedRepository.findByUser(user.getId());
+
+        return OtherUserResponseDto.from(user, collected);
     }
 }
