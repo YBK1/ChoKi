@@ -55,7 +55,7 @@ export default function Index() {
 				</button>
 				{selectedErrand && (
 					<button
-						className="px-4 py-2 rounded bg-orange-400 text-white"
+						className="px-4 py-2 rounded bg-orange_main text-white"
 						onClick={handleNext}
 					>
 						다음
@@ -113,11 +113,13 @@ export default function Index() {
 
 	const StepThree = () => {
 		const [searchTerm, setSearchTerm] = useState('');
+		const [currentPage, setCurrentPage] = useState(0);
+		const PAGE_SIZE = 5; // 한 페이지당 아이템 수
 
 		// 검색 처리 함수
 		const handleSearch = async () => {
 			try {
-				const result = await searchItem(searchTerm);
+				const result = await searchItem(searchTerm, currentPage, PAGE_SIZE);
 				console.log('검색 결과:', result);
 				// 여기서 검색 결과를 활용하여 UI를 업데이트할 수 있습니다
 			} catch (error) {
@@ -158,6 +160,8 @@ export default function Index() {
 					</button>
 				</div>
 				<div className="text-sm mb-4">찾고 있는 물건이 없나요? ➕</div>
+
+				{/* 페이지네이션 컨트롤을 추가할 수 있습니다 */}
 
 				<div className="flex justify-between mt-4">
 					<button
