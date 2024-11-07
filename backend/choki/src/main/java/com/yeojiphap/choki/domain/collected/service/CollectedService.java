@@ -42,7 +42,7 @@ public class CollectedService {
         collectedRepository.save(collected);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public AnimalListDto getCollectedAnimals() {
         User user = findCurrentUser();
         List<Collected> collectedAnimals = collectedRepository.findByUser(user.getId());
