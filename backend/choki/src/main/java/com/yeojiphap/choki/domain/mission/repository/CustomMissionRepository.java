@@ -14,5 +14,9 @@ public interface CustomMissionRepository {
 
 	void deleteMission(ObjectId missionId);
 
+	void updateShoppingId(ObjectId missionId, ObjectId shoppingId);
+
 	List<Mission> findAllByChildIdAndStatus(Long childId, Status status);
+
+	void setMissionStatusPending(ObjectId missionId);
 }

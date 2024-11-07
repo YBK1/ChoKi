@@ -12,7 +12,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class ChildPointDto {
-	private ObjectId shoppingId;
+	private String shoppingId;
 	private Double latitude;
 	private Double longitude;
 }

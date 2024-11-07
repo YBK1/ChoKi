@@ -1,6 +1,7 @@
 package com.yeojiphap.choki.domain.user.controller;
 
 import com.yeojiphap.choki.domain.user.dto.TokenResponse;
+import com.yeojiphap.choki.domain.user.dto.UserIdRequest;
 import com.yeojiphap.choki.domain.user.dto.signUpRequest;
 import com.yeojiphap.choki.domain.user.service.UserService;
 import com.yeojiphap.choki.global.ApiResponse;
@@ -20,15 +21,21 @@ public class UserController implements SpringDocUserController {
     private final CookieService cookieService;
 
     @PostMapping("/signup")
-    public ApiResponse signup(@RequestBody signUpRequest signUpRequest,  HttpServletResponse response) {
+    public ApiResponse signup(@RequestBody signUpRequest signUpRequest, HttpServletResponse response) {
         TokenResponse tokenResponse = userService.signUp(signUpRequest);
         response.setHeader("access", tokenResponse.accessToken());
         response.addCookie(cookieService.createCookie("refresh", tokenResponse.refreshToken()));
         return ApiResponse.success(HttpStatus.CREATED, SIGN_UP_SUCCESS.getMessage());
     }
 
+
     @GetMapping("/child/{userId}")
     public ApiResponse getChildInfo(@PathVariable Long userId) {
         return ApiResponse.success(HttpStatus.OK, userService.getChildInfo(userId), GET_CHILD_INFO_SUCCESS.getMessage());
+
+    @GetMapping("/validation/id")
+    public ApiResponse checkUserId(@RequestParam String userId) {
+        return ApiResponse.success(HttpStatus.OK, userService.validateUserId(new UserIdRequest(userId)));
+
     }
 }

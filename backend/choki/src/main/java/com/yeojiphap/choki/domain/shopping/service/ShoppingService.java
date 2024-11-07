@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.service.MissionService;
-import com.yeojiphap.choki.domain.shopping.domain.Point;
+import com.yeojiphap.choki.domain.notification.service.NotificationService;
 import com.yeojiphap.choki.domain.shopping.dto.*;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ import com.yeojiphap.choki.domain.shopping.domain.CartItem;
 import com.yeojiphap.choki.domain.shopping.domain.Shopping;
 import com.yeojiphap.choki.domain.shopping.domain.Product;
 import com.yeojiphap.choki.domain.shopping.domain.ProductDocument;
-import com.yeojiphap.choki.domain.shopping.domain.Route;
+import com.yeojiphap.choki.domain.shopping.exception.BadRequestException;
 import com.yeojiphap.choki.domain.shopping.repository.ShoppingRepository;
 import com.yeojiphap.choki.domain.shopping.repository.ProductRepository;
 
@@ -34,8 +34,9 @@ import lombok.RequiredArgsConstructor;
 public class ShoppingService {
 	private final ProductRepository productRepository;
 	private final ShoppingRepository shoppingRepository;
-	private final RedisTemplate<String, Object> redisTemplate;
 	private final MissionService missionService;
+	private final NotificationService notificationService;
+	private final RedisTemplate<String, Object> redisTemplate;
 
 	// 쇼핑 정보 검색하기
 	public Shopping getShoppingById(ObjectId id) {
@@ -49,32 +50,47 @@ public class ShoppingService {
 		ObjectId missionId = missionService.addShoppingMission(createRequestDto);
 
 		try{
+			if(!createRequestDto.validate()){
+				throw new BadRequestException();
+			}
+
 			Shopping shopping = Shopping.builder()
+				.parentId(createRequestDto.getParentId())
+				.childId(createRequestDto.getChildId())
 				.startPoint(createRequestDto.getStartPoint())
 				.destination(createRequestDto.getDestination())
-				.route(Route.builder().route(createRequestDto.getRoute()).build())
+				.route(createRequestDto.getRoute())
 				.shoppingList(createRequestDto.getShoppingList().stream()
 					.map(barcodeItem -> {
 						// 바코드 값만 들어온 request를 실제 상품 값으로 조회해서 저장
-						ProductDto productDto = searchProductByBarcode(Long.toString(barcodeItem.getBarcode()));
+						ProductDto productDto = searchProductByBarcode(barcodeItem.getBarcode());
 
 						return Product.builder()
-							.barcode(Long.toString(barcodeItem.getBarcode()))
+							.barcode(barcodeItem.getBarcode())
 							.quantity(barcodeItem.getQuantity())
 							.productName(productDto.getProductName())
 							.category(productDto.getCategory())
 							.image(productDto.getImage())
+							.cartItem(null)
 							.build();
 					}).collect(Collectors.toList()))
-				.cartItem(new ArrayList<>())
 				// 매핑되는 미션을 포함해서 저장해야 함
-				.missionId(missionId)
+				.missionId(missionId.toString())
 				.build();
 
-			shoppingRepository.save(shopping);
+			Shopping savedShopping = shoppingRepository.save(shopping);
+
+			try{
+				missionService.allocateShoppingMission(missionId, savedShopping.getId());
+			}catch(Exception e){
+				// 미션에 할당 실패시 다 삭제 해야 함
+				shoppingRepository.delete(savedShopping);
+				throw e;
+			}
 		}catch(Exception e){
-			// 트랜잭션 원칙 적용위해서 삭제 해줘야 함
+			// 장보기 생성하다 오류 발생시 미션도 삭제한다 ( 일관성 )
 			missionService.deleteMission(missionId);
+			throw e;
 		}
 
 	}
@@ -82,11 +98,11 @@ public class ShoppingService {
 	// 장바구니에 상품 담기
 	@Transactional
 	public void addProductToShopping(AddProductToCartRequestDto addProductToCartRequestDto) {
-		ProductDto productDto = searchProductByBarcode(Long.toString(addProductToCartRequestDto.getBarcode()));
+		ProductDto productDto = searchProductByBarcode(addProductToCartRequestDto.getBarcode());
 
 		// CartItem 생성
 		CartItem cartItem = CartItem.builder()
-			.barcode(Long.toString(addProductToCartRequestDto.getBarcode()))
+			.barcode(addProductToCartRequestDto.getBarcode())
 			.quantity(addProductToCartRequestDto.getQuantity())
 			.productName(productDto.getProductName())
 			.category(productDto.getCategory())
@@ -94,27 +110,36 @@ public class ShoppingService {
 			.comment(addProductToCartRequestDto.getComment())
 			.build();
 		// 삽입
-		shoppingRepository.insertCartItemById(addProductToCartRequestDto.getShoppingId(), cartItem);
+		shoppingRepository.insertCartItemById(new ObjectId(addProductToCartRequestDto.getShoppingId()),
+			addProductToCartRequestDto.getListBarcode(), cartItem);
+	}
+
+	// 상품 수량 변경
+	@Transactional
+	public void changeQuantityOfCartItem(ChangeQuantityRequestDto changeQuantityRequestDto){
+		shoppingRepository.changeQuantityOfCartItem(new ObjectId(changeQuantityRequestDto.getShoppingId()), changeQuantityRequestDto.getBarcode(), changeQuantityRequestDto.getQuantity());
 	}
 
 	// 장바구니에서 상품 빼기
 	@Transactional
-	public void deleteProductFromShopping(DeleteProductFromCartReqeustDto deleteProductFromCartReqeustDto){
+	public void deleteProductFromShopping(DeleteProductFromCartRequestDto deleteProductFromCartRequestDto){
 		// 삭제 수행
-		shoppingRepository.deleteCartItemById(new ObjectId(deleteProductFromCartReqeustDto.getShoppingId()), deleteProductFromCartReqeustDto.getBarcode());
+		shoppingRepository.deleteCartItemById(new ObjectId(deleteProductFromCartRequestDto.getShoppingId()), deleteProductFromCartRequestDto.getBarcode());
 	}
 
 	// 이름 기반 상품 검색
-	public List<ProductDto> searchProductByName(String itemName, Pageable pageable){
+	public List<ProductDto> searchProductByName(ProductNameSearchDto productNameSearchDto){
+		String itemName = productNameSearchDto.getItemName();
+		Pageable pageable = PageRequest.of(productNameSearchDto.getPage(), productNameSearchDto.getSize());
 		// elasticsearch 검색
-		Page<ProductDocument> pages = productRepository.findByNameContaining(itemName, pageable);
-
+		// Page<ProductDocument> pages = productRepository.findByNameContaining(itemName, pageable);
+		Page<ProductDocument> pages = productRepository.searchByName(itemName, pageable);
 		// 결과
 		List<ProductDto> productDtoList = new ArrayList<>();
 		for(ProductDocument product : pages) {
 			// DTO로 변환
 			productDtoList.add(ProductDto.builder()
-					.barcode(product.getNumber())
+					.barcode(product.getNumber().toString())
 					.productName(product.getName())
 					.category(product.getCategory())
 					.image(product.getImage())
@@ -125,15 +150,20 @@ public class ShoppingService {
 
 	// 바코드 기반 단일 상품 검색
 	public ProductDto searchProductByBarcode(String barcode) {
-		Optional<ProductDocument> productDto = productRepository.findById(barcode);
-		
-		// DTO 변환
-		return ProductDto.builder()
-			.barcode(productDto.get().getNumber())
-			.productName(productDto.get().getName())
-			.category(productDto.get().getCategory())
-			.image(productDto.get().getImage())
-			.build();
+		Optional<ProductDocument> productOptional = productRepository.findById(barcode);
+		if(productOptional.isPresent()){
+			// DTO 변환
+			return ProductDto.builder()
+				.barcode(productOptional.get().getNumber().toString())
+				.productName(productOptional.get().getName())
+				.category(productOptional.get().getCategory())
+				.image(productOptional.get().getImage())
+				.build();
+		}
+		else{
+			return null;
+		}
+
 
 		// excpetion은 나중에 만들고 분류하자 일단 놔둬
 		// if(productDto.isPresent()){
@@ -148,12 +178,12 @@ public class ShoppingService {
 		log.info("상품 비교 시작");
 
 		// 장바구니 리스트 바코드 정보 확인
-		ProductDto originProduct =searchProductByBarcode(Long.toString(productCompareRequestDto.getOriginBarcode()));
+		ProductDto originProduct = searchProductByBarcode(productCompareRequestDto.getOriginBarcode());
 		// 입력 바코드 정보 확인
-		ProductDto inputProduct = searchProductByBarcode(Long.toString(productCompareRequestDto.getInputBarcode()));
+		ProductDto inputProduct = searchProductByBarcode(productCompareRequestDto.getOriginBarcode());
 
 		ProductCompareResponseDto productCompareResponseDto = new ProductCompareResponseDto();
-		if(originProduct.getBarcode() == inputProduct.getBarcode()) {
+		if(originProduct.getBarcode().equals(inputProduct.getBarcode())) {
 			productCompareResponseDto.setMatchStatus("MATCH");
 		}
 		else{
@@ -173,24 +203,43 @@ public class ShoppingService {
 		return productCompareResponseDto;
 	}
 
-	// Redis에 현재 아이 위치 저장
-	public void saveChildPoint(ChildPointDto childPointDto) {
-		Point point = Point.builder()
-			.latitude(childPointDto.getLatitude())
-			.longitude(childPointDto.getLongitude())
-			.build();
-
-		redisTemplate.opsForHash().put(childPointDto.getShoppingId().toString(), "location", point);
+	public String compareMessage(ProductCompareResponseDto productCompareResponseDto){
+		if(productCompareResponseDto.getMatchStatus().equals("MATCH")){
+			return "상품 일치";
+		}else if(productCompareResponseDto.getMatchStatus().equals("NOT_MATCH")){
+			return "상품 불일치";
+		}else{
+			return "상품 유사";
+		}
 	}
 
+
+	// Redis에 현재 아이 위치 저장
+	public void saveChildPoint(ChildPointDto childPointDto) {
+		redisTemplate.opsForHash().put(childPointDto.getShoppingId(), "latitude", childPointDto.getLatitude().toString());
+		redisTemplate.opsForHash().put(childPointDto.getShoppingId(), "longitude", childPointDto.getLongitude().toString());
+
+		System.out.println(childPointDto.getLatitude().toString());
+	}
+
+	// 장보기 완료 처리
+	// 1. 장보기 미션의 상태를 PENDING으로 변경
+	// 2. 그에 따른 알림 생성
+	// 3. FCM 메세지 보내기
 	@Transactional
 	public void completeShopping(String shoppingId){
 		Optional<Shopping> shoppingOptional = shoppingRepository.findById(shoppingId);
 		if(shoppingOptional.isPresent()) {
 			Shopping shopping = shoppingOptional.get();
 
-			ObjectId missionId = shopping.getMissionId();
-			Mission mission = missionService.getMission(missionId);
+			// 미션의 상태를 변경
+			ObjectId missionId = new ObjectId(shopping.getMissionId());
+			missionService.setMissionStatusPending(missionId);
+
+			// 그에 따른 알림
+			notificationService.addNotificationIfShoppingEnd(shopping);
+
+			// FCM 가능?;;
 		}
 	}
 }

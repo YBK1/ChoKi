@@ -19,4 +19,11 @@ public class ShoppingCreateRequestDto {
 	private Location destination;
 	private List<Point> route;
 	private List<BarcodeItem> shoppingList;
+
+	public boolean validate(){
+		return parentId != null && childId != null
+			&& startPoint != null && destination != null
+			&& route != null && shoppingList != null;
+	}
+
 }

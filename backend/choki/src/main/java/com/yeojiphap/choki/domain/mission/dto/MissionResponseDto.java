@@ -18,4 +18,5 @@ public class MissionResponseDto {
 	private String completedAt;
 	private String image;
 	private MissionType type;
+	private String shoppingId;
 }
