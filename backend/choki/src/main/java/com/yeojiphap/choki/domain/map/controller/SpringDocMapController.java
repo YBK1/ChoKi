@@ -44,14 +44,14 @@ public interface SpringDocMapController {
                                       "status": 200,
                                       "message": "가이드 경로 목록 조회 성공",
                                       "data": {
-                                          "routes": [
+                                          "guidedRouteList": [
                                             {
                                               "destination": {
                                                 "buildingName": "Library",
                                                 "latitude": 37.5665,
                                                 "longitude": 126.978
                                               },
-                                              "objectId": "672b6fbd29765e734a94dafb"
+                                              "objectId": "672b6fbd29765e734a94sadafb"
                                             },
                                             {
                                               "destination": {
