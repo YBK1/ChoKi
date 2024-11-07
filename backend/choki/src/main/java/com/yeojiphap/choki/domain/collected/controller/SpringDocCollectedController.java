@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "보유 캐릭터 컨트롤러", description = "보유한 캐릭터 조회, 추가 등 보유 캐릭터를 관리하는 클래스")
 public interface SpringDocCollectedController {
@@ -48,4 +49,26 @@ public interface SpringDocCollectedController {
             ),
     })
     public ApiResponse getCollectedAnimals();
+
+    @Operation(
+            summary = "메인 캐릭터를 변경합니다.",
+            description = "메인 캐릭터를 변경합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "메인 캐릭터 변경 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "메인 캐릭터 변경 성공",
+                                      "data": null
+                                    }"""
+                            )
+                    )
+            ),
+    })
+    public ApiResponse updateMainAnimal(@PathVariable(value = "{animal_id}") Long animalId);
 }

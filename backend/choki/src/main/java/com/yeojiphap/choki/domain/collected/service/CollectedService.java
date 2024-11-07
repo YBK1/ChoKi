@@ -7,6 +7,7 @@ import com.yeojiphap.choki.domain.character.exception.AnimalNotFoundException;
 import com.yeojiphap.choki.domain.character.repository.AnimalRepository;
 import com.yeojiphap.choki.domain.collected.domain.Collected;
 import com.yeojiphap.choki.domain.collected.exception.AnimalAlreadyExistException;
+import com.yeojiphap.choki.domain.collected.exception.AnimalNotOwnedException;
 import com.yeojiphap.choki.domain.collected.repository.CollectedRepository;
 import com.yeojiphap.choki.domain.user.domain.User;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.yeojiphap.choki.domain.collected.message.CollectedSuccessMessage.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,6 +54,21 @@ public class CollectedService {
                 .toList();
 
         return new AnimalListDto(animalDtos);
+    }
+
+    @Transactional
+    public String updateMainAnimal(Long animalId) {
+        User user = findCurrentUser();
+        validateAnimalOwnership(user.getId(), animalId);
+
+        user.updateMainAnimal(animalId);
+        return MAIN_ANIMAL_UPDATE_SUCCESS.getMessage();
+    }
+
+    private void validateAnimalOwnership(Long userId, Long animalId) {
+        if (!collectedRepository.existsByAnimalIdAndUserId(animalId, userId)) {
+            throw new AnimalNotOwnedException();
+        }
     }
 
     private User findCurrentUser() {
