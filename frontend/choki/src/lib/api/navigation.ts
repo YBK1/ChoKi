@@ -29,7 +29,7 @@ export const saveRoute = async (
 export const getRouteList = async () => {
 	try {
 		const response = await axiosInstance.get('/api/route/guide/list');
-		return response.data;
+		return response.data.guidedRouteList;
 	} catch (error) {
 		console.error('경로 목록 가져오기 실패핑:', error);
 		throw error;

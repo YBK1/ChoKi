@@ -6,8 +6,9 @@ import child_profile from '@/assets/icons/child_profile.svg';
 import level_icon from '@/assets/icons/level.svg';
 import mission_plus from '@/assets/icons/mission_plus.svg';
 import CommonModal from '@/components/Common/Modal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { searchItem } from '@/lib/api/searchItem';
+import { getRouteList } from '@/lib/api/navigation';
 
 export default function Index() {
 	const missions: Mission[] = [
@@ -67,13 +68,34 @@ export default function Index() {
 
 	const StepTwo = () => {
 		const [selectedDestination, setSelectedDestination] = useState('');
+		const [destinations, setDestinations] = useState<
+			{ objectId: string; buildingName: string }[]
+		>([]);
 
 		// 예시 장소 리스트
-		const destinations = [
-			{ id: 1, buildingName: '승필 백화점' },
-			{ id: 2, buildingName: '호현 카페' },
-			{ id: 3, buildingName: '민주 구멍가게' },
-		];
+		// const destinations = [
+		// 	{ id: 1, buildingName: '승필 백화점' },
+		// 	{ id: 2, buildingName: '호현 카페' },
+		// 	{ id: 3, buildingName: '민주 구멍가게' },
+		// ];
+
+		useEffect(() => {
+			const fetchDestinations = async () => {
+				try {
+					const routeList = await getRouteList();
+					console.log('routeList:', routeList);
+					const formattedDestinations = routeList.map((route: any) => ({
+						objectId: route.objectId,
+						buildingName: route.destination.buildingName,
+					}));
+					setDestinations(formattedDestinations);
+				} catch (error) {
+					console.error('Failed to fetch destinations:', error);
+				}
+			};
+
+			fetchDestinations();
+		}, []);
 
 		return (
 			<div className="flex flex-col h-full">
@@ -86,7 +108,10 @@ export default function Index() {
 					>
 						<option value="">목적지를 선택하세요</option>
 						{destinations.map(destination => (
-							<option key={destination.id} value={destination.buildingName}>
+							<option
+								key={destination.objectId}
+								value={destination.buildingName}
+							>
 								{destination.buildingName}
 							</option>
 						))}
