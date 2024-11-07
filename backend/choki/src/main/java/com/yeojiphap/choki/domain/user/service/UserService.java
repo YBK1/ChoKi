@@ -8,6 +8,7 @@ import com.yeojiphap.choki.domain.user.dto.response.ChildResponseDto;
 import com.yeojiphap.choki.domain.user.dto.response.TokenResponse;
 import com.yeojiphap.choki.domain.user.dto.response.UserResponseDto;
 import com.yeojiphap.choki.domain.user.dto.request.UserIdRequest;
+import com.yeojiphap.choki.domain.user.dto.response.UserLevelDto;
 import com.yeojiphap.choki.domain.user.exception.UserIdDuplicatedException;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.domain.user.message.UserSuccessMessage;
@@ -46,11 +47,13 @@ public class UserService {
         return createToken(user.getUserId(), user.getRole());
     }
 
+    @Transactional(readOnly = true)
     public ChildResponseDto getChildInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         return ChildResponseDto.from(user);
     }
 
+    @Transactional(readOnly = true)
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUserId(SecurityUtil.getCurrentUserId());
 
@@ -59,7 +62,6 @@ public class UserService {
         return UserResponseDto.from(currentUser, collected);
     }
 
-    // 아이디로 유저 정보 조회하기
     @Transactional(readOnly = true)
     public String validateUserId(UserIdRequest request) {
         userRepository.findByUserId(request.userId())
@@ -69,6 +71,13 @@ public class UserService {
         return UserSuccessMessage.USER_ID_VALIDATION_SUCCESS.getMessage();
     }
 
+    @Transactional(readOnly = true)
+    public UserLevelDto getLevel() {
+        User user = findCurrentUser();
+        return new UserLevelDto(user.getLevel(), user.getExp(), user.getLevel() == user.getPastLevel());
+    }
+
+    // 아이디로 유저 정보 조회하기
     @Transactional(readOnly = true)
     public User findByUserId(String userId) {
         return userRepository.findByUserId(userId).orElseThrow(UserNotFoundException::new);
@@ -87,5 +96,9 @@ public class UserService {
     public User findById(Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.orElse(null);
+    }
+
+    private User findCurrentUser() {
+        return userRepository.findByUserId(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
     }
 }
