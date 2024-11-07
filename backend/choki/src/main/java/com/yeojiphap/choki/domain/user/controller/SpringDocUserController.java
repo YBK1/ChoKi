@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "회원 컨트롤러", description = "회원 생성, 조회, 삭제 등 회원을 관리하는 클래스")
 public interface SpringDocUserController {
@@ -39,10 +40,11 @@ public interface SpringDocUserController {
             summary = "내 정보 조회",
             description = "현재 접속한 유저의 상세 정보를 조회합니다."
     )
+
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "정보 조회 성공",
+                    responseCode = "201",
+                    description = "아이디 유효성 검사 성공",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
@@ -64,6 +66,8 @@ public interface SpringDocUserController {
                                               “mainAnimal” : 3,
                                               “animals”: [2,3,4]
                                         },
+                                      "message": "사용 가능한 아이디입니다.",
+                                      "data": null
                                     }"""
                             )
                     )
@@ -103,4 +107,27 @@ public interface SpringDocUserController {
             )
     })
     public ApiResponse getChildInfo(@PathVariable Long userId);
+
+    @Operation(
+            summary = "회원 아이디 검증",
+            description = "사용 가능한 회원 아이디인지에 대한 유효성 검사를 진행합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "201",
+                    description = "아이디 유효성 검사 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "사용 가능한 아이디입니다.",
+                                      "data": null
+                                    }"""
+                            )
+                    )
+            ),
+    })
+    public ApiResponse checkUserId(@RequestParam String userId);
+
 }

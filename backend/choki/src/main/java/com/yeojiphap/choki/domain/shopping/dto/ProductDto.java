@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ProductDto {
-	private Long barcode;
+	private String barcode;
 	private String category;
 	private String productName;
 	private String image;

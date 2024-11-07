@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class BarcodeItem {
-	private Long barcode;
+	private String barcode;
 	private Long quantity;
 }

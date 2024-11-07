@@ -7,7 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class DeleteProductFromCartReqeustDto {
+public class DeleteProductFromCartRequestDto {
 	private String shoppingId;
+	private String listBarcode;
 	private String barcode;
 }

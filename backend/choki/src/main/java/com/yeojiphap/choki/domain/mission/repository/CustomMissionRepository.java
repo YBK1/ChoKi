@@ -1,6 +1,7 @@
 package com.yeojiphap.choki.domain.mission.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 
@@ -14,5 +15,9 @@ public interface CustomMissionRepository {
 
 	void deleteMission(ObjectId missionId);
 
+	void updateShoppingId(ObjectId missionId, ObjectId shoppingId);
+
 	List<Mission> findAllByChildIdAndStatus(Long childId, Status status);
+
+	Optional<Mission> setMissionStatusPending(ObjectId missionId);
 }

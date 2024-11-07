@@ -13,8 +13,6 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class Location {
-	@Id
-	private ObjectId id;
 	private Double latitude;
 	private Double longitude;
 	private String buildingName;

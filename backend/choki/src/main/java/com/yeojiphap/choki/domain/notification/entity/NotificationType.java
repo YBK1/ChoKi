@@ -1,5 +1,5 @@
 package com.yeojiphap.choki.domain.notification.entity;
 
 public enum NotificationType {
-	SHOPPING, MISSION
+	SHOP, RECYCLING, EXTRA_MISSION
 }
