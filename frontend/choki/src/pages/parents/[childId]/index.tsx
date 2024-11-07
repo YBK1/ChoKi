@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import MissionItem from '@/components/Common/MissionItem';
 import Image from 'next/image';
 import notification_icon from '@/assets/icons/notification.svg';
@@ -6,8 +7,9 @@ import child_profile from '@/assets/icons/child_profile.svg';
 import level_icon from '@/assets/icons/level.svg';
 import mission_plus from '@/assets/icons/mission_plus.svg';
 import CommonModal from '@/components/Common/Modal';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { searchItem } from '@/lib/api/searchItem';
+import { getRouteList, getRouteDetails } from '@/lib/api/navigation';
 
 export default function Index() {
 	const missions: Mission[] = [
@@ -67,13 +69,152 @@ export default function Index() {
 
 	const StepTwo = () => {
 		const [selectedDestination, setSelectedDestination] = useState('');
+		const [destinations, setDestinations] = useState<
+			{ objectId: string; buildingName: string }[]
+		>([]);
+		const [routeDetails, setRouteDetails] = useState<any>(null);
+		const mapRef = useRef<any>(null);
+		const polylineRef = useRef<any>(null);
+		const markersRef = useRef<any[]>([]);
 
 		// 예시 장소 리스트
-		const destinations = [
-			{ id: 1, buildingName: '승필 백화점' },
-			{ id: 2, buildingName: '호현 카페' },
-			{ id: 3, buildingName: '민주 구멍가게' },
-		];
+		// const destinations = [
+		// 	{ id: 1, buildingName: '승필 백화점' },
+		// 	{ id: 2, buildingName: '호현 카페' },
+		// 	{ id: 3, buildingName: '민주 구멍가게' },
+		// ];
+
+		useEffect(() => {
+			// 목적지 목록 가져오기
+			const fetchDestinations = async () => {
+				try {
+					const routeList = await getRouteList();
+					// 형식 변경
+					const formattedDestinations = routeList.map((route: any) => ({
+						objectId: route.objectId,
+						buildingName: route.destination.buildingName,
+					}));
+					setDestinations(formattedDestinations);
+				} catch (error) {
+					console.error('목적지 정보 가져오기 실패핑:', error);
+				}
+			};
+
+			fetchDestinations();
+		}, []);
+
+		useEffect(() => {
+			// 카카오맵 화면 띄우기
+			const kakao = (window as any).kakao;
+			const initializeMap = (latitude: number, longitude: number) => {
+				if (kakao && kakao.maps) {
+					kakao.maps.load(() => {
+						const mapContainer = document.getElementById('map');
+						const mapOptions = {
+							center: new kakao.maps.LatLng(latitude, longitude),
+							level: 4,
+						};
+						const mapInstance = new kakao.maps.Map(mapContainer, mapOptions);
+						mapRef.current = mapInstance;
+
+						const markerPosition = new kakao.maps.LatLng(latitude, longitude);
+						const marker = new kakao.maps.Marker({
+							position: markerPosition,
+						});
+						marker.setMap(mapInstance);
+					});
+				}
+			};
+
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(
+					position => {
+						const { latitude, longitude } = position.coords;
+						initializeMap(latitude, longitude);
+					},
+					error => {
+						console.error('현재 위치 가져오기 실패핑:', error);
+						initializeMap(37.5665, 126.978);
+					},
+					{ enableHighAccuracy: true },
+				);
+			} else {
+				// 현재 위치 못가져오면 중심 서울로
+				initializeMap(37.5665, 126.978);
+			}
+		}, []);
+
+		// 목적지 선택 함수
+		const handleDestinationChange = async (
+			e: React.ChangeEvent<HTMLSelectElement>,
+		) => {
+			const destinationId = e.target.value;
+			setSelectedDestination(destinationId);
+
+			try {
+				const details = await getRouteDetails(destinationId);
+				setRouteDetails(details);
+				if ((window as any).kakao && (window as any).kakao.maps) {
+					drawRoute(details);
+				}
+			} catch (error) {
+				console.error('경로 상세정보 가져오기 실패핑:', error);
+			}
+		};
+
+		// 경로 그리는 함수
+		const drawRoute = (details: any) => {
+			const kakao = (window as any).kakao;
+
+			if (!kakao || !kakao.maps || !mapRef.current) {
+				console.error('Kakao Maps SDK is not loaded or map is not initialized');
+				return;
+			}
+
+			if (polylineRef.current) {
+				polylineRef.current.setMap(null);
+			}
+			markersRef.current.forEach(marker => marker.setMap(null));
+			markersRef.current = [];
+
+			const { startPoint, destination, routes } = details;
+
+			const routePoints = [
+				new kakao.maps.LatLng(startPoint.latitude, startPoint.longitude),
+				...routes.map(
+					(route: any) =>
+						new kakao.maps.LatLng(route.latitude, route.longitude),
+				),
+				new kakao.maps.LatLng(destination.latitude, destination.longitude),
+			];
+
+			console.log(routePoints);
+
+			const startMarker = new kakao.maps.Marker({
+				position: routePoints[0],
+			});
+			startMarker.setMap(mapRef.current);
+
+			const endMarker = new kakao.maps.Marker({
+				position: routePoints[routePoints.length - 1],
+			});
+			endMarker.setMap(mapRef.current);
+
+			const polyline = new kakao.maps.Polyline({
+				map: mapRef.current,
+				path: routePoints,
+				strokeWeight: 5,
+				strokeColor: '#FF0000',
+				strokeOpacity: 0.7,
+				strokeStyle: 'solid',
+			});
+			polylineRef.current = polyline;
+
+			// 지도 축척
+			const bounds = new kakao.maps.LatLngBounds();
+			routePoints.forEach(point => bounds.extend(point));
+			mapRef.current.setBounds(bounds);
+		};
 
 		return (
 			<div className="flex flex-col h-full">
@@ -81,17 +222,24 @@ export default function Index() {
 				<div className="flex-1">
 					<select
 						className="w-full p-2 border rounded"
-						onChange={e => setSelectedDestination(e.target.value)}
+						onChange={handleDestinationChange}
 						value={selectedDestination}
 					>
 						<option value="">목적지를 선택하세요</option>
 						{destinations.map(destination => (
-							<option key={destination.id} value={destination.buildingName}>
+							<option key={destination.objectId} value={destination.objectId}>
 								{destination.buildingName}
 							</option>
 						))}
 					</select>
 				</div>
+
+				<div
+					id="map"
+					className="mt-4"
+					style={{ width: '100%', height: '400px' }}
+					ref={mapRef}
+				></div>
 				<div className="flex justify-between mt-auto">
 					<button
 						className="px-4 py-2 rounded bg-gray-100 text-gray-500"

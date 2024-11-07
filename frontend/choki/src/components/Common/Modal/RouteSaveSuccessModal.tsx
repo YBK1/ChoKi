@@ -1,5 +1,5 @@
 import React from 'react';
-import CommonModal from '../Common/Modal/index';
+import CommonModal from './index';
 
 interface SuccessModalProps {
 	isOpen: boolean;
@@ -19,7 +19,7 @@ const SuccessModal = ({
 				<p className="text-center mb-6">{message}</p>
 				<button
 					onClick={onClose}
-					className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none"
+					className="mt-4 bg-orange_main text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 focus:outline-none"
 				>
 					닫기
 				</button>
