@@ -19,11 +19,6 @@ interface LoginRequest {
 interface LoginResponse {
 	role: string;
 }
-// export interface BaseResponse<T> {
-// 	status: number;
-// 	message: string;
-// 	data: T;
-// }
 
 interface NotificationResponse {
 	childId: number;
@@ -31,4 +26,11 @@ interface NotificationResponse {
 	type: MissionType;
 	id: number;
 	time: string;
+}
+
+interface ItemSearchResponse {
+	barcode: string;
+	category: string;
+	productName: string;
+	image: string;
 }
