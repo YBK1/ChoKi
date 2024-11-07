@@ -7,6 +7,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 	ParentsShoppingItem,
 	ChildrenShoppingItem,
 }) => {
+	const onClickCamera = () => {};
 	return (
 		<div className="relative flex items-stretch px-8 py-4 border border-gray-200 rounded-2xl max-w-xl mx-auto shadow-md">
 			{/* Divider */}
@@ -28,7 +29,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				</p>
 				<p className="text-gray-500 text-sm">
 					수량:{' '}
-					<span className="font-semibold">{ParentsShoppingItem.count}</span>
+					<span className="font-semibold">{ParentsShoppingItem.count}개</span>
 				</p>
 			</div>
 
@@ -56,7 +57,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 							layout="fixed"
 							width={48}
 							height={48}
-							onClick={() => console.log('카메라 클릭')}
+							onClick={onClickCamera}
 						/>
 					</div>
 				) : (
