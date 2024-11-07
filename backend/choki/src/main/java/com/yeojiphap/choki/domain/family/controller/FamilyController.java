@@ -27,7 +27,7 @@ public class FamilyController implements SpringDocFamilyController{
     }
 
     @GetMapping("/info")
-    public ApiResponse getFamily() {
+    public ApiResponse getChildrenInfoUsingFamily() {
         return ApiResponse.success(HttpStatus.OK, familyService.getChildInfoByFamilyId(), GET_CHILD_INFO_SUCCESS.getMessage());
     }
 
