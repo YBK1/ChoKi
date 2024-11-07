@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import MissionItem from '@/components/Common/MissionItem';
 import Image from 'next/image';
 import notification_icon from '@/assets/icons/notification.svg';
@@ -6,7 +7,7 @@ import child_profile from '@/assets/icons/child_profile.svg';
 import level_icon from '@/assets/icons/level.svg';
 import mission_plus from '@/assets/icons/mission_plus.svg';
 import CommonModal from '@/components/Common/Modal';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { searchItem } from '@/lib/api/searchItem';
 import { getRouteList, getRouteDetails } from '@/lib/api/navigation';
 
@@ -72,6 +73,7 @@ export default function Index() {
 			{ objectId: string; buildingName: string }[]
 		>([]);
 		const [routeDetails, setRouteDetails] = useState<any>(null);
+		const mapRef = useRef<any>(null);
 
 		// 예시 장소 리스트
 		// const destinations = [
@@ -98,6 +100,21 @@ export default function Index() {
 			fetchDestinations();
 		}, []);
 
+		useEffect(() => {
+			const kakao = (window as any).kakao;
+			if (kakao && kakao.maps) {
+				kakao.maps.load(() => {
+					const mapContainer = document.getElementById('map');
+					const mapOptions = {
+						center: new kakao.maps.LatLng(37.5665, 126.978),
+						level: 4,
+					};
+					const mapInstance = new kakao.maps.Map(mapContainer, mapOptions);
+					mapRef.current = mapInstance;
+				});
+			}
+		}, []);
+
 		const handleDestinationChange = async (
 			e: React.ChangeEvent<HTMLSelectElement>,
 		) => {
@@ -108,10 +125,58 @@ export default function Index() {
 			try {
 				const details = await getRouteDetails(destinationId);
 				setRouteDetails(details);
-				console.log('가져온 경로 상세정보:', details);
+				if ((window as any).kakao && (window as any).kakao.maps) {
+					drawRoute(details);
+				}
 			} catch (error) {
 				console.error('경로 상세정보 가져오기 실패핑:', error);
 			}
+		};
+
+		const drawRoute = (details: any) => {
+			const kakao = (window as any).kakao;
+
+			if (!kakao || !kakao.maps || !mapRef.current) {
+				console.error('Kakao Maps SDK is not loaded or map is not initialized');
+				return;
+			}
+
+			const { startPoint, destination, routes } = details;
+
+			const routePoints = [
+				new kakao.maps.LatLng(startPoint.latitude, startPoint.longitude),
+				...routes.map(
+					(route: any) =>
+						new kakao.maps.LatLng(route.latitude, route.longitude),
+				),
+				new kakao.maps.LatLng(destination.latitude, destination.longitude),
+			];
+
+			console.log(routePoints);
+
+			const startMarker = new kakao.maps.Marker({
+				position: routePoints[0],
+			});
+			startMarker.setMap(mapRef.current);
+
+			const endMarker = new kakao.maps.Marker({
+				position: routePoints[routePoints.length - 1],
+			});
+			endMarker.setMap(mapRef.current);
+
+			const polyline = new kakao.maps.Polyline({
+				map: mapRef.current,
+				path: routePoints,
+				strokeWeight: 5,
+				strokeColor: '#FF0000',
+				strokeOpacity: 0.7,
+				strokeStyle: 'solid',
+			});
+
+			// Adjust map bounds to show the entire route
+			const bounds = new kakao.maps.LatLngBounds();
+			routePoints.forEach(point => bounds.extend(point));
+			mapRef.current.setBounds(bounds);
 		};
 
 		return (
@@ -132,37 +197,12 @@ export default function Index() {
 					</select>
 				</div>
 
-				{routeDetails && (
-					<div className="mt-4">
-						<h3 className="text-lg font-semibold">Route Details</h3>
-						<p>
-							<strong>Start Point:</strong>{' '}
-							{routeDetails.startPoint.buildingName}
-						</p>
-						<p>Latitude: {routeDetails.startPoint.latitude}</p>
-						<p>Longitude: {routeDetails.startPoint.longitude}</p>
-						<hr className="my-2" />
-						<p>
-							<strong>Destination:</strong>{' '}
-							{routeDetails.destination.buildingName}
-						</p>
-						<p>Latitude: {routeDetails.destination.latitude}</p>
-						<p>Longitude: {routeDetails.destination.longitude}</p>
-						<hr className="my-2" />
-						<h4 className="font-semibold">Intermediate Stops:</h4>
-						<ul>
-							{routeDetails.routes.map((route: any, index: number) => (
-								<li key={index}>
-									<p>
-										<strong>{route.buildingName}</strong>
-									</p>
-									<p>Latitude: {route.latitude}</p>
-									<p>Longitude: {route.longitude}</p>
-								</li>
-							))}
-						</ul>
-					</div>
-				)}
+				<div
+					id="map"
+					className="mt-4"
+					style={{ width: '100%', height: '400px' }}
+					ref={mapRef}
+				></div>
 				<div className="flex justify-between mt-auto">
 					<button
 						className="px-4 py-2 rounded bg-gray-100 text-gray-500"
