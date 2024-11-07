@@ -1,5 +1,7 @@
 package com.yeojiphap.choki.global;
 
+import com.yeojiphap.choki.domain.shopping.exception.BadRequestException;
+import com.yeojiphap.choki.domain.shopping.exception.ShoppingNotFoundException;
 import com.yeojiphap.choki.domain.user.exception.InvalidUserRoleException;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.global.auth.exception.ExpiredRefreshTokenException;
@@ -39,4 +41,13 @@ public class GlobalExceptionHandler {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ApiResponse<Void> handleNotFoundRefreshTokenException(BadRequestException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
+
+    @ExceptionHandler(ShoppingNotFoundException.class)
+    public ApiResponse<Void> handleNotFoundRefreshTokenException(ShoppingNotFoundException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
 }

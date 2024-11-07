@@ -1,8 +1,10 @@
 package com.yeojiphap.choki.domain.mission.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -10,6 +12,7 @@ import org.springframework.data.mongodb.core.query.Update;
 
 import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.domain.Status;
+import com.yeojiphap.choki.domain.shopping.domain.Shopping;
 
 import lombok.RequiredArgsConstructor;
 
@@ -57,9 +60,14 @@ public class CustomMissionRepositoryImpl implements CustomMissionRepository{
 	}
 
 	@Override
-	public void setMissionStatusPending(ObjectId missionId){
+	public Optional<Mission> setMissionStatusPending(ObjectId missionId){
 		Query query = new Query(Criteria.where("_id").is(missionId));
 		Update update = new Update().set("status", "PENDING");
-		mongoTemplate.updateFirst(query, update, Mission.class);
+		return Optional.ofNullable(mongoTemplate.findAndModify(
+			query,
+			update,
+			FindAndModifyOptions.options().returnNew(true),
+			Mission.class
+		));
 	}
 }

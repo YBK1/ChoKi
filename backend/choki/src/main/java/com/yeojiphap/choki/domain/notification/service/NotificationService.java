@@ -11,6 +11,7 @@ import com.yeojiphap.choki.domain.notification.Repository.NotificationRepository
 import com.yeojiphap.choki.domain.notification.dto.NotificationResponseDto;
 import com.yeojiphap.choki.domain.notification.entity.Notification;
 import com.yeojiphap.choki.domain.notification.entity.NotificationType;
+import com.yeojiphap.choki.domain.notification.exception.NotificationNotFoundException;
 import com.yeojiphap.choki.domain.shopping.domain.Shopping;
 import com.yeojiphap.choki.domain.user.domain.User;
 import com.yeojiphap.choki.domain.user.service.UserService;
@@ -28,8 +29,11 @@ public class NotificationService {
 	public List<NotificationResponseDto> getNotifications(Long childId) {
 		String parentId = SecurityUtil.getCurrentUserId();
 
-		List<Notification> notifications = new ArrayList<>();
-		notifications.addAll(notificationRepository.findAllByParentId(parentId, childId));
+		List<Notification> notifications = notificationRepository.findAllByParentId(parentId, childId);
+
+		if(notifications.isEmpty()) {
+			throw new NotificationNotFoundException();
+		}
 
 		// DTO로 변환
 		List<NotificationResponseDto> dtos = notifications.stream()
