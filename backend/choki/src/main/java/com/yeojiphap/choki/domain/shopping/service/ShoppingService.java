@@ -23,6 +23,7 @@ import com.yeojiphap.choki.domain.shopping.domain.Shopping;
 import com.yeojiphap.choki.domain.shopping.domain.Product;
 import com.yeojiphap.choki.domain.shopping.domain.ProductDocument;
 import com.yeojiphap.choki.domain.shopping.exception.BadRequestException;
+import com.yeojiphap.choki.domain.shopping.exception.ShoppingNotFoundException;
 import com.yeojiphap.choki.domain.shopping.repository.ShoppingRepository;
 import com.yeojiphap.choki.domain.shopping.repository.ProductRepository;
 
@@ -40,7 +41,7 @@ public class ShoppingService {
 
 	// 쇼핑 정보 검색하기
 	public Shopping getShoppingById(ObjectId id) {
-		return shoppingRepository.findById(id);
+		return shoppingRepository.findById(id).orElseThrow(ShoppingNotFoundException::new);
 	}
 
 	// 사용자가 입력한 내용으로 새로운 장보기를 만드는 함수
@@ -109,15 +110,17 @@ public class ShoppingService {
 			.image(productDto.getImage())
 			.comment(addProductToCartRequestDto.getComment())
 			.build();
+
 		// 삽입
 		shoppingRepository.insertCartItemById(new ObjectId(addProductToCartRequestDto.getShoppingId()),
-			addProductToCartRequestDto.getListBarcode(), cartItem);
+			addProductToCartRequestDto.getListBarcode(), cartItem).orElseThrow(ShoppingNotFoundException::new);
 	}
 
 	// 상품 수량 변경
 	@Transactional
 	public void changeQuantityOfCartItem(ChangeQuantityRequestDto changeQuantityRequestDto){
-		shoppingRepository.changeQuantityOfCartItem(new ObjectId(changeQuantityRequestDto.getShoppingId()), changeQuantityRequestDto.getBarcode(), changeQuantityRequestDto.getQuantity());
+		shoppingRepository.changeQuantityOfCartItem(new ObjectId(changeQuantityRequestDto.getShoppingId()), changeQuantityRequestDto.getBarcode(), changeQuantityRequestDto.getQuantity())
+			.orElseThrow(ShoppingNotFoundException::new);
 	}
 
 	// 장바구니에서 상품 빼기
@@ -218,8 +221,6 @@ public class ShoppingService {
 	public void saveChildPoint(ChildPointDto childPointDto) {
 		redisTemplate.opsForHash().put(childPointDto.getShoppingId(), "latitude", childPointDto.getLatitude().toString());
 		redisTemplate.opsForHash().put(childPointDto.getShoppingId(), "longitude", childPointDto.getLongitude().toString());
-
-		System.out.println(childPointDto.getLatitude().toString());
 	}
 
 	// 장보기 완료 처리

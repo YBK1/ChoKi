@@ -9,6 +9,7 @@ import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.domain.MissionType;
 import com.yeojiphap.choki.domain.mission.domain.Status;
 import com.yeojiphap.choki.domain.mission.dto.MissionResponseDto;
+import com.yeojiphap.choki.domain.mission.exception.MissionNotFoundException;
 import com.yeojiphap.choki.domain.mission.repository.MissionRepository;
 import com.yeojiphap.choki.domain.shopping.dto.ShoppingCreateRequestDto;
 
@@ -79,6 +80,6 @@ public class MissionService {
 
 	// 미션 완료 처리 하기
 	public void setMissionStatusPending(ObjectId missionId){
-		missionRepository.setMissionStatusPending(missionId);
+		missionRepository.setMissionStatusPending(missionId).orElseThrow(MissionNotFoundException::new);
 	}
 }

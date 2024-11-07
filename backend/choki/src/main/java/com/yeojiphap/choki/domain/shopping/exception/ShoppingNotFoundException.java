@@ -4,14 +4,16 @@ import org.springframework.http.HttpStatus;
 
 import com.yeojiphap.choki.domain.user.exception.UserExceptionMessage;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
-public class BadRequestException extends RuntimeException {
+@NoArgsConstructor
+public class ShoppingNotFoundException extends RuntimeException {
 	@Override
 	public String getMessage() {
-		return "입력 값이 일치하지 않습니다.";
+		return "검색 결과가 존재하지 않습니다.";
 	}
 	public HttpStatus getStatus() {
-		return HttpStatus.BAD_REQUEST;
+		return HttpStatus.NOT_FOUND;
 	}
 }

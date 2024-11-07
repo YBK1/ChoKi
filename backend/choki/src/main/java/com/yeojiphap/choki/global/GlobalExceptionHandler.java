@@ -2,6 +2,8 @@ package com.yeojiphap.choki.global;
 
 import com.yeojiphap.choki.domain.character.exception.AnimalNotFoundException;
 import com.yeojiphap.choki.domain.collected.exception.AnimalAlreadyExistException;
+import com.yeojiphap.choki.domain.shopping.exception.BadRequestException;
+import com.yeojiphap.choki.domain.shopping.exception.ShoppingNotFoundException;
 import com.yeojiphap.choki.domain.family.exception.ChildNotExistException;
 import com.yeojiphap.choki.domain.family.exception.FamilyNotFoundException;
 import com.yeojiphap.choki.domain.family.exception.InvalidInviteCodeException;
@@ -79,6 +81,15 @@ public class GlobalExceptionHandler {
     // 409 - Conflict
     @ExceptionHandler(UserIdDuplicatedException.class)
     public ApiResponse<Void> handleUserIdDuplicatedException(UserIdDuplicatedException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
+    @ExceptionHandler(BadRequestException.class)
+    public ApiResponse<Void> handleNotFoundRefreshTokenException(BadRequestException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
+
+    @ExceptionHandler(ShoppingNotFoundException.class)
+    public ApiResponse<Void> handleNotFoundRefreshTokenException(ShoppingNotFoundException e) {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 }

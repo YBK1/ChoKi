@@ -10,6 +10,8 @@ import com.yeojiphap.choki.domain.shopping.dto.ShoppingCreateRequestDto;
 import com.yeojiphap.choki.global.ApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,6 +21,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public interface SpringDocMissionController {
 	@Operation(
 		summary = "현재 진행중인 미션 조회",
+		parameters = {
+			@Parameter(
+				name = "access",
+				description = "JWT 토큰",
+				in = ParameterIn.HEADER,
+				required = true,
+				example = "eyJhbGciOiJ..."
+			)
+		},
 		description = "현재 진행중인 미션을 조회한다"
 	)
 	@ApiResponses(value = {
