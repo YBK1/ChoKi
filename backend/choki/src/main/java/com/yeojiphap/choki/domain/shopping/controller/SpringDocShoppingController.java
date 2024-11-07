@@ -12,6 +12,8 @@ import com.yeojiphap.choki.domain.user.dto.signUpRequest;
 import com.yeojiphap.choki.global.ApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -21,6 +23,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public interface SpringDocShoppingController {
 	@Operation(
 		summary = "장보기 생성",
+		parameters = {
+			@Parameter(
+				name = "access",
+				description = "JWT 토큰",
+				in = ParameterIn.HEADER,
+				required = true,
+				example = "eyJhbGciOiJ..."
+			)
+		},
 		description = "정보를 입력해 장보기를 생성한다.."
 	)
 	@ApiResponses(value = {
@@ -43,6 +54,15 @@ public interface SpringDocShoppingController {
 
 	@Operation(
 		summary = "이름으로 상품 정보 검색",
+		parameters = {
+			@Parameter(
+				name = "access",
+				description = "JWT 토큰",
+				in = ParameterIn.HEADER,
+				required = true,
+				example = "eyJhbGciOiJ..."
+			)
+		},
 		description = "상품 DB에서 이름으로 상품을 검색합니다."
 	)
 	@ApiResponses(value = {
@@ -72,6 +92,15 @@ public interface SpringDocShoppingController {
 
 	@Operation(
 		summary = "바코드로 상품 정보 조회",
+		parameters = {
+			@Parameter(
+				name = "access",
+				description = "JWT 토큰",
+				in = ParameterIn.HEADER,
+				required = true,
+				example = "eyJhbGciOiJ..."
+			)
+		},
 		description = "상품 DB에서 바코드로 상품을 검색합니다."
 	)
 	@ApiResponses(value = {
@@ -99,6 +128,15 @@ public interface SpringDocShoppingController {
 
 	@Operation(
 		summary = "상품 유사도 비교하기",
+		parameters = {
+			@Parameter(
+				name = "access",
+				description = "JWT 토큰",
+				in = ParameterIn.HEADER,
+				required = true,
+				example = "eyJhbGciOiJ..."
+			)
+		},
 		description = "2개의 바코드를 입력해 유사한 상품인지 확인합니다."
 	)
 	@ApiResponses(value = {
