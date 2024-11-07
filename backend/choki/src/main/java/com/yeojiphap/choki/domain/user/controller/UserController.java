@@ -31,4 +31,9 @@ public class UserController implements SpringDocUserController {
     public ApiResponse getChildInfo(@PathVariable Long userId) {
         return ApiResponse.success(HttpStatus.OK, userService.getChildInfo(userId), GET_CHILD_INFO_SUCCESS.getMessage());
     }
+
+    @GetMapping("/mypage")
+    public ApiResponse myPage() {
+        return ApiResponse.success(HttpStatus.OK, userService.getUserDetailInfo(), GET_USER_DETAIL_INFO_SUCCESS.getMessage());
+    }
 }
