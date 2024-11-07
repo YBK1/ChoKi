@@ -10,13 +10,13 @@ const RecyclePage = () => {
 
 	return (
 		<div
-			className="min-h-screen bg-cover bg-center flex flex-col items-center justify-between pt-5 pb-20 px-4 sm:px-8"
+			className="min-h-screen bg-cover bg-center flex flex-col items-center pt-5 pb-20 px-4 sm:px-8"
 			style={{
 				backgroundImage: "url('/icons/recycle_background.svg')",
 			}}
 		>
 			{/* Animal Speech Bubble */}
-			<div className="mb-8 -mt-6 md:mt-0">
+			<div className="-mt-6 md:mt-0">
 				<AnimalSpeech />
 			</div>
 
@@ -26,7 +26,7 @@ const RecyclePage = () => {
 			</div>
 
 			{/* Complete Button */}
-			<div className="flex justify-center mt-[-40px] mb-8">
+			<div className="flex justify-center">
 				<Button
 					size="small"
 					color="orange"
