@@ -173,7 +173,6 @@ export default function Index() {
 				strokeStyle: 'solid',
 			});
 
-			// Adjust map bounds to show the entire route
 			const bounds = new kakao.maps.LatLngBounds();
 			routePoints.forEach(point => bounds.extend(point));
 			mapRef.current.setBounds(bounds);
