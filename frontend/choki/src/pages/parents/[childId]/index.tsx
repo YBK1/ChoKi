@@ -340,12 +340,53 @@ export default function Index() {
 	};
 
 	// StepThree 컴포넌트 수정
+	interface CartItem extends ItemSearchResponse {
+		quantity: number;
+	}
+
 	const StepThree = () => {
 		const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-		const [selectedItems, setSelectedItems] = useState<any[]>([]);
+		const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
 
-		const handleItemSelect = (item: any) => {
-			setSelectedItems(prev => [...prev, item]);
+		const handleItemSelect = (item: ItemSearchResponse) => {
+			setSelectedItems(prev => {
+				// Check if item already exists
+				const existingItem = prev.find(i => i.barcode === item.barcode);
+				if (existingItem) {
+					return prev.map(i =>
+						i.barcode === item.barcode ? { ...i, quantity: i.quantity + 1 } : i,
+					);
+				}
+				// Add new item with quantity 1
+				return [...prev, { ...item, quantity: 1 }];
+			});
+		};
+
+		const handleQuantityChange = (barcode: string, delta: number) => {
+			setSelectedItems(
+				prev =>
+					prev
+						.map(item => {
+							if (item.barcode === barcode) {
+								const newQuantity = Math.max(0, item.quantity + delta);
+								return { ...item, quantity: newQuantity };
+							}
+							return item;
+						})
+						.filter(item => item.quantity > 0), // Remove items with quantity 0
+			);
+		};
+
+		const handleDelete = (barcode: string) => {
+			setSelectedItems(prev => prev.filter(item => item.barcode !== barcode));
+		};
+
+		// Transform selectedItems to shoppingList format for API
+		const getShoppingList = () => {
+			return selectedItems.map(item => ({
+				barcode: item.barcode,
+				quantity: item.quantity,
+			}));
 		};
 
 		return (
@@ -369,15 +410,15 @@ export default function Index() {
 
 				<div className="ml-2 mb-2">장바구니 목록</div>
 				<div className="flex-1 overflow-y-auto">
-					{selectedItems.map((item, index) => (
+					{selectedItems.map(item => (
 						<div
-							key={index}
+							key={item.barcode}
 							className="flex items-center space-x-3 p-2 border rounded-lg mb-2"
 						>
 							<div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
 								<Image
 									src={item.image}
-									alt={item.productName || '상품 이미지'}
+									alt={item.productName}
 									width={48}
 									height={48}
 									className="object-cover"
@@ -386,11 +427,31 @@ export default function Index() {
 							<div className="flex-1">
 								<div className="font-medium">{item.productName}</div>
 							</div>
+							<div className="flex items-center space-x-2">
+								<button
+									onClick={() => handleQuantityChange(item.barcode, -1)}
+									className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
+								>
+									-
+								</button>
+								<span className="w-8 text-center">{item.quantity}</span>
+								<button
+									onClick={() => handleQuantityChange(item.barcode, 1)}
+									className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
+								>
+									+
+								</button>
+								<button
+									onClick={() => handleDelete(item.barcode)}
+									className="ml-2 px-3 py-1 bg-orange-100 text-orange_main rounded-lg"
+								>
+									삭제
+								</button>
+							</div>
 						</div>
 					))}
 				</div>
 
-				{/* 검색 모달 */}
 				<CommonModal
 					isOpen={isSearchModalOpen}
 					onClose={() => setIsSearchModalOpen(false)}
@@ -419,6 +480,7 @@ export default function Index() {
 			</div>
 		);
 	};
+
 	// 각 단계별 모달 사이즈 정의
 	const getModalSize = (step: number) => {
 		switch (step) {
@@ -464,6 +526,7 @@ export default function Index() {
 			</div>
 		</div>
 	);
+
 	// 현재 단계와 선택된 심부름에 따른 컨텐츠 렌더링
 	const renderContent = () => {
 		if (currentStep === 1) {
@@ -547,6 +610,7 @@ export default function Index() {
 						</div>
 					</div>
 				</div>
+
 				{/* 심부름 목록 */}
 				<div>
 					<div className="flex ml-8 mb-4 gap-2">
