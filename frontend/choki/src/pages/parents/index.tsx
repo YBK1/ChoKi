@@ -10,12 +10,25 @@ import CommonModal from '@/components/Common/Modal';
 import CommonButton from '@/components/Common/Button';
 import { Toast } from '@/components/Toast/Toast';
 import { getInviteCode } from '@/lib/api/inviteCode';
+import { getFamily } from '@/lib/api/user';
 
 export default function ParentPages() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [inviteCode, setInviteCode] = useState('');
 	const [showToast, setShowToast] = useState(false);
+	const [children, setChildren] = useState<Child[]>([]);
 
+	const fetchFamilyData = async () => {
+		try {
+			const response = await getFamily();
+			setChildren(response.children);
+			// console.log('children', children);
+			// console.log('username', username);
+		} catch (err) {
+			console.error('가족 정보 가져오기 실패:', err);
+		}
+	};
+	fetchFamilyData();
 	// 초대 코드 가져오기
 	const fetchInviteCode = async () => {
 		try {
@@ -54,7 +67,7 @@ export default function ParentPages() {
 			{/* 안내 */}
 			<div className="relative w-full h-[190px] rounded-b-3xl bg-light_yellow_dark shadow-xl mb-4">
 				<h1 className="text-2xl font-normal mt-14 ml-8">
-					안녕하세요 민주님,
+					안녕하세요 username님,
 					<br />
 					오늘도 아이들과 함께 파이팅!
 				</h1>
