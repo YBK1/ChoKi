@@ -7,7 +7,7 @@ export const searchItem = async (
 	itemName: string,
 	page: number,
 	size: number,
-): Promise<ItemSearchResponse> => {
+): Promise<ItemSearchResponse[]> => {
 	try {
 		const response = await axiosInstance.post(
 			`${baseURL}/api/shopping/item/search`,
