@@ -28,14 +28,14 @@ public interface SpringDocCollectedController {
                                       "data": {
                                               "animals": [
                                                   {
-                                                      "id": 1,
+                                                      "animalId": 1,
                                                       "degree": "COMMON",
                                                       "enName": "lion",
                                                       "koName": "사자",
                                                       "animalImage": "image-route.com"
                                                   },
                                                   {
-                                                      "id": 1,
+                                                      "animalId": 1,
                                                       "degree": "COMMON",
                                                       "enName": "lion",
                                                       "koName": "사자",

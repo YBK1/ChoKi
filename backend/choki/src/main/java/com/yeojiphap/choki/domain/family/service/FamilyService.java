@@ -10,6 +10,7 @@ import com.yeojiphap.choki.domain.user.exception.InvalidUserRoleException;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.domain.family.repository.FamilyRepository;
 import com.yeojiphap.choki.domain.user.repository.UserRepository;
+import com.yeojiphap.choki.domain.user.service.UserService;
 import com.yeojiphap.choki.global.auth.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,23 +23,23 @@ import static com.yeojiphap.choki.domain.family.message.FamilySuccessMessage.*;
 @RequiredArgsConstructor
 public class FamilyService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final FamilyRepository familyRepository;
 
     public InviteCodeDto createFamily() {
-        User user = findCurrentUser();
+        User user = userService.findCurrentUser();
 
         Family family = Family.createWithInviteCode();
         familyRepository.save(family);
 
         user.assignFamily(family);
-        userRepository.save(user);
+        userService.saveUser(user);
 
         return new InviteCodeDto(family.getInviteCode());
     }
 
     public InviteCodeDto getInviteCode() {
-        Family family = familyRepository.findByUsers_UserId((SecurityUtil.getCurrentUserId())).orElseThrow();
+        Family family = familyRepository.findByUsers_Username((SecurityUtil.getCurrentUserId())).orElseThrow();
         return new InviteCodeDto(family.getInviteCode());
     }
 
@@ -46,15 +47,15 @@ public class FamilyService {
         String inviteCode = request.inviteCode();
 
         Family family = familyRepository.findByInviteCode(inviteCode).orElseThrow(InvalidInviteCodeException::new);
-        User user = findCurrentUser();
+        User user = userService.findCurrentUser();
         user.assignFamily(family);
-        userRepository.save(user);
+        userService.saveUser(user);
 
         return FAMILY_ASSIGN_SUCCESS.getMessage();
     }
 
     public List<ChildrenResponseDto> getChildInfoByFamilyId() {
-        User user = findCurrentUser();
+        User user = userService.findCurrentUser();
 
         if (!user.getRole().equals(Role.PARENT)) {
             throw new InvalidUserRoleException();
@@ -67,8 +68,4 @@ public class FamilyService {
                 .toList();
     }
 
-    private User findCurrentUser() {
-        return userRepository.findByUserId(SecurityUtil.getCurrentUserId())
-                .orElseThrow(UserNotFoundException::new);
-    }
 }

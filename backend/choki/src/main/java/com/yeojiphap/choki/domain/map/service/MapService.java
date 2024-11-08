@@ -10,8 +10,7 @@ import com.yeojiphap.choki.domain.map.dto.response.GuidedRouteListDto;
 import com.yeojiphap.choki.domain.map.exception.GuidedRouteNotFoundException;
 import com.yeojiphap.choki.domain.map.repository.GuidedRouteRepository;
 import com.yeojiphap.choki.domain.user.domain.User;
-import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
-import com.yeojiphap.choki.domain.user.repository.UserRepository;
+import com.yeojiphap.choki.domain.user.service.UserService;
 import com.yeojiphap.choki.global.auth.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,13 +22,13 @@ import static com.yeojiphap.choki.domain.map.message.MapSuccessMessage.*;
 @Service
 @RequiredArgsConstructor
 public class MapService {
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final GuidedRouteRepository guidedRouteRepository;
 
     public String saveGuidedRoute(RouteRequest request) {
-        User user = findCurrentUser();
+        User user = userService.findCurrentUser();
         GuidedRoute guidedRoute = GuidedRoute.builder()
-                .userId(user.getUserId())
+                .userId(user.getUsername())
                 .startPoint(getUserLocation(user))
                 .destination(request.destination())
                 .routes(request.routes())
@@ -50,10 +49,6 @@ public class MapService {
     public GuidedRouteDto getGuidedRoute(GuidedRouteRequest request) {
         GuidedRoute guidedRoute = guidedRouteRepository.findById(request.id()).orElseThrow(GuidedRouteNotFoundException::new);
         return GuidedRouteDto.from(guidedRoute);
-    }
-
-    private User findCurrentUser() {
-        return userRepository.findByUserId(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
     }
 
     private Location getUserLocation(User user) {

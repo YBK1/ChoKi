@@ -11,7 +11,7 @@ public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userId;
+    private String username;
 
     private String userPassword;
 
@@ -43,8 +43,8 @@ public class User {
     private Family family;
 
     @Builder
-    public User(String userId, String userPassword, String nickname, String address, Double latitude, Double longitude, String name, String tel, Role role) {
-        this.userId = userId;
+    public User(String username, String userPassword, String nickname, String address, Double latitude, Double longitude, String name, String tel, Role role) {
+        this.username = username;
         this.userPassword = userPassword;
         this.nickname = nickname;
         this.address = address;

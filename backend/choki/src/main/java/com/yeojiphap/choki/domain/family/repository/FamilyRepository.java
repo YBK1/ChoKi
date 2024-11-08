@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FamilyRepository extends JpaRepository<Family, Long> {
-    Optional<Family> findByUsers_UserId(String userId);
+    Optional<Family> findByUsers_Username(String username);
 
     @Query("SELECT u FROM User u WHERE u.family.id = :familyId AND u.role = 'CHILD'")
     List<User> getChildren(@Param("familyId") Long familyId);

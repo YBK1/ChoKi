@@ -14,7 +14,7 @@ import com.yeojiphap.choki.domain.notification.entity.NotificationType;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 	// n+1 문제 대비용 fetch join
-	@Query("SELECT n FROM Notification n JOIN FETCH n.parent p JOIN FETCH n.child c WHERE p.userId = :parentId AND c.id = :childId")
+	@Query("SELECT n FROM Notification n JOIN FETCH n.parent p JOIN FETCH n.child c WHERE p.username = :parentId AND c.id = :childId")
 	List<Notification> findAllByParentId(@Param("parentId") String parentId, @Param("childId") Long childId);
 
 	@Query("SELECT n.id FROM Notification n WHERE n.child.id = :childId AND n.type = :type")
