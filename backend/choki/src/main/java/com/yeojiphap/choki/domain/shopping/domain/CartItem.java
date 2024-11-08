@@ -16,5 +16,8 @@ public class CartItem {
 	private String productName;
 	private String image;
 	private Long quantity;
-	private String comment;
+	// "SOLDOUT", "NOREASON", "BLANK"
+	private String reason;
+	// "MATCH", "SIMILAR", "NOT_MATCH"
+	private String status;
 }

@@ -17,12 +17,13 @@ public class AddProductToCartResponseDto {
 	private String listBarcode;
 	private String barcode;
 	private Long quantity;
-	private String comment;
+	private String reason;
+	private String status;
 
 	public AddProductToCartResponseDto(AddProductToCartRequestDto dto) {
 		this.listBarcode = dto.getListBarcode();
 		this.barcode = dto.getBarcode();
 		this.quantity = dto.getQuantity();
-		this.comment = dto.getComment();
+		this.reason = dto.getReason();
 	}
 }

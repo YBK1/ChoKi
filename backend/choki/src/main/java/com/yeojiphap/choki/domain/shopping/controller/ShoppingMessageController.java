@@ -11,6 +11,7 @@ import com.yeojiphap.choki.domain.shopping.dto.ChangeQuantityRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.ChildPointDto;
 import com.yeojiphap.choki.domain.shopping.dto.DeleteProductFromCartRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.HelpMessageDto;
+import com.yeojiphap.choki.domain.shopping.dto.websocketDto.DangerRequestDto;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingService;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingWebSocketService;
 
@@ -80,6 +81,19 @@ public class ShoppingMessageController {
 		shoppingService.saveChildPoint(childPointDto);
 		// sub에 메세지를 전송
 		shoppingWebSocketService.sendChildPoint(childPointDto);
+	}
+
+	// 특정 위기상황을 처리하는 함수
+	// (/pub/shopping/point)
+	@MessageMapping("/shopping/point/danger")
+	public void sendDanger(DangerRequestDto dangerRequestDto){
+		// log
+		log.info("위기 알림 수신함");
+
+		// redis에 위치 저장
+		shoppingService.sendDangerFcm(dangerRequestDto);
+		// sub에 메세지를 전송
+		shoppingWebSocketService.sendDangerNotification(dangerRequestDto);
 	}
 
 	// 장보기 종료 메세지
