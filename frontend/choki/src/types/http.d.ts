@@ -40,3 +40,16 @@ interface ItemSearchResponse {
 	productName: string;
 	image: string;
 }
+
+interface ChildResponse {
+	userId: number;
+	nickname: string;
+	address: string;
+	name: string;
+	tel: string;
+	role: string;
+	level: number;
+	exp: number;
+	pastLevel: number;
+	mainAnimalId: number;
+}
