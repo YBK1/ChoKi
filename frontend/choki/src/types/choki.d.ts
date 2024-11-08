@@ -155,3 +155,12 @@ interface CamProps {
 interface AnimalSpeechProps {
 	isImageCaptured: boolean;
 }
+
+// 아이 메인 페이지 유니티로 보내는 정보
+interface ChildMainUnityProps {
+	level: number;
+	exp: number;
+	pastLevel: number;
+	mainAnimal: number;
+	nickname: string;
+}
