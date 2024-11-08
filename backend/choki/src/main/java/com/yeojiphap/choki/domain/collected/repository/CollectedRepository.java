@@ -15,4 +15,9 @@ public interface CollectedRepository extends JpaRepository<Collected, Long> {
 
     @Query("SELECT c FROM Collected c JOIN FETCH c.animal WHERE c.user.id = :userId")
     List<Collected> findByUser(@Param("userId") Long userId);
+
+    boolean existsByAnimalIdAndUserId(Long animalId, Long userId);
+
+    @Query("SELECT c.animal.id FROM Collected c WHERE c.user.id = :userId")
+    List<Long> findAnimalIdsByUserId(Long userId);
 }

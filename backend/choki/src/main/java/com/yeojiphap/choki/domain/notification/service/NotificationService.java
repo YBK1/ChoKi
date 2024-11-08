@@ -1,6 +1,5 @@
 package com.yeojiphap.choki.domain.notification.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ public class NotificationService {
 
 	// 부모의 특정 아이에 대한 모든 알림을 가져오는 함수
 	public List<NotificationResponseDto> getNotifications(Long childId) {
-		String parentId = SecurityUtil.getCurrentUserId();
+		String parentId = SecurityUtil.getCurrentUsername();
 
 		List<Notification> notifications = notificationRepository.findAllByParentId(parentId, childId);
 

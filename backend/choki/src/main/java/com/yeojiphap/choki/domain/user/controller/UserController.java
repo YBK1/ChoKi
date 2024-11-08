@@ -29,7 +29,7 @@ public class UserController implements SpringDocUserController {
     }
 
     @GetMapping("/child/{userId}")
-    public ApiResponse getChildInfo(@PathVariable Long userId) {
+    public ApiResponse getChildInfo(@PathVariable String userId) {
         return ApiResponse.success(HttpStatus.OK, userService.getChildInfo(userId), GET_CHILD_INFO_SUCCESS.getMessage());
     }
 
@@ -41,7 +41,11 @@ public class UserController implements SpringDocUserController {
     @GetMapping("/validation/id")
     public ApiResponse checkUserId(@RequestParam String userId) {
         return ApiResponse.success(HttpStatus.OK, userService.validateUserId(new UserIdRequest(userId)));
+    }
 
+    @GetMapping("/profile/{userId}")
+    public ApiResponse getUserInfo(@PathVariable String userId) {
+        return ApiResponse.success(HttpStatus.OK, userService.getOtherUserInfo(userId), GET_USER_DETAIL_INFO_SUCCESS.getMessage());
     }
 
     @GetMapping("/level")

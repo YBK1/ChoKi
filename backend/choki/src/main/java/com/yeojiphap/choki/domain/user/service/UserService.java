@@ -5,6 +5,7 @@ import com.yeojiphap.choki.domain.collected.repository.CollectedRepository;
 import com.yeojiphap.choki.domain.collected.service.CollectedService;
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.dto.response.ChildResponseDto;
+import com.yeojiphap.choki.domain.user.dto.response.OtherUserResponseDto;
 import com.yeojiphap.choki.domain.user.dto.response.TokenResponse;
 import com.yeojiphap.choki.domain.user.dto.response.UserResponseDto;
 import com.yeojiphap.choki.domain.user.dto.request.UserIdRequest;
@@ -44,19 +45,17 @@ public class UserService {
 
         // 기본 캐릭터 추가
         collectedService.addBaseAnimalToUser(user.getId(), 20L);
-        return createToken(user.getUserId(), user.getRole());
+        return createToken(user.getUsername(), user.getRole());
     }
 
-    @Transactional(readOnly = true)
-    public ChildResponseDto getChildInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    public ChildResponseDto getChildInfo(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
         return ChildResponseDto.from(user);
     }
 
     @Transactional(readOnly = true)
     public UserResponseDto getUserDetailInfo() {
-        User currentUser = findByUserId(SecurityUtil.getCurrentUserId());
-
+        User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
 
         return UserResponseDto.from(currentUser, collected);
@@ -64,7 +63,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public String validateUserId(UserIdRequest request) {
-        userRepository.findByUserId(request.userId())
+        userRepository.findByUsername(request.username())
                 .ifPresent(user -> {
                     throw new UserIdDuplicatedException();
                 });
@@ -72,15 +71,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserLevelDto getLevel() {
-        User user = findCurrentUser();
-        return new UserLevelDto(user.getLevel(), user.getExp(), user.getLevel() == user.getPastLevel());
-    }
-
-    // 아이디로 유저 정보 조회하기
-    @Transactional(readOnly = true)
-    public User findByUserId(String userId) {
-        return userRepository.findByUserId(userId).orElseThrow(UserNotFoundException::new);
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 
     private TokenResponse createToken(String username, Role role) {
@@ -98,7 +90,18 @@ public class UserService {
         return user.orElse(null);
     }
 
-    private User findCurrentUser() {
-        return userRepository.findByUserId(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
+    public User findCurrentUser() {
+        return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(UserNotFoundException::new);
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
+    public OtherUserResponseDto getOtherUserInfo(String username) {
+        User user = findByUsername(username);
+        List<Collected> collected = collectedRepository.findByUser(user.getId());
+
+        return OtherUserResponseDto.from(user, collected);
     }
 }

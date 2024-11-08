@@ -11,7 +11,7 @@ public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userId;
+    private String username;
 
     private String userPassword;
 
@@ -36,15 +36,15 @@ public class User {
 
     private int pastLevel = 1;
 
-    private Long mainAnimal = 20L;
+    private Long mainAnimal = 21L;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "family_id")
     private Family family;
 
     @Builder
-    public User(String userId, String userPassword, String nickname, String address, Double latitude, Double longitude, String name, String tel, Role role) {
-        this.userId = userId;
+    public User(String username, String userPassword, String nickname, String address, Double latitude, Double longitude, String name, String tel, Role role) {
+        this.username = username;
         this.userPassword = userPassword;
         this.nickname = nickname;
         this.address = address;
@@ -57,5 +57,9 @@ public class User {
 
     public void assignFamily(Family family) {
         this.family = family;
+    }
+
+    public void updateMainAnimal(Long mainAnimal) {
+        this.mainAnimal = mainAnimal;
     }
 }

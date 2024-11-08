@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 
 public record signUpRequest(
         @NotBlank(message = "User ID는 필수 입력 항목입니다.")
-        String userId,
+        String username,
 
         @NotBlank(message = "비밀번호는 필수 입력 항목입니다.")
         String userPassword,
@@ -31,7 +31,7 @@ public record signUpRequest(
 ) {
     public User toEntity(String encodedPassword) {
         return User.builder()
-                .userId(userId)
+                .username(username)
                 .userPassword(encodedPassword)
                 .nickname(nickname)
                 .address(address)

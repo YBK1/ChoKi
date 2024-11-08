@@ -22,6 +22,7 @@ import com.yeojiphap.choki.domain.shopping.domain.CartItem;
 import com.yeojiphap.choki.domain.shopping.domain.Shopping;
 import com.yeojiphap.choki.domain.shopping.domain.Product;
 import com.yeojiphap.choki.domain.shopping.domain.ProductDocument;
+import com.yeojiphap.choki.domain.shopping.dto.websocketDto.DangerRequestDto;
 import com.yeojiphap.choki.domain.shopping.exception.BadRequestException;
 import com.yeojiphap.choki.domain.shopping.exception.ShoppingNotFoundException;
 import com.yeojiphap.choki.domain.shopping.repository.ShoppingRepository;
@@ -108,7 +109,9 @@ public class ShoppingService {
 			.productName(productDto.getProductName())
 			.category(productDto.getCategory())
 			.image(productDto.getImage())
-			.comment(addProductToCartRequestDto.getComment())
+			.reason(addProductToCartRequestDto.getReason())
+			.status(compareBarcode(new ProductCompareRequestDto(addProductToCartRequestDto.getListBarcode(), addProductToCartRequestDto.getBarcode()))
+				.getMatchStatus())
 			.build();
 
 		// 삽입
@@ -221,6 +224,11 @@ public class ShoppingService {
 	public void saveChildPoint(ChildPointDto childPointDto) {
 		redisTemplate.opsForHash().put(childPointDto.getShoppingId(), "latitude", childPointDto.getLatitude().toString());
 		redisTemplate.opsForHash().put(childPointDto.getShoppingId(), "longitude", childPointDto.getLongitude().toString());
+	}
+
+	// 위기 발생시 FCM 알림 생성
+	public void sendDangerFcm(DangerRequestDto dangerRequestDto){
+		// fcm 생성하기.. 추후 구현
 	}
 
 	// 장보기 완료 처리

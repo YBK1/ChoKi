@@ -8,12 +8,15 @@ import org.springframework.stereotype.Service;
 import com.yeojiphap.choki.domain.notification.service.NotificationService;
 import com.yeojiphap.choki.domain.shopping.domain.Shopping;
 import com.yeojiphap.choki.domain.shopping.dto.AddProductToCartRequestDto;
+import com.yeojiphap.choki.domain.shopping.dto.ProductCompareRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.AddProductToCartResponseDto;
 import com.yeojiphap.choki.domain.shopping.dto.ChangeQuantityRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.ChildPointDto;
 import com.yeojiphap.choki.domain.shopping.dto.DeleteProductFromCartRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.HelpMessageDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.ChangeQuantityResponseDto;
+import com.yeojiphap.choki.domain.shopping.dto.websocketDto.DangerRequestDto;
+import com.yeojiphap.choki.domain.shopping.dto.websocketDto.DangerResponseDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.DeleteProductFromCartResponseDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.FinishShoppingResponseDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.HelpMessageResponseDto;
@@ -39,7 +42,7 @@ public class ShoppingWebSocketService {
 	// 아이의 장보기 시작 메소드
 	public void startShopping(String shoppingId, String access){
 		String userId = jwtUtil.getUsername(access);
-		User currentUser = userService.findByUserId(userId);
+		User currentUser = userService.findByUsername(userId);
 		Shopping shopping = shoppingService.getShoppingById(new ObjectId(shoppingId));
 
 		Double latitude = null;
@@ -84,6 +87,11 @@ public class ShoppingWebSocketService {
 	public void sendAddProductMessage(AddProductToCartRequestDto addProductToCartRequestDto) {
 		// ResponseDto로 변환
 		AddProductToCartResponseDto addProductToCartResponseDto = new AddProductToCartResponseDto(addProductToCartRequestDto);
+		addProductToCartResponseDto.setStatus(
+			shoppingService.compareBarcode(
+				new ProductCompareRequestDto(addProductToCartRequestDto.getListBarcode(),
+					addProductToCartResponseDto.getBarcode()))
+				.getMatchStatus());
 
 		simpMessagingTemplate.convertAndSend("/sub/shopping/" + addProductToCartRequestDto.getShoppingId(), addProductToCartResponseDto);
 	}
@@ -107,6 +115,12 @@ public class ShoppingWebSocketService {
 	public void sendChildPoint(ChildPointDto childPointDto) {
 		PointResponseDto pointResponseDto = new PointResponseDto(childPointDto);
 		simpMessagingTemplate.convertAndSend("/sub/shopping/" + childPointDto.getShoppingId(), pointResponseDto);
+	}
+
+	// 위기 알림 메세지 전송
+	public void sendDangerNotification(DangerRequestDto dangerRequestDto){
+		DangerResponseDto dangerResponseDto = new DangerResponseDto(dangerRequestDto);
+		simpMessagingTemplate.convertAndSend("/sub/shoppingId/" + dangerRequestDto.getShoppingId(), dangerResponseDto);
 	}
 
 	// 헬프 메시지 전송
