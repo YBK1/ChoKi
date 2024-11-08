@@ -7,6 +7,7 @@ import com.yeojiphap.choki.domain.character.service.AnimalService;
 import com.yeojiphap.choki.domain.collected.domain.AnimalGrade;
 import com.yeojiphap.choki.domain.collected.domain.Collected;
 import com.yeojiphap.choki.domain.collected.dto.UnownedAnimalsDto;
+import com.yeojiphap.choki.domain.collected.exception.AllAnimalsOwnedException;
 import com.yeojiphap.choki.domain.collected.exception.AnimalAlreadyExistException;
 import com.yeojiphap.choki.domain.collected.exception.AnimalNotOwnedException;
 import com.yeojiphap.choki.domain.collected.repository.CollectedRepository;
@@ -99,7 +100,12 @@ public class CollectedService {
         }
 
         if (characters.isEmpty()) {
-            characters = unownedCommon.isEmpty() ? unownedRare : unownedCommon;
+            characters = !unownedCommon.isEmpty() ? unownedCommon
+                    : !unownedRare.isEmpty() ? unownedRare : unownedUnique;
+        }
+
+        if (characters.isEmpty()) {
+            throw new AllAnimalsOwnedException();
         }
 
         return characters.get(random.nextInt(characters.size()));
@@ -127,11 +133,12 @@ public class CollectedService {
 
         if (randomValue <= 10) {
             return UNIQUE;
-        } else if (randomValue <= 40) {
-            return RARE;
-        } else {
-            return COMMON;
         }
+        if (randomValue <= 40) {
+            return RARE;
+        }
+
+        return COMMON;
     }
 
     private void validateAnimalOwnership(Long userId, Long animalId) {
