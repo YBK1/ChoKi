@@ -19,6 +19,13 @@ interface LoginRequest {
 interface LoginResponse {
 	role: string;
 }
+interface InviteCodeResponse {
+	inviteCode: string;
+}
+interface JoinFamilyResponse {
+	invite_code: string;
+}
+
 // export interface BaseResponse<T> {
 // 	status: number;
 // 	message: string;
@@ -31,4 +38,11 @@ interface NotificationResponse {
 	type: MissionType;
 	id: number;
 	time: string;
+}
+
+interface ItemSearchResponse {
+	barcode: string;
+	category: string;
+	productName: string;
+	image: string;
 }

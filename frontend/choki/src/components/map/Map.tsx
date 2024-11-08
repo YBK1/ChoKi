@@ -4,10 +4,16 @@ import UserLocationMarker from './UserLocationMarker';
 import RoutePolyline from './RoutePolyline';
 import RouteRecorder from './RouteRecorder';
 import SetDestination from './SetDestination';
+import ChildNavBar from '../Common/Navbar/ChildNavBar';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
-const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
+const Map = ({
+	showRouteRecorder = true,
+	showPolyline = true,
+	showPreviousButton = true,
+	showChildNavBar = false,
+}: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
 	const [finalRoute, setFinalRoute] = useState<
@@ -33,26 +39,28 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 			{mapInstance && showSetDestination && (
 				<SetDestination onClose={onClose} route={finalRoute} />
 			)}
-			<button
-				onClick={goToPreviousPage}
-				style={{
-					position: 'absolute',
-					top: '15px',
-					left: '15px',
-					backgroundColor: '#e0e0e0',
-					border: 'none',
-					fontSize: '20px',
-					cursor: 'pointer',
-					borderRadius: '5px',
-					padding: '10px',
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-					zIndex: 5,
-				}}
-			>
-				<Image src="/icons/back.png" alt="Back" width={7} height={7} />
-			</button>
+			{showPreviousButton && (
+				<button
+					onClick={goToPreviousPage}
+					style={{
+						position: 'absolute',
+						top: '15px',
+						left: '15px',
+						backgroundColor: '#e0e0e0',
+						border: 'none',
+						fontSize: '20px',
+						cursor: 'pointer',
+						borderRadius: '5px',
+						padding: '10px',
+						display: 'flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						zIndex: 5,
+					}}
+				>
+					<Image src="/icons/back.png" alt="Back" width={7} height={7} />
+				</button>
+			)}
 			<MapContainer onMapLoad={setMapInstance} />
 			{mapInstance && <UserLocationMarker map={mapInstance} />}
 			{mapInstance && showPolyline && (
@@ -80,6 +88,18 @@ const Map = ({ showRouteRecorder = true, showPolyline = true }: MapProps) => {
 						setFinalRoute={setFinalRoute}
 						onRecordingFinish={handleRecordingFinished}
 					/>
+				</div>
+			)}
+			{showChildNavBar && (
+				<div
+					style={{
+						position: 'absolute',
+						bottom: '0',
+						width: '100%',
+						zIndex: 10,
+					}}
+				>
+					<ChildNavBar />
 				</div>
 			)}
 		</div>

@@ -14,7 +14,7 @@ const config: Config = {
 			colors: {
 				black: '#000000',
 				white: '#FFFFFF',
-				ligin_yellow_nav: '#FFF5B9',
+				light_yellow_nav: '#FFF5B9',
 				light_yellow_mid: '#FEF4BA',
 				orange_main: '#FF9D3D',
 				light_yellow_dark: '#FEEE91',

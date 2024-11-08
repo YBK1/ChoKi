@@ -12,6 +12,8 @@ type MapProps = {
 	showRouteRecorder?: boolean;
 	showPolyline?: boolean;
 	showDestinationSearch?: boolean;
+	showPreviousButton?: boolean;
+	showChildNavBar: boolean;
 };
 
 // 카카오맵 실제 지도 props
@@ -164,4 +166,13 @@ interface ShoppingCardProps {
 
 interface Speech {
 	speech: string;
+}
+// 카메라 인터페이스
+interface CamProps {
+	onCaptureChange: (captured: boolean) => void;
+}
+
+// 재활용 동물 대화 인터페이스
+interface AnimalSpeechProps {
+	isImageCaptured: boolean;
 }

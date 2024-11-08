@@ -4,6 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import TransitionToLocalView from './TransitionToLocalView';
 import CurrentLocationButton from './CurrentLocationButton';
 import TimeDistanceTracker from './TimeDistanceTracker';
+import UpperNavbar from '../Common/Navbar/UpperNavbar';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
@@ -15,6 +16,7 @@ const MapComponent = () => {
 		null,
 	);
 	const [isGlobeView, setIsGlobeView] = useState(true);
+	const [showLocalViewElements, setShowLocalViewElements] = useState(false);
 
 	useEffect(() => {
 		if (!mapContainerRef.current) return;
@@ -66,6 +68,15 @@ const MapComponent = () => {
 		);
 	}, [map]);
 
+	useEffect(() => {
+		if (!isGlobeView) {
+			const timer = setTimeout(() => setShowLocalViewElements(true), 5500);
+			return () => clearTimeout(timer);
+		} else {
+			setShowLocalViewElements(false);
+		}
+	}, [isGlobeView]);
+
 	return (
 		<div className="relative w-full h-screen">
 			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>{' '}
@@ -79,10 +90,13 @@ const MapComponent = () => {
 					/>
 				</>
 			) : (
-				<>
-					<CurrentLocationButton map={map} />
-					<TimeDistanceTracker />
-				</>
+				showLocalViewElements && (
+					<>
+						<CurrentLocationButton map={map} />
+						<TimeDistanceTracker />
+						<UpperNavbar />
+					</>
+				)
 			)}
 		</div>
 	);
