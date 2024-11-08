@@ -34,7 +34,7 @@ public interface SpringDocUserController {
                     )
             ),
     })
-    public ApiResponse signup(@RequestBody signUpRequest signUpRequest,  HttpServletResponse response);
+    ApiResponse signup(@RequestBody signUpRequest signUpRequest,  HttpServletResponse response);
 
     @Operation(
             summary = "내 정보 조회",
@@ -71,7 +71,7 @@ public interface SpringDocUserController {
                     )
             ),
     })
-    public ApiResponse myPage();
+    ApiResponse myPage();
 
     @Operation(
             summary = "자녀 정보 조회",
@@ -104,7 +104,7 @@ public interface SpringDocUserController {
                     )
             )
     })
-    public ApiResponse getChildInfo(@PathVariable String userId);
+    ApiResponse getChildInfo(@PathVariable String userId);
 
     @Operation(
             summary = "자녀 정보 조회",
@@ -133,7 +133,7 @@ public interface SpringDocUserController {
                     )
             )
     })
-    public ApiResponse getUserInfo(@PathVariable String userId);
+    ApiResponse getUserInfo(@PathVariable String userId);
 
     @Operation(
             summary = "회원 아이디 검증",
@@ -155,31 +155,81 @@ public interface SpringDocUserController {
                     )
             ),
     })
-    public ApiResponse checkUserId(@RequestParam String userId);
+    ApiResponse checkUserId(@RequestParam String userId);
 
     @Operation(
-            summary = "회원 레벨 조회",
-            description = "회원의 현재 레벨, 경험치와 과거 레벨을 조회합니다."
+            summary = "내 주변에 있는 유저 검색",
+            description = "내 주변에 있는 유저를 조회해서 위치와 동물을 반환합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "주변 사용자들 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                    {
+                        "status": 200,
+                        "message": "주변 사용자들 조회 성공",
+                        "data": {
+                            "users": [
+                                {
+                                    "userId": 6,
+                                    "username": "123",
+                                    "latitude": 35.2053043,
+                                    "longitude": 126.8117272,
+                                    "animalId": 21,
+                                    "animalImage": "image.com"
+                                },
+                                {
+                                    "userId": 7,
+                                    "username": "1234",
+                                    "latitude": 35.1939822,
+                                    "longitude": 126.8143431,
+                                    "animalId": 21,
+                                    "animalImage": "image.com"
+                                },
+                                {
+                                    "userId": 11,
+                                    "username": "12345678",
+                                    "latitude": 35.2007347,
+                                    "longitude": 126.8216869,
+                                    "animalId": 21,
+                                    "animalImage": "image.com"
+                                }
+                            ]
+                        }
+                    }
+                    """
+                            )
+                    )
+            )
+    })
+    ApiResponse getNearbyUsers();
+
+    @Operation(
+            summary = "내 주변에 있는 유저 검색",
+            description = "내 주변에 있는 유저를 조회해서 위치와 동물을 반환합니다."
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "회원 레벨 조회 성공",
                     content = @Content(
-                            mediaType = "application/json",
-                            examples = @ExampleObject(value = """
-                    {
-                      "status": 200,
-                      "message": "회원 레벨 조회 성공",
-                      "data": {
-                        "level" : 1,
-                        "exp" : 50,
-                        "isLevelEqual": true
-                      }
-                    }"""
-                            )
+                        mediaType = "application/json",
+                        examples = @ExampleObject(value = """
+                                {
+                                        "status": 200,
+                                        "message": "회원 레벨 조회 성공",
+                                        "data": {
+                                                "level" : 1,
+                                                "exp" : 50,
+                                                "isLevelEqual": true
+                                        }
+                                }"""
+                        )
                     )
             ),
     })
-    public ApiResponse getUserLevel();
+    ApiResponse getUserLevel();
 }
