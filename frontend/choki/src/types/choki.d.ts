@@ -13,6 +13,7 @@ type MapProps = {
 	showPolyline?: boolean;
 	showDestinationSearch?: boolean;
 	showPreviousButton?: boolean;
+	showChildNavBar: boolean;
 };
 
 // 카카오맵 실제 지도 props
