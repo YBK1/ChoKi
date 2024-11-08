@@ -94,26 +94,26 @@ public interface SpringDocFamilyController {
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 200,
-                                      "message": "자녀 조회 성공",
-                                      "data": {
-                                              “children” : [
-                                                  {
-                                                      “childId” : 1,
-                                                      “name” : “김애기”,
-                                                      “nickname”: “자녀닉네임”,
-                                                      “level”: 10,
-                                                      “address” : “광주광역시 삼전“
-                                                  },
-                                                  {
-                                                      “childId” : 2,
-                                                      “name” : “김자녀”,
-                                                      “nickname”: “자녀닉네임2”,
-                                                      “level”: 1,
-                                                      “address” : “광주광역시 삼전“
-                                                  },
-                                              ]
-                                          }
-                                    }"""
+                                        "message": "자녀 조회 성공",
+                                        "data": {
+                                          "children": [
+                                            {
+                                              "childId": 1,
+                                              "name": "김애기",
+                                              "nickname": "자녀닉네임",
+                                              "level": 10,
+                                              "address": "광주광역시 삼전"
+                                            },
+                                            {
+                                              "childId": 2,
+                                              "name": "김자녀",
+                                              "nickname": "자녀닉네임2",
+                                              "level": 1,
+                                              "address": "광주광역시 삼전"
+                                            }
+                                          ]
+                                      }
+                                }"""
                             )
                     )
             ),

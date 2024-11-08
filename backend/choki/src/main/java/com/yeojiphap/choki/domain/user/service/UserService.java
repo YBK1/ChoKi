@@ -47,8 +47,8 @@ public class UserService {
         return createToken(user.getUserId(), user.getRole());
     }
 
-    public ChildResponseDto getChildInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    public ChildResponseDto getChildInfo(String userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(UserNotFoundException::new);
         return ChildResponseDto.from(user);
     }
 
