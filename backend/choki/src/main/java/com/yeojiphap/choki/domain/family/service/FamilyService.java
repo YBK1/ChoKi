@@ -7,9 +7,7 @@ import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.domain.User;
 import com.yeojiphap.choki.domain.family.dto.InviteCodeDto;
 import com.yeojiphap.choki.domain.user.exception.InvalidUserRoleException;
-import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.domain.family.repository.FamilyRepository;
-import com.yeojiphap.choki.domain.user.repository.UserRepository;
 import com.yeojiphap.choki.domain.user.service.UserService;
 import com.yeojiphap.choki.global.auth.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +37,7 @@ public class FamilyService {
     }
 
     public InviteCodeDto getInviteCode() {
-        Family family = familyRepository.findByUsers_Username((SecurityUtil.getCurrentUserId())).orElseThrow();
+        Family family = familyRepository.findByUsers_Username((SecurityUtil.getCurrentUsername())).orElseThrow();
         return new InviteCodeDto(family.getInviteCode());
     }
 

@@ -39,7 +39,7 @@ public class MapService {
     }
 
     public GuidedRouteListDto getGuidedRoutes() {
-        List<GuidedRoute> guidedRoutes = guidedRouteRepository.findByUserId(SecurityUtil.getCurrentUserId());
+        List<GuidedRoute> guidedRoutes = guidedRouteRepository.findByUserId(SecurityUtil.getCurrentUsername());
         List<DestinationDto> routeList = guidedRoutes.stream()
                 .map(route -> new DestinationDto(route.getDestination(), route.getId().toHexString()))
                 .toList();

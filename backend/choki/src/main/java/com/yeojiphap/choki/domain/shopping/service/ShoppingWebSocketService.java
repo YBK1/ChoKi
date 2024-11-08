@@ -39,7 +39,7 @@ public class ShoppingWebSocketService {
 	// 아이의 장보기 시작 메소드
 	public void startShopping(String shoppingId, String access){
 		String userId = jwtUtil.getUsername(access);
-		User currentUser = userService.findByUserId(userId);
+		User currentUser = userService.findByUsername(userId);
 		Shopping shopping = shoppingService.getShoppingById(new ObjectId(shoppingId));
 
 		Double latitude = null;

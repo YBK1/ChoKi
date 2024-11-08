@@ -47,13 +47,13 @@ public class UserService {
         return createToken(user.getUsername(), user.getRole());
     }
 
-    public ChildResponseDto getChildInfo(String userId) {
-        User user = userRepository.findByUserId(userId).orElseThrow(UserNotFoundException::new);
+    public ChildResponseDto getChildInfo(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
         return ChildResponseDto.from(user);
     }
 
     public UserResponseDto getUserDetailInfo() {
-        User currentUser = findByUserId(SecurityUtil.getCurrentUserId());
+        User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
 
         return UserResponseDto.from(currentUser, collected);
@@ -69,8 +69,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public User findByUserId(String userId) {
-        return userRepository.findByUsername(userId).orElseThrow(UserNotFoundException::new);
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 
     private TokenResponse createToken(String username, Role role) {
@@ -89,14 +89,15 @@ public class UserService {
     }
 
     public User findCurrentUser() {
-        return userRepository.findByUsername(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
+        return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(UserNotFoundException::new);
     }
 
     public void saveUser(User user) {
         userRepository.save(user);
+    }
 
-    public OtherUserResponseDto getOtherUserInfo(String userId) {
-        User user = findByUserId(userId);
+    public OtherUserResponseDto getOtherUserInfo(String username) {
+        User user = findByUsername(username);
         List<Collected> collected = collectedRepository.findByUser(user.getId());
 
         return OtherUserResponseDto.from(user, collected);
