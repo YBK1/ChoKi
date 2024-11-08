@@ -40,11 +40,10 @@ public interface SpringDocUserController {
             summary = "내 정보 조회",
             description = "현재 접속한 유저의 상세 정보를 조회합니다."
     )
-
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "201",
-                    description = "아이디 유효성 검사 성공",
+                    responseCode = "200",
+                    description = "정보 조회 성공",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
@@ -66,7 +65,8 @@ public interface SpringDocUserController {
                                           "mainAnimal": 3,
                                           "animals": [2, 3, 4]
                                     }
-                                    }"""
+                                }"""
+
                             )
                     )
             ),
@@ -100,8 +100,7 @@ public interface SpringDocUserController {
                                         "animals": [2,3,4]
                                       },
                                       "message": "정보 조회 성공"
-                                    }
-                                    """)
+                                    }""")
                     )
             )
     })
@@ -142,7 +141,7 @@ public interface SpringDocUserController {
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "201",
+                    responseCode = "200",
                     description = "아이디 유효성 검사 성공",
                     content = @Content(
                             mediaType = "application/json",
@@ -165,7 +164,7 @@ public interface SpringDocUserController {
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
-                    description = "아이디 유효성 검사 성공",
+                    description = "주변 사용자들 조회 성공",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
@@ -206,6 +205,31 @@ public interface SpringDocUserController {
                     )
             )
     })
-
     ApiResponse getNearbyUsers();
+
+    @Operation(
+            summary = "내 주변에 있는 유저 검색",
+            description = "내 주변에 있는 유저를 조회해서 위치와 동물을 반환합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "회원 레벨 조회 성공",
+                    content = @Content(
+                        mediaType = "application/json",
+                        examples = @ExampleObject(value = """
+                                {
+                                        "status": 200,
+                                        "message": "회원 레벨 조회 성공",
+                                        "data": {
+                                                "level" : 1,
+                                                "exp" : 50,
+                                                "isLevelEqual": true
+                                        }
+                                }"""
+                        )
+                    )
+            ),
+    })
+    ApiResponse getUserLevel();
 }

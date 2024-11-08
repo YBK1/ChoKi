@@ -51,5 +51,9 @@ public class UserController implements SpringDocUserController {
     @GetMapping("/nearby")
     public ApiResponse getNearbyUsers() {
         return ApiResponse.success(HttpStatus.OK, userService.findNearbyUsers(), NEARBY_USERS_FOUND.getMessage());
+
+    @GetMapping("/level")
+    public ApiResponse getUserLevel() {
+        return ApiResponse.success(HttpStatus.OK, userService.getLevel(), USER_LEVEL_SEARCH_SUCCESS.getMessage());
     }
 }

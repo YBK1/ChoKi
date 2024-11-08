@@ -8,6 +8,7 @@ import com.yeojiphap.choki.domain.collected.service.CollectedService;
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.dto.response.*;
 import com.yeojiphap.choki.domain.user.dto.request.UserIdRequest;
+import com.yeojiphap.choki.domain.user.dto.response.UserLevelDto;
 import com.yeojiphap.choki.domain.user.exception.UserIdDuplicatedException;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.domain.user.message.UserSuccessMessage;
@@ -54,11 +55,18 @@ public class UserService {
         return ChildResponseDto.from(user);
     }
 
+    @Transactional(readOnly = true)
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
 
         return UserResponseDto.from(currentUser, collected);
+    }
+
+    @Transactional(readOnly = true)
+    public UserLevelDto getLevel() {
+        User user = findCurrentUser();
+        return new UserLevelDto(user.getLevel(), user.getExp(), user.getLevel() == user.getPastLevel());
     }
 
     @Transactional(readOnly = true)

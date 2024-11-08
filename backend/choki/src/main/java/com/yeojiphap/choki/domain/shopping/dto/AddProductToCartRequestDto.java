@@ -14,5 +14,6 @@ public class AddProductToCartRequestDto {
 	private String listBarcode;
 	private String barcode;
 	private Long quantity;
-	private String comment;
+	private String reason;
+	private String status;
 }
