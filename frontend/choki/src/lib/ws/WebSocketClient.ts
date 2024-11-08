@@ -2,25 +2,16 @@ import * as StompJs from '@stomp/stompjs';
 
 class WebSocketClient {
 	private client: StompJs.Client;
-	private accessToken: string | null;
 	private role: 'parent' | 'child';
 
 	constructor(role: 'parent' | 'child') {
 		this.role = role;
-
-		if (typeof window !== 'undefined') {
-			// Only access `localStorage` in the client
-			this.accessToken = localStorage.getItem('access');
-		} else {
-			this.accessToken = null;
-		}
-
 		this.client = new StompJs.Client({
 			brokerURL: 'wss://choki.co.kr/ws/shopping',
-			connectHeaders: {
-				access: `${this.accessToken || ''}`,
-			},
 			reconnectDelay: 20000,
+			debug: str => {
+				console.log(str);
+			},
 			onConnect: () => {
 				console.log(`${this.role} connected to WebSocket`);
 				this.sendMessage('/app/check-connection', {
@@ -41,8 +32,18 @@ class WebSocketClient {
 		});
 	}
 
+	// Fetches token from localStorage each time for updated access
+	private getAccessToken() {
+		if (typeof window !== 'undefined') {
+			return localStorage.getItem('access');
+		}
+		return null;
+	}
+
 	connect() {
-		if (this.accessToken) {
+		const token = this.getAccessToken() || '';
+		if (token) {
+			this.client.connectHeaders = { access: token }; // Add token to connect headers
 			this.client.activate();
 			console.log(`Activating ${this.role} WebSocket Client...`);
 		} else {
@@ -57,14 +58,21 @@ class WebSocketClient {
 
 	subscribe(topic: string, callback: (message: StompJs.Message) => void) {
 		this.client.onConnect = () => {
-			this.client.subscribe(topic, message => {
-				console.log(
-					`${this.role} received message on topic ${topic}:`,
-					message.body,
-				);
-				callback(message);
-			});
-			console.log(`${this.role} subscribed to topic: ${topic}`);
+			const token = this.getAccessToken() || '';
+			console.log(`${this.role} connected to topic: ${topic}`);
+
+			// Perform subscription with connectHeaders containing token
+			this.client.subscribe(
+				topic,
+				message => {
+					console.log(
+						`${this.role} received message on topic ${topic}:`,
+						message.body,
+					);
+					callback(message);
+				},
+				{ access: token },
+			);
 		};
 
 		if (!this.client.active) {
@@ -77,6 +85,7 @@ class WebSocketClient {
 			this.client.publish({
 				destination,
 				body: JSON.stringify(message),
+				headers: { access: this.getAccessToken() || '' }, // Send token with message
 			});
 			console.log(`${this.role} sent message to ${destination}:`, message);
 		} else {
@@ -88,5 +97,4 @@ class WebSocketClient {
 const parentWebSocketClient = new WebSocketClient('parent');
 const childWebSocketClient = new WebSocketClient('child');
 
-// Export instances based on the role
 export { parentWebSocketClient, childWebSocketClient };

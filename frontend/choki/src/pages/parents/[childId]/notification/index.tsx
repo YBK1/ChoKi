@@ -3,6 +3,7 @@ import Image from 'next/image';
 import previous_icon from '@/assets/icons/previous.svg';
 import { MISSION_IMAGES } from '@/constants/mission';
 import right_arrow from '@/assets/icons/right_arrow.svg';
+import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
 
 export default function NotificationPage() {
 	const router = useRouter();
@@ -33,6 +34,17 @@ export default function NotificationPage() {
 
 	const handleGoBack = () => {
 		router.back();
+	};
+
+	const subscribeWebSocket = () => {
+		parentWebSocketClient.connect();
+
+		parentWebSocketClient.subscribe(
+			`/sub/shopping/672df1def4c5cb7ca5d36532`,
+			msg => {
+				console.log('받은 문자:', msg.body);
+			},
+		);
 	};
 
 	return (
@@ -66,7 +78,13 @@ export default function NotificationPage() {
 							<span className="text-sm text-gray-400">{notification.time}</span>
 						</div>
 						<div className="min-w-[24px] min-h-[24px]">
-							<Image src={right_arrow} alt="detail" width={24} height={24} />
+							<Image
+								src={right_arrow}
+								alt="detail"
+								width={24}
+								height={24}
+								onClick={subscribeWebSocket}
+							/>
 						</div>
 					</div>
 				))}
