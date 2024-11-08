@@ -24,4 +24,8 @@ public class CollectedController implements SpringDocCollectedController {
         return ApiResponse.success(HttpStatus.OK, collectedService.updateMainAnimal(animalId));
     }
 
+    @PostMapping("/animal/draw")
+    public ApiResponse drawRandomAnimal() {
+        return ApiResponse.success(HttpStatus.OK, collectedService.drawRandomAnimal());
+    }
 }
