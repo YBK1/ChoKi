@@ -87,6 +87,11 @@ interface ModalProps {
 	size: ModalSize;
 	children: React.ReactNode;
 }
+
+interface nonCloseModalProps {
+	children: React.ReactNode;
+}
+
 // 초대코드 모달 Props
 interface InviteCodeModalProps {
 	children: React.ReactNode;
@@ -155,4 +160,8 @@ interface ShoppingCardProps {
 	role: string;
 	ParentsShoppingItem: ShoppingItem;
 	ChildrenShoppingItem: ShoppingItem;
+}
+
+interface Speech {
+	speech: string;
 }

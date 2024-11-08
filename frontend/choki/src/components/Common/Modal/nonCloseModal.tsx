@@ -1,10 +1,6 @@
 import React from 'react';
 
-interface ModalProps {
-	children: React.ReactNode;
-}
-
-const InviteCodeModal = ({ children }: ModalProps) => {
+const InviteCodeModal = ({ children }: nonCloseModalProps) => {
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center">
 			{/* Modal */}

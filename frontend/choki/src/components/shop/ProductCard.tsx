@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import WasteBasket from '@/assets/icons/waste_basket.svg';
+import MiniWarning from '@/assets/icons/mini_warning.svg';
 
 const ProductCard: React.FC<ShoppingCardProps> = ({
 	role,
@@ -8,6 +9,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 	ChildrenShoppingItem,
 }) => {
 	const onClickCamera = () => {};
+
 	return (
 		<div className="relative flex items-stretch px-8 py-4 border border-gray-200 rounded-2xl max-w-xl mx-auto shadow-md">
 			{/* Divider */}
@@ -20,7 +22,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 						src="/icons/test_item.svg"
 						alt="상품 이미지"
 						layout="fixed"
-						width={64} // 적절한 크기 설정
+						width={64}
 						height={96}
 					/>
 				</div>
@@ -35,7 +37,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 
 			{/* Right Section */}
 			<div className="flex flex-col items-center w-1/2 pl-6 h-full justify-center relative">
-				{/* WasteBasket 아이콘 */}
+				{/* WasteBasket 아이콘 (CHILD) 또는 MiniWarning 아이콘 (PARENTS) */}
 				{role === 'CHILD' && ChildrenShoppingItem && (
 					<div className="absolute top-1 -right-4 cursor-pointer">
 						<Image
@@ -44,6 +46,17 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 							width={20}
 							height={20}
 							onClick={() => console.log('삭제 아이콘 클릭')}
+						/>
+					</div>
+				)}
+				{role === 'PARENTS' && (
+					<div className="absolute top-1 -right-4 transform -translate-y-1/4 cursor-pointer">
+						<Image
+							src={MiniWarning}
+							alt="경고 아이콘"
+							width={30}
+							height={30}
+							onClick={() => console.log('경고 아이콘 클릭')}
 						/>
 					</div>
 				)}
