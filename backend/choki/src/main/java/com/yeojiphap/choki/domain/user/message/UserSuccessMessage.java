@@ -5,6 +5,7 @@ public enum UserSuccessMessage {
     GET_CHILD_INFO_SUCCESS("자녀 정보 조회 성공"),
     GET_USER_DETAIL_INFO_SUCCESS("내 정보 상세 조회 성공"),
     USER_ID_VALIDATION_SUCCESS("사용 가능한 아이디입니다."),
+    NEARBY_USERS_FOUND("주변 사용자들 조회 성공"),
     ;
 
     private final String message;
