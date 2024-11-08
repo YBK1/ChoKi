@@ -22,8 +22,6 @@ export default function ParentPages() {
 		try {
 			const response = await getFamily();
 			setChildren(response.children);
-			// console.log('children', children);
-			// console.log('username', username);
 		} catch (err) {
 			console.error('가족 정보 가져오기 실패:', err);
 		}
@@ -93,16 +91,13 @@ export default function ParentPages() {
 						미션을 부여하실건가요?
 					</h2>
 					<div className="flex justify-center gap-16">
-						<div className="flex flex-col items-center">
-							<Image src={child_profile} alt="child_profile" />
-							<p className="text-sm mt-2">여준이는 심부름왕</p>
-							<p className="text-sm font-bold mt-1">Lv.10</p>
-						</div>
-						<div className="flex flex-col items-center">
-							<Image src={child_profile} alt="child_profile" />
-							<p className="text-sm mt-2">장덕동 심부름왕</p>
-							<p className="text-sm font-bold mt-1">Lv.5</p>
-						</div>
+						{children.map(child => (
+							<div key={child.childId} className="flex flex-col items-center">
+								<Image src={child_profile} alt="child_profile" />
+								<p className="text-sm mt-2">{child.nickname}</p>
+								<p className="text-sm font-bold mt-1">Lv.{child.level}</p>
+							</div>
+						))}
 					</div>
 				</div>
 
