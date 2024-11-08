@@ -59,7 +59,6 @@ public class UserService {
         return UserResponseDto.from(currentUser, collected);
     }
 
-    // 아이디로 유저 정보 조회하기
     @Transactional(readOnly = true)
     public String validateUserId(UserIdRequest request) {
         userRepository.findByUserId(request.userId())

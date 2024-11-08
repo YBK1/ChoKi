@@ -12,11 +12,12 @@ public class Animal {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private Degree degree;
 
     private String enName;
 
     private String koName;
 
-    private String characterImage;
+    private String animalImage;
 }
