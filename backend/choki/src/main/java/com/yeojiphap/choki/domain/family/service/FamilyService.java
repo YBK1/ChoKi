@@ -3,10 +3,12 @@ package com.yeojiphap.choki.domain.family.service;
 import com.yeojiphap.choki.domain.family.domain.Family;
 import com.yeojiphap.choki.domain.family.dto.ChildDetailResponseDto;
 import com.yeojiphap.choki.domain.family.dto.ChildrenResponseDto;
+import com.yeojiphap.choki.domain.family.dto.ParentWithChildrenResponseDto;
 import com.yeojiphap.choki.domain.family.exception.InvalidInviteCodeException;
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.domain.User;
 import com.yeojiphap.choki.domain.family.dto.InviteCodeDto;
+import com.yeojiphap.choki.domain.user.dto.response.ChildResponseDto;
 import com.yeojiphap.choki.domain.user.exception.InvalidUserRoleException;
 import com.yeojiphap.choki.domain.family.repository.FamilyRepository;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
@@ -56,7 +58,7 @@ public class FamilyService {
         return FAMILY_ASSIGN_SUCCESS.getMessage();
     }
 
-    public List<ChildrenResponseDto> getChildInfoByFamilyId() {
+    public ParentWithChildrenResponseDto getChildInfoByFamilyId() {
         User user = userService.findCurrentUser();
 
         if (!user.getRole().equals(Role.PARENT)) {
@@ -65,10 +67,13 @@ public class FamilyService {
 
         List<User> children = familyRepository.getChildren(user.getFamily().getId());
 
-        return children.stream()
+        List<ChildrenResponseDto> childrenDtos = children.stream()
                 .map(ChildrenResponseDto::from)
                 .toList();
+
+        return ParentWithChildrenResponseDto.from(user.getUsername(), childrenDtos);
     }
+
 
     public ChildDetailResponseDto getChildInfoByChildName(String childUsername) {
         User user = userRepository.findByUsername(childUsername).orElseThrow(UserNotFoundException::new);

@@ -96,6 +96,7 @@ public interface SpringDocFamilyController {
                                       "status": 200,
                                         "message": "자녀 조회 성공",
                                         "data": {
+                                          "username": "parent username", 
                                           "children": [
                                             {
                                               "childId": 1,
