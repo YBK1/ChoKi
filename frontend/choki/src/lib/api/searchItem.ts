@@ -1,6 +1,6 @@
 import axiosInstance from '@/lib/api/axiosInstance';
-// const baseURL = process.env.NEXT_PUBLIC_API_URL;
-const baseURL = 'https://choki.co.kr';
+const baseURL = process.env.NEXT_PUBLIC_API_URL;
+// const baseURL = 'https://choki.co.kr';
 
 // 상품 검색 API
 export const searchItem = async (
