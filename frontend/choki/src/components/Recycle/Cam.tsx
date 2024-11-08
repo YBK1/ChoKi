@@ -58,24 +58,26 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange }) => {
 		<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg transform transition-transform mx-auto w-[80%] max-w-lg">
 			{/* 카메라 화면 or 찍은 사진 */}
 			<div className="mb-4 w-full flex justify-center">
-				{capturedImage ? (
-					<Image
-						src={capturedImage}
-						alt="Captured"
-						width={320}
-						height={240}
-						className="rounded-md shadow-md"
-					/>
-				) : (
-					<video
-						ref={videoRef}
-						autoPlay
-						className="rounded-md shadow-md w-auto h-80 bg-gray-200"
-					/>
-				)}
+				<div className="bg-gray-200 rounded-md shadow-md overflow-hidden w-80 h-80 flex items-center justify-center">
+					{capturedImage ? (
+						<Image
+							src={capturedImage}
+							alt="Captured"
+							width={320}
+							height={240}
+							className="w-full h-full object-cover"
+						/>
+					) : (
+						<video
+							ref={videoRef}
+							autoPlay
+							className="w-full h-full object-cover"
+						/>
+					)}
+				</div>
 			</div>
 
-			{/* 재촬영 버튼 */}
+			{/* 촬영 버튼 */}
 			{capturedImage ? (
 				<div className="flex gap-4 mt-4">
 					<Button
