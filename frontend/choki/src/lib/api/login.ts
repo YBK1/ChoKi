@@ -17,7 +17,7 @@ export const registerUser = async ({
 	role,
 }: SignupRequest) => {
 	const response = await axios.post(`${baseURL}/api/user/signup`, {
-		username:userId,
+		username: userId,
 		userPassword,
 		nickname,
 		address,
