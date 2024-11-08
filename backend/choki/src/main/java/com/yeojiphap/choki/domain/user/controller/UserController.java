@@ -47,4 +47,9 @@ public class UserController implements SpringDocUserController {
     public ApiResponse getUserInfo(@PathVariable String userId) {
         return ApiResponse.success(HttpStatus.OK, userService.getOtherUserInfo(userId), GET_USER_DETAIL_INFO_SUCCESS.getMessage());
     }
+
+    @GetMapping("/nearby")
+    public ApiResponse getNearbyUsers() {
+        return ApiResponse.success(HttpStatus.OK, userService.findNearbyUsers(), NEARBY_USERS_FOUND.getMessage());
+    }
 }
