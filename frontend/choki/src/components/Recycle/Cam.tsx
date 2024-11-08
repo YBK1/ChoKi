@@ -75,7 +75,7 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange }) => {
 				)}
 			</div>
 
-			{/* Capture Button */}
+			{/* 재촬영 버튼 */}
 			{capturedImage ? (
 				<div className="flex gap-4 mt-4">
 					<Button

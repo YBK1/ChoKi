@@ -1,4 +1,4 @@
-import BottomNavbar from '@/components/Common/Navbar/BottomNavbar';
+import ChildNavbar from '@/components/Common/Navbar/ChildNavBar';
 import AnimalSpeech from '@/components/Recycle/AnimalSpeech';
 import Cam from '@/components/Recycle/Cam';
 import Button from '@/components/Common/Button';
@@ -44,7 +44,7 @@ const RecyclePage = () => {
 
 			{/* Bottom Navbar */}
 			<div className="fixed bottom-0 w-full">
-				<BottomNavbar />
+				<ChildNavbar />
 			</div>
 		</div>
 	);
