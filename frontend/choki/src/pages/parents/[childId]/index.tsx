@@ -280,13 +280,15 @@ export default function Index() {
 		onItemSelect: (item: any) => void;
 	}) => {
 		const [itemName, setItemName] = useState('');
-		const [searchResults, setSearchResults] = useState([]);
+		const [searchResults, setSearchResults] = useState<
+			ItemSearchResponse[] | []
+		>([]);
 		const PAGE_SIZE = 5;
 
 		const handleSearch = async () => {
 			try {
 				const result = await searchItem(itemName, 0, PAGE_SIZE);
-				setSearchResults(result || []);
+				setSearchResults(result);
 				console.log(result);
 			} catch (error) {
 				console.error('검색 중 오류 발생:', error);
