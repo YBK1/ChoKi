@@ -1,6 +1,7 @@
 package com.yeojiphap.choki.global;
 
 import com.yeojiphap.choki.domain.character.exception.AnimalNotFoundException;
+import com.yeojiphap.choki.domain.collected.exception.AllAnimalsOwnedException;
 import com.yeojiphap.choki.domain.collected.exception.AnimalAlreadyExistException;
 import com.yeojiphap.choki.domain.shopping.exception.BadRequestException;
 import com.yeojiphap.choki.domain.shopping.exception.ShoppingNotFoundException;
@@ -75,6 +76,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ChildNotExistException.class)
     public ApiResponse<Void> handleChildNotExistException(ChildNotExistException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
+
+    @ExceptionHandler(AllAnimalsOwnedException.class)
+    public ApiResponse<Void> handleAllAnimalsOwnedException(AllAnimalsOwnedException e) {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 
