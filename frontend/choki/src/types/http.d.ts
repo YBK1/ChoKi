@@ -26,6 +26,12 @@ interface JoinFamilyResponse {
 	invite_code: string;
 }
 
+// export interface BaseResponse<T> {
+// 	status: number;
+// 	message: string;
+// 	data: T;
+// }
+
 interface NotificationResponse {
 	childId: number;
 	content: string;
@@ -41,15 +47,18 @@ interface ItemSearchResponse {
 	image: string;
 }
 
-interface ChildResponse {
-	userId: number;
-	nickname: string;
-	address: string;
+interface Child {
+	childId: number;
 	name: string;
-	tel: string;
-	role: string;
+	nickname: string;
 	level: number;
-	exp: number;
-	pastLevel: number;
-	mainAnimalId: number;
+	address: string;
+}
+
+interface FamilyResponse {
+	status: number;
+	message: string;
+	data: {
+		children: Child[];
+	};
 }
