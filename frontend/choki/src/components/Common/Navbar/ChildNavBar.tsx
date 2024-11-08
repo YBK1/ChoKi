@@ -21,7 +21,7 @@ const ChildNavBar = () => {
 					</div>
 				</div>
 			</Link>
-			<Link href="/child/profile">
+			<Link href="/child/userpage">
 				<div className="bg-light_yellow_nav p-1.5 rounded-xl flex items-center justify-center">
 					<div className="bg-white p-2 rounded-xl">
 						<Image src={profileIcon} alt="Profile" width={50} height={50} />
