@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@stomp/stompjs": "^7.0.0",
     "@svgr/webpack": "^8.1.0",
     "axios": "^1.7.7",
     "mapbox-gl": "^3.7.0",
@@ -22,6 +23,7 @@
     "@types/qs": "^6.9.17",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/stompjs": "^2.3.9",
     "eslint": "^8",
     "eslint-config-next": "15.0.1",
     "eslint-config-prettier": "^9.1.0",
