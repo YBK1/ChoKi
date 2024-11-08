@@ -12,6 +12,7 @@ const MapPage = () => {
 				showPolyline={false}
 				showDestinationSearch={false}
 				showPreviousButton={false}
+				showChildNavBar={true}
 			/>
 		</div>
 	);

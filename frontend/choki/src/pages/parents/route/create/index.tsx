@@ -11,6 +11,7 @@ const MapPage = () => {
 				showRouteRecorder={true}
 				showPolyline={true}
 				showDestinationSearch={true}
+				showChildNavBar={false}
 			/>
 		</div>
 	);

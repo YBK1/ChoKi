@@ -4,6 +4,7 @@ import UserLocationMarker from './UserLocationMarker';
 import RoutePolyline from './RoutePolyline';
 import RouteRecorder from './RouteRecorder';
 import SetDestination from './SetDestination';
+import ChildNavBar from '../Common/Navbar/ChildNavBar';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 
@@ -11,6 +12,7 @@ const Map = ({
 	showRouteRecorder = true,
 	showPolyline = true,
 	showPreviousButton = true,
+	showChildNavBar = false,
 }: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
@@ -86,6 +88,18 @@ const Map = ({
 						setFinalRoute={setFinalRoute}
 						onRecordingFinish={handleRecordingFinished}
 					/>
+				</div>
+			)}
+			{showChildNavBar && (
+				<div
+					style={{
+						position: 'absolute',
+						bottom: '0',
+						width: '100%',
+						zIndex: 10,
+					}}
+				>
+					<ChildNavBar />
 				</div>
 			)}
 		</div>

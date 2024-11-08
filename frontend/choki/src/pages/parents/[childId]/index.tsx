@@ -31,7 +31,6 @@ export default function Index() {
 
 	const handleNext = () => setCurrentStep(prev => prev + 1);
 	const handlePrev = () => setCurrentStep(prev => prev - 1);
-
 	// 각 단계별 컴포넌트
 	const StepOne = () => (
 		<div className="flex flex-col h-full">
@@ -188,17 +187,30 @@ export default function Index() {
 				new kakao.maps.LatLng(destination.latitude, destination.longitude),
 			];
 
-			console.log(routePoints);
+			const startMarkerImage = new kakao.maps.MarkerImage(
+				'/icons/start_icon.svg',
+				new kakao.maps.Size(40, 40),
+				{ offset: new kakao.maps.Point(20, 40) },
+			);
+			const endMarkerImage = new kakao.maps.MarkerImage(
+				'/icons/destination_icon.svg',
+				new kakao.maps.Size(40, 40),
+				{ offset: new kakao.maps.Point(20, 40) },
+			);
 
 			const startMarker = new kakao.maps.Marker({
 				position: routePoints[0],
+				image: startMarkerImage,
 			});
 			startMarker.setMap(mapRef.current);
+			markersRef.current.push(startMarker);
 
 			const endMarker = new kakao.maps.Marker({
 				position: routePoints[routePoints.length - 1],
+				image: endMarkerImage,
 			});
 			endMarker.setMap(mapRef.current);
+			markersRef.current.push(endMarker);
 
 			const polyline = new kakao.maps.Polyline({
 				map: mapRef.current,
@@ -267,13 +279,15 @@ export default function Index() {
 		onItemSelect: (item: any) => void;
 	}) => {
 		const [itemName, setItemName] = useState('');
-		const [searchResults, setSearchResults] = useState([]);
+		const [searchResults, setSearchResults] = useState<
+			ItemSearchResponse[] | []
+		>([]);
 		const PAGE_SIZE = 5;
 
 		const handleSearch = async () => {
 			try {
 				const result = await searchItem(itemName, 0, PAGE_SIZE);
-				setSearchResults(result || []);
+				setSearchResults(result);
 				console.log(result);
 			} catch (error) {
 				console.error('검색 중 오류 발생:', error);
