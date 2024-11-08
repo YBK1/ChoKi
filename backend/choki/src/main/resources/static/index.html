@@ -144,7 +144,10 @@
             const socket = new WebSocket(wsUrl);
             stompClient = Stomp.over(socket);
 
-            stompClient.debug = null;
+            // stompClient.debug = null;
+            stompClient.debug = function(str) {
+                console.log(str);
+            };
 
             // access 헤더에 토큰 추가
             const connectHeaders = getAuthHeaders();

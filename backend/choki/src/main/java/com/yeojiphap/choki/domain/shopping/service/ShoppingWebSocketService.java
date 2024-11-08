@@ -28,9 +28,11 @@ import com.yeojiphap.choki.domain.user.service.UserService;
 import com.yeojiphap.choki.global.auth.jwt.JWTUtil;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ShoppingWebSocketService {
 	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final ShoppingService shoppingService;
@@ -41,8 +43,9 @@ public class ShoppingWebSocketService {
 
 	// 아이의 장보기 시작 메소드
 	public void startShopping(String shoppingId, String access){
-		String userId = jwtUtil.getUsername(access);
-		User currentUser = userService.findByUsername(userId);
+		String username = jwtUtil.getUsername(access);
+		System.out.println(username);
+		User currentUser = userService.findByUsername(username);
 		Shopping shopping = shoppingService.getShoppingById(new ObjectId(shoppingId));
 
 		Double latitude = null;
