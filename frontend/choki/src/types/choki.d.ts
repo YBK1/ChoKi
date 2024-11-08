@@ -13,6 +13,7 @@ type MapProps = {
 	showPolyline?: boolean;
 	showDestinationSearch?: boolean;
 	showPreviousButton?: boolean;
+	showChildNavBar: boolean;
 };
 
 // 카카오맵 실제 지도 props
@@ -143,4 +144,14 @@ interface Window {
 	UnityLoader: any; // Unity 로더 타입
 	unityInstance: any; // Unity 인스턴스 타입
 	receiveDataFromUnity: (data: string) => void; // Unity에서 데이터를 받을 함수 타입
+}
+
+// 카메라 인터페이스
+interface CamProps {
+	onCaptureChange: (captured: boolean) => void;
+}
+
+// 재활용 동물 대화 인터페이스
+interface AnimalSpeechProps {
+	isImageCaptured: boolean;
 }

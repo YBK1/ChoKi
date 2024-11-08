@@ -188,17 +188,30 @@ export default function Index() {
 				new kakao.maps.LatLng(destination.latitude, destination.longitude),
 			];
 
-			console.log(routePoints);
+			const startMarkerImage = new kakao.maps.MarkerImage(
+				'/icons/start_icon.svg',
+				new kakao.maps.Size(40, 40),
+				{ offset: new kakao.maps.Point(20, 40) },
+			);
+			const endMarkerImage = new kakao.maps.MarkerImage(
+				'/icons/destination_icon.svg',
+				new kakao.maps.Size(40, 40),
+				{ offset: new kakao.maps.Point(20, 40) },
+			);
 
 			const startMarker = new kakao.maps.Marker({
 				position: routePoints[0],
+				image: startMarkerImage,
 			});
 			startMarker.setMap(mapRef.current);
+			markersRef.current.push(startMarker);
 
 			const endMarker = new kakao.maps.Marker({
 				position: routePoints[routePoints.length - 1],
+				image: endMarkerImage,
 			});
 			endMarker.setMap(mapRef.current);
+			markersRef.current.push(endMarker);
 
 			const polyline = new kakao.maps.Polyline({
 				map: mapRef.current,
