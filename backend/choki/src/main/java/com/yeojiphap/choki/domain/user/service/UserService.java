@@ -1,13 +1,12 @@
 package com.yeojiphap.choki.domain.user.service;
 
+import com.yeojiphap.choki.domain.character.domain.Animal;
+import com.yeojiphap.choki.domain.character.service.AnimalService;
 import com.yeojiphap.choki.domain.collected.domain.Collected;
 import com.yeojiphap.choki.domain.collected.repository.CollectedRepository;
 import com.yeojiphap.choki.domain.collected.service.CollectedService;
 import com.yeojiphap.choki.domain.user.domain.Role;
-import com.yeojiphap.choki.domain.user.dto.response.ChildResponseDto;
-import com.yeojiphap.choki.domain.user.dto.response.OtherUserResponseDto;
-import com.yeojiphap.choki.domain.user.dto.response.TokenResponse;
-import com.yeojiphap.choki.domain.user.dto.response.UserResponseDto;
+import com.yeojiphap.choki.domain.user.dto.response.*;
 import com.yeojiphap.choki.domain.user.dto.request.UserIdRequest;
 import com.yeojiphap.choki.domain.user.exception.UserIdDuplicatedException;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
@@ -31,10 +30,13 @@ import java.util.Optional;
 public class UserService {
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
+    private final AnimalService animalService;
+    private final UserRepository userRepository;
     private final CollectedService collectedService;
     private final CollectedRepository collectedRepository;
-    private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private static final Double SEARCH_RADIUS_KM = 1.5;
 
     @Transactional
     public TokenResponse signUp(signUpRequest signUpRequest) {
@@ -68,17 +70,16 @@ public class UserService {
         return UserSuccessMessage.USER_ID_VALIDATION_SUCCESS.getMessage();
     }
 
-    @Transactional(readOnly = true)
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
-    }
+    public NearbyUsersDto findNearbyUsers() {
+        User user = findCurrentUser();
+        List<User> users = userRepository.findUsersWithinRadius(user.getLatitude(), user.getLongitude(), SEARCH_RADIUS_KM);
+        List<UserMainCharacterDto> userMainCharacterDtos = users.stream()
+                .map(foundUser -> {
+                    Animal animal = animalService.findById(foundUser.getMainAnimal());
+                    return new UserMainCharacterDto(foundUser.getId(), foundUser.getUsername(), foundUser.getLatitude(), foundUser.getLongitude(), foundUser.getMainAnimal(), animal.getAnimalImage());
+                }).toList();
 
-    private TokenResponse createToken(String username, Role role) {
-        String access = jwtUtil.createJwt("access", username, Role.valueOf(role.toString()), 86400000L);
-        String refresh = jwtUtil.createJwt("refresh", username, Role.valueOf(role.toString()), 86400000L);
-
-        tokenService.addRefreshToken(username, refresh, 86400000L);
-        return new TokenResponse(access, refresh);
+        return new NearbyUsersDto(userMainCharacterDtos);
     }
 
     // 아이디로 유저 정보 조회하기
@@ -86,6 +87,10 @@ public class UserService {
     public User findById(Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.orElse(null);
+    }
+    @Transactional(readOnly = true)
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 
     public User findCurrentUser() {
@@ -101,5 +106,13 @@ public class UserService {
         List<Collected> collected = collectedRepository.findByUser(user.getId());
 
         return OtherUserResponseDto.from(user, collected);
+    }
+
+    private TokenResponse createToken(String username, Role role) {
+        String access = jwtUtil.createJwt("access", username, Role.valueOf(role.toString()), 86400000L);
+        String refresh = jwtUtil.createJwt("refresh", username, Role.valueOf(role.toString()), 86400000L);
+
+        tokenService.addRefreshToken(username, refresh, 86400000L);
+        return new TokenResponse(access, refresh);
     }
 }
