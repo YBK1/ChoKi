@@ -3,8 +3,7 @@ package com.yeojiphap.choki.domain.collected.service;
 import com.yeojiphap.choki.domain.character.domain.Animal;
 import com.yeojiphap.choki.domain.character.dto.AnimalDto;
 import com.yeojiphap.choki.domain.character.dto.AnimalListDto;
-import com.yeojiphap.choki.domain.character.exception.AnimalNotFoundException;
-import com.yeojiphap.choki.domain.character.repository.AnimalRepository;
+import com.yeojiphap.choki.domain.character.service.AnimalService;
 import com.yeojiphap.choki.domain.collected.domain.AnimalGrade;
 import com.yeojiphap.choki.domain.collected.domain.Collected;
 import com.yeojiphap.choki.domain.collected.dto.UnownedAnimalsDto;
@@ -30,13 +29,13 @@ import static com.yeojiphap.choki.domain.collected.message.CollectedSuccessMessa
 public class CollectedService {
     private final CollectedRepository collectedRepository;
     private final UserRepository userRepository;
-    private final AnimalRepository animalRepository;
+    private final AnimalService animalService;
     private static final Random random = new Random();
 
     @Transactional
     public void addBaseAnimalToUser(Long userId, Long animalId) {
         User user = findByUserId(userId);
-        Animal animal = findByAnimalId(animalId);
+        Animal animal = findAnimalById(animalId);
 
         if (collectedRepository.findByUserAndAnimal(user, animal).isPresent()) {
             throw new AnimalAlreadyExistException();
@@ -70,9 +69,23 @@ public class CollectedService {
         return MAIN_ANIMAL_UPDATE_SUCCESS.getMessage();
     }
 
-    public Long drawRandomAnimal() {
+    public AnimalDto drawRandomAnimal() {
         UnownedAnimalsDto unownedAnimalsDtos = getUnownedAnimals();
-        return pickUnownedAnimal(unownedAnimalsDtos.unownedUnique(), unownedAnimalsDtos.unownedRare(), unownedAnimalsDtos.unownedCommon());
+        Long animalId = pickUnownedAnimal(unownedAnimalsDtos.unownedUnique(), unownedAnimalsDtos.unownedRare(), unownedAnimalsDtos.unownedCommon());
+        Animal animal = findAnimalById(animalId);
+        createCollected(animal);
+
+        return AnimalDto.from(animal);
+    }
+
+    private void createCollected(Animal animal) {
+        User user = findCurrentUser();
+        Collected collected = Collected.builder()
+                .user(user)
+                .animal(animal)
+                .build();
+
+        collectedRepository.save(collected);
     }
 
     private Long pickUnownedAnimal(List<Long> unownedUnique, List<Long> unownedRare, List<Long> unownedCommon) {
@@ -135,7 +148,7 @@ public class CollectedService {
         return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
-    private Animal findByAnimalId(Long id) {
-        return animalRepository.findById(id).orElseThrow(AnimalNotFoundException::new);
+    private Animal findAnimalById(Long id) {
+        return animalService.findById(id);
     }
 }
