@@ -12,6 +12,7 @@ import com.yeojiphap.choki.domain.collected.repository.CollectedRepository;
 import com.yeojiphap.choki.domain.user.domain.User;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.domain.user.repository.UserRepository;
+import com.yeojiphap.choki.domain.user.service.UserService;
 import com.yeojiphap.choki.global.auth.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,13 +25,13 @@ import static com.yeojiphap.choki.domain.collected.message.CollectedSuccessMessa
 @Service
 @RequiredArgsConstructor
 public class CollectedService {
-    private final CollectedRepository collectedRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final AnimalRepository animalRepository;
+    private final CollectedRepository collectedRepository;
 
     @Transactional
     public void addBaseAnimalToUser(Long userId, Long animalId) {
-        User user = findByUserId(userId);
+        User user = userService.findById(userId);
         Animal animal = findByAnimalId(animalId);
 
         if (collectedRepository.findByUserAndAnimal(user, animal).isPresent()) {
@@ -47,7 +48,7 @@ public class CollectedService {
 
     @Transactional(readOnly = true)
     public AnimalListDto getCollectedAnimals() {
-        User user = findCurrentUser();
+        User user = userService.findCurrentUser();
         List<Collected> collectedAnimals = collectedRepository.findByUser(user.getId());
         List<AnimalDto> animalDtos = collectedAnimals.stream()
                 .map(collected -> AnimalDto.from(collected.getAnimal()))
@@ -58,7 +59,7 @@ public class CollectedService {
 
     @Transactional
     public String updateMainAnimal(Long animalId) {
-        User user = findCurrentUser();
+        User user = userService.findCurrentUser();
         validateAnimalOwnership(user.getId(), animalId);
 
         user.updateMainAnimal(animalId);
@@ -69,14 +70,6 @@ public class CollectedService {
         if (!collectedRepository.existsByAnimalIdAndUserId(animalId, userId)) {
             throw new AnimalNotOwnedException();
         }
-    }
-
-    private User findCurrentUser() {
-        return userRepository.findByUserId(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
-    }
-
-    private User findByUserId(Long id) {
-        return userRepository.findById(id).orElseThrow(UserNotFoundException::new);
     }
 
     private Animal findByAnimalId(Long id) {

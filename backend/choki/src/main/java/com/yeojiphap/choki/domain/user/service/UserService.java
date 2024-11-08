@@ -43,7 +43,7 @@ public class UserService {
 
         // 기본 캐릭터 추가
         collectedService.addBaseAnimalToUser(user.getId(), 20L);
-        return createToken(user.getUserId(), user.getRole());
+        return createToken(user.getUsername(), user.getRole());
     }
 
     public ChildResponseDto getChildInfo(Long userId) {
@@ -61,7 +61,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public String validateUserId(UserIdRequest request) {
-        userRepository.findByUserId(request.userId())
+        userRepository.findByUsername(request.username())
                 .ifPresent(user -> {
                     throw new UserIdDuplicatedException();
                 });
@@ -70,7 +70,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User findByUserId(String userId) {
-        return userRepository.findByUserId(userId).orElseThrow(UserNotFoundException::new);
+        return userRepository.findByUsername(userId).orElseThrow(UserNotFoundException::new);
     }
 
     private TokenResponse createToken(String username, Role role) {
@@ -86,5 +86,13 @@ public class UserService {
     public User findById(Long id) {
         Optional<User> user = userRepository.findById(id);
         return user.orElse(null);
+    }
+
+    public User findCurrentUser() {
+        return userRepository.findByUsername(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 }
