@@ -1,14 +1,18 @@
 import Modal from '@/components/Common/Modal/nonCloseModal';
 import Navbar from '@/components/Common/Navbar/UpperNavbar';
 import ProductCard from '@/components/shop/ProductCard';
+import Image from 'next/image';
+import ShoppingCharceter from '@/assets/icons/shopping_character.svg';
+
 export default function childShoppingPage() {
 	const dumpItem = {
 		title: '상품명',
 		count: 3,
 	};
+
 	return (
 		<div
-			className="relative flex flex-col  items-center min-h-screen bg-cover bg-center"
+			className="relative flex flex-col items-center min-h-screen bg-cover bg-center"
 			style={{
 				backgroundImage: `url('/icons/mart_background.svg')`, // public 폴더 내 경로를 직접 지정
 			}}
@@ -28,6 +32,13 @@ export default function childShoppingPage() {
 					</div>
 				</Modal>
 			</div>
+			<Image
+				src={ShoppingCharceter}
+				alt="장보기 캐릭터"
+				className="absolute bottom-16 right-4" // 오른쪽 하단에 위치시키기 위한 스타일
+				width={100} // 캐릭터 이미지 크기 조절
+				height={100}
+			/>
 		</div>
 	);
 }
