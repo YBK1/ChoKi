@@ -90,14 +90,19 @@ export default function ParentPages() {
 						<br />
 						미션을 부여하실건가요?
 					</h2>
-					<div className="flex justify-center gap-16">
-						{children.map(child => (
-							<div key={child.childId} className="flex flex-col items-center">
-								<Image src={child_profile} alt="child_profile" />
-								<p className="text-sm mt-2">{child.nickname}</p>
-								<p className="text-sm font-bold mt-1">Lv.{child.level}</p>
-							</div>
-						))}
+					<div className="overflow-x-auto px-4">
+						<div className="flex flex-nowrap gap-8 min-w-min pb-4">
+							{children.map(child => (
+								<div
+									key={child.childId}
+									className="flex flex-col items-center flex-shrink-0"
+								>
+									<Image src={child_profile} alt="child_profile" />
+									<p className="text-sm mt-2">{child.nickname}</p>
+									<p className="text-sm font-bold mt-1">Lv.{child.level}</p>
+								</div>
+							))}
+						</div>
 					</div>
 				</div>
 
