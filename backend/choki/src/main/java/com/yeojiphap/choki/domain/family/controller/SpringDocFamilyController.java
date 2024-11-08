@@ -72,7 +72,7 @@ public interface SpringDocFamilyController {
                             examples = @ExampleObject(value = """
                                     {
                                       "status": 200,
-                                      "message": 가족 등록 성공,
+                                      "message": "가족 등록 성공",
                                       "data": null
                                     }"""
                             )

@@ -9,6 +9,7 @@ import com.yeojiphap.choki.domain.user.dto.response.OtherUserResponseDto;
 import com.yeojiphap.choki.domain.user.dto.response.TokenResponse;
 import com.yeojiphap.choki.domain.user.dto.response.UserResponseDto;
 import com.yeojiphap.choki.domain.user.dto.request.UserIdRequest;
+import com.yeojiphap.choki.domain.user.dto.response.UserLevelDto;
 import com.yeojiphap.choki.domain.user.exception.UserIdDuplicatedException;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.domain.user.message.UserSuccessMessage;
@@ -52,6 +53,7 @@ public class UserService {
         return ChildResponseDto.from(user);
     }
 
+    @Transactional(readOnly = true)
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
