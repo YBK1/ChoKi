@@ -49,25 +49,23 @@ public interface SpringDocUserController {
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 200,
-                                      "message": "정보 조회 성공",
-                                       “data” : {
-                                              “userId” : “1”,
-                                              “nickname” : “테스터”,
-                                              “address” : “광주 하남신단로”,
-                                              “name” : “홍길동”,
-                                              “tel” : “010-1234-5678”,
-                                              “role” : “Parent”,
-                                              “inviteCode” : “uuid-123-1123”,
-                                              “familyId” : 2,
-                                              “level” : 1,
-                                              “exp” : 50,
-                                              “pastLevel” : 1,
-                                              “mainAnimal” : 3,
-                                              “animals”: [2,3,4]
-                                        },
-                                      "message": "사용 가능한 아이디입니다.",
-                                      "data": null
+                                    "status": 200,
+                                    "message": "정보 조회 성공",
+                                    "data": {
+                                          "userId": "1",
+                                          "nickname": "테스터",
+                                          "address": "광주 하남신단로",
+                                          "name": "홍길동",
+                                          "tel": "010-1234-5678",
+                                          "role": "Parent",
+                                          "inviteCode": "uuid-123-1123",
+                                          "familyId": 2,
+                                          "level": 1,
+                                          "exp": 50,
+                                          "pastLevel": 1,
+                                          "mainAnimal": 3,
+                                          "animals": [2, 3, 4]
+                                    }
                                     }"""
                             )
                     )
@@ -89,7 +87,7 @@ public interface SpringDocUserController {
                                     {
                                       "status": 200,
                                       "data": {
-                                        "userId": "2",
+                                        "userId": "testUser",
                                         "nickname": "아이",
                                         "address": "광주 하남신단로",
                                         "name": "홍길동",
@@ -98,7 +96,8 @@ public interface SpringDocUserController {
                                         "level": 1,
                                         "exp": 50,
                                         "pastLevel": 1,
-                                        "mainAnimalId": 3
+                                        "mainAnimalId": 3,
+                                        "animals": [2,3,4]
                                       },
                                       "message": "정보 조회 성공"
                                     }
@@ -106,7 +105,36 @@ public interface SpringDocUserController {
                     )
             )
     })
-    public ApiResponse getChildInfo(@PathVariable Long userId);
+    public ApiResponse getChildInfo(@PathVariable String userId);
+
+    @Operation(
+            summary = "자녀 정보 조회",
+            description = "특정 userId를 기반으로 자녀 정보를 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "정보 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "data": {
+                                        "id": "2",
+                                        "nickname": "아이",
+                                        "address": "광주 하남신단로",
+                                        "level": 1,
+                                        "mainAnimalId": 3,
+                                        "animals": [2,3,4]
+                                      },
+                                      "message": "정보 조회 성공"
+                                    }
+                                    """)
+                    )
+            )
+    })
+    public ApiResponse getUserInfo(@PathVariable String userId);
 
     @Operation(
             summary = "회원 아이디 검증",
