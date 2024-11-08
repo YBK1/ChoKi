@@ -62,6 +62,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public UserLevelDto getLevel() {
+        User user = findCurrentUser();
+        return new UserLevelDto(user.getLevel(), user.getExp(), user.getLevel() == user.getPastLevel());
+    }
+
+    @Transactional(readOnly = true)
     public String validateUserId(UserIdRequest request) {
         userRepository.findByUsername(request.username())
                 .ifPresent(user -> {
