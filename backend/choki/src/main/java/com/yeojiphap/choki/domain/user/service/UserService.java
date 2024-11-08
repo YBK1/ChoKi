@@ -5,6 +5,7 @@ import com.yeojiphap.choki.domain.collected.repository.CollectedRepository;
 import com.yeojiphap.choki.domain.collected.service.CollectedService;
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.dto.response.ChildResponseDto;
+import com.yeojiphap.choki.domain.user.dto.response.OtherUserResponseDto;
 import com.yeojiphap.choki.domain.user.dto.response.TokenResponse;
 import com.yeojiphap.choki.domain.user.dto.response.UserResponseDto;
 import com.yeojiphap.choki.domain.user.dto.request.UserIdRequest;
@@ -46,14 +47,13 @@ public class UserService {
         return createToken(user.getUsername(), user.getRole());
     }
 
-    public ChildResponseDto getChildInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    public ChildResponseDto getChildInfo(String userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(UserNotFoundException::new);
         return ChildResponseDto.from(user);
     }
 
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUserId(SecurityUtil.getCurrentUserId());
-
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
 
         return UserResponseDto.from(currentUser, collected);
@@ -94,5 +94,11 @@ public class UserService {
 
     public void saveUser(User user) {
         userRepository.save(user);
+
+    public OtherUserResponseDto getOtherUserInfo(String userId) {
+        User user = findByUserId(userId);
+        List<Collected> collected = collectedRepository.findByUser(user.getId());
+
+        return OtherUserResponseDto.from(user, collected);
     }
 }
