@@ -93,14 +93,17 @@ export default function ParentPages() {
 					<div className="overflow-x-auto px-4">
 						<div className="flex flex-nowrap gap-8 min-w-min pb-4">
 							{children.map(child => (
-								<div
+								<Link
+									href={`/parents/${child.childId}`}
 									key={child.childId}
-									className="flex flex-col items-center flex-shrink-0"
+									className="cursor-pointer hover:opacity-80 transition-opacity"
 								>
-									<Image src={child_profile} alt="child_profile" />
-									<p className="text-sm mt-2">{child.nickname}</p>
-									<p className="text-sm font-bold mt-1">Lv.{child.level}</p>
-								</div>
+									<div className="flex flex-col items-center flex-shrink-0">
+										<Image src={child_profile} alt="child_profile" />
+										<p className="text-sm mt-2">{child.nickname}</p>
+										<p className="text-sm font-bold mt-1">Lv.{child.level}</p>
+									</div>
+								</Link>
 							))}
 						</div>
 					</div>
