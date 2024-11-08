@@ -34,7 +34,7 @@ public interface SpringDocUserController {
                     )
             ),
     })
-    ApiResponse signup(@RequestBody signUpRequest signUpRequest,  HttpServletResponse response);
+    ApiResponse signup(@RequestBody signUpRequest signUpRequest, HttpServletResponse response);
 
     @Operation(
             summary = "내 정보 조회",
@@ -47,25 +47,25 @@ public interface SpringDocUserController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
-                                    {
-                                    "status": 200,
-                                    "message": "정보 조회 성공",
-                                    "data": {
-                                          "userId": "1",
-                                          "nickname": "테스터",
-                                          "address": "광주 하남신단로",
-                                          "name": "홍길동",
-                                          "tel": "010-1234-5678",
-                                          "role": "Parent",
-                                          "inviteCode": "uuid-123-1123",
-                                          "familyId": 2,
-                                          "level": 1,
-                                          "exp": 50,
-                                          "pastLevel": 1,
-                                          "mainAnimal": 3,
-                                          "animals": [2, 3, 4]
-                                    }
-                                }"""
+                                        {
+                                        "status": 200,
+                                        "message": "정보 조회 성공",
+                                        "data": {
+                                              "userId": "1",
+                                              "nickname": "테스터",
+                                              "address": "광주 하남신단로",
+                                              "name": "홍길동",
+                                              "tel": "010-1234-5678",
+                                              "role": "Parent",
+                                              "inviteCode": "uuid-123-1123",
+                                              "familyId": 2,
+                                              "level": 1,
+                                              "exp": 50,
+                                              "pastLevel": 1,
+                                              "mainAnimal": 3,
+                                              "animals": [2, 3, 4]
+                                        }
+                                    }"""
 
                             )
                     )
@@ -168,39 +168,39 @@ public interface SpringDocUserController {
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
-                    {
-                        "status": 200,
-                        "message": "주변 사용자들 조회 성공",
-                        "data": {
-                            "users": [
-                                {
-                                    "userId": 6,
-                                    "username": "123",
-                                    "latitude": 35.2053043,
-                                    "longitude": 126.8117272,
-                                    "animalId": 21,
-                                    "animalImage": "image.com"
-                                },
-                                {
-                                    "userId": 7,
-                                    "username": "1234",
-                                    "latitude": 35.1939822,
-                                    "longitude": 126.8143431,
-                                    "animalId": 21,
-                                    "animalImage": "image.com"
-                                },
-                                {
-                                    "userId": 11,
-                                    "username": "12345678",
-                                    "latitude": 35.2007347,
-                                    "longitude": 126.8216869,
-                                    "animalId": 21,
-                                    "animalImage": "image.com"
-                                }
-                            ]
-                        }
-                    }
-                    """
+                                    {
+                                        "status": 200,
+                                        "message": "주변 사용자들 조회 성공",
+                                        "data": {
+                                            "users": [
+                                                {
+                                                    "userId": 6,
+                                                    "username": "123",
+                                                    "latitude": 35.2053043,
+                                                    "longitude": 126.8117272,
+                                                    "animalId": 21,
+                                                    "animalImage": "image.com"
+                                                },
+                                                {
+                                                    "userId": 7,
+                                                    "username": "1234",
+                                                    "latitude": 35.1939822,
+                                                    "longitude": 126.8143431,
+                                                    "animalId": 21,
+                                                    "animalImage": "image.com"
+                                                },
+                                                {
+                                                    "userId": 11,
+                                                    "username": "12345678",
+                                                    "latitude": 35.2007347,
+                                                    "longitude": 126.8216869,
+                                                    "animalId": 21,
+                                                    "animalImage": "image.com"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                    """
                             )
                     )
             )
@@ -216,18 +216,18 @@ public interface SpringDocUserController {
                     responseCode = "200",
                     description = "회원 레벨 조회 성공",
                     content = @Content(
-                        mediaType = "application/json",
-                        examples = @ExampleObject(value = """
-                                {
-                                        "status": 200,
-                                        "message": "회원 레벨 조회 성공",
-                                        "data": {
-                                                "level" : 1,
-                                                "exp" : 50,
-                                                "isLevelEqual": true
-                                        }
-                                }"""
-                        )
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                            "status": 200,
+                                            "message": "회원 레벨 조회 성공",
+                                            "data": {
+                                                    "level" : 1,
+                                                    "exp" : 50,
+                                                    "isLevelEqual": true
+                                            }
+                                    }"""
+                            )
                     )
             ),
     })
