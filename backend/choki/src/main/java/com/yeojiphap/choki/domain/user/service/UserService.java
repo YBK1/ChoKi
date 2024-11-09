@@ -50,11 +50,6 @@ public class UserService {
         return createToken(user.getUsername(), user.getRole());
     }
 
-    public ChildResponseDto getChildInfo(String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
-        return ChildResponseDto.from(user);
-    }
-
     @Transactional(readOnly = true)
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
@@ -109,11 +104,16 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public OtherUserResponseDto getOtherUserInfo(String username) {
-        User user = findByUsername(username);
+    public OtherUserResponseDto getOtherUserInfo(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
         List<Collected> collected = collectedRepository.findByUser(user.getId());
 
         return OtherUserResponseDto.from(user, collected);
+    }
+
+    public ChildResponseDto getChildInfo() {
+        User user = findCurrentUser();
+        return ChildResponseDto.from(user);
     }
 
     private TokenResponse createToken(String username, Role role) {
