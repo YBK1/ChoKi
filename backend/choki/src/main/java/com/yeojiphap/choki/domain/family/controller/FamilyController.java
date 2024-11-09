@@ -31,9 +31,9 @@ public class FamilyController implements SpringDocFamilyController{
         return ApiResponse.success(HttpStatus.OK, familyService.getChildInfoByFamilyId(), GET_CHILD_INFO_SUCCESS.getMessage());
     }
 
-    @GetMapping("/info/{childUsername}")
-    public ApiResponse getChildInfoUsingFamily(@PathVariable String childUsername) {
-        return ApiResponse.success(HttpStatus.OK, familyService.getChildInfoByChildName(childUsername), GET_CHILD_INFO_SUCCESS.getMessage());
+    @GetMapping("/info/{childId}")
+    public ApiResponse getChildDetailInfo(@PathVariable Long childId) {
+        return ApiResponse.success(HttpStatus.OK, familyService.getChildInfoByChildId(childId), GET_CHILD_INFO_SUCCESS.getMessage());
     }
 
     @PostMapping("/invite-code/accept")

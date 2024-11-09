@@ -28,11 +28,6 @@ public class UserController implements SpringDocUserController {
         return ApiResponse.success(HttpStatus.CREATED, SIGN_UP_SUCCESS.getMessage());
     }
 
-    @GetMapping("/child/{userId}")
-    public ApiResponse getChildInfo(@PathVariable String userId) {
-        return ApiResponse.success(HttpStatus.OK, userService.getChildInfo(userId), GET_CHILD_INFO_SUCCESS.getMessage());
-    }
-
     @GetMapping("/mypage")
     public ApiResponse myPage() {
         return ApiResponse.success(HttpStatus.OK, userService.getUserDetailInfo(), GET_USER_DETAIL_INFO_SUCCESS.getMessage());
@@ -44,7 +39,7 @@ public class UserController implements SpringDocUserController {
     }
 
     @GetMapping("/profile/{userId}")
-    public ApiResponse getUserInfo(@PathVariable String userId) {
+    public ApiResponse getUserInfo(@PathVariable Long userId) {
         return ApiResponse.success(HttpStatus.OK, userService.getOtherUserInfo(userId), GET_USER_DETAIL_INFO_SUCCESS.getMessage());
     }
 
@@ -56,5 +51,10 @@ public class UserController implements SpringDocUserController {
     @GetMapping("/level")
     public ApiResponse getUserLevel() {
         return ApiResponse.success(HttpStatus.OK, userService.getLevel(), USER_LEVEL_SEARCH_SUCCESS.getMessage());
+    }
+
+    @GetMapping("/child")
+    public ApiResponse getChildInfo() {
+        return ApiResponse.success(HttpStatus.OK, userService.getChildInfo(), GET_CHILD_INFO_SUCCESS.getMessage());
     }
 }

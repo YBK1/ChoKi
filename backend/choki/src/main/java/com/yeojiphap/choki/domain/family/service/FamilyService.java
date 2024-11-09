@@ -8,7 +8,6 @@ import com.yeojiphap.choki.domain.family.exception.InvalidInviteCodeException;
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.domain.User;
 import com.yeojiphap.choki.domain.family.dto.InviteCodeDto;
-import com.yeojiphap.choki.domain.user.dto.response.ChildResponseDto;
 import com.yeojiphap.choki.domain.user.exception.InvalidUserRoleException;
 import com.yeojiphap.choki.domain.family.repository.FamilyRepository;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
@@ -75,8 +74,8 @@ public class FamilyService {
     }
 
 
-    public ChildDetailResponseDto getChildInfoByChildName(String childUsername) {
-        User user = userRepository.findByUsername(childUsername).orElseThrow(UserNotFoundException::new);
+    public ChildDetailResponseDto getChildInfoByChildId(Long childId) {
+        User user = userRepository.findById(childId).orElseThrow(UserNotFoundException::new);
         return ChildDetailResponseDto.from(user);
     }
 }

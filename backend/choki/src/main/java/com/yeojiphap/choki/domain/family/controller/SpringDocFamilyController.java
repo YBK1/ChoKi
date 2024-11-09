@@ -120,4 +120,38 @@ public interface SpringDocFamilyController {
             ),
     })
     public ApiResponse getChildrenInfoUsingFamily();
+
+    @Operation(
+            summary = "자녀의 상세 정보를 조회합니다.",
+            description = "선택한 자녀의 정보를 조회할 수 있습니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "자녀 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                    "status": 200,
+                                    "data" : {
+                                        "id” : "2”,
+                                        "username”: "test213”,
+                                        "nickname” : "아이”,
+                                        "address” : "광주 하남신단로”,
+                                        "name” : "홍길동”,
+                                        "tel” : "010-1234-5678”,
+                                        "role” : "Child”,
+                                        "level” : 1,
+                                        "exp” : 50,
+                                        "pastLevel” : 1,
+                                        "mainAnimalId” : 3
+                                    },
+                                    "message": "정보 조회 성공"
+                                }"""
+                            )
+                    )
+            ),
+    })
+    public ApiResponse getChildDetailInfo(Long childId);
 }
