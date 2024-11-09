@@ -63,3 +63,12 @@ interface FamilyResponse {
 		children: Child[];
 	};
 }
+
+interface ShopRequset {
+	parentId: number;
+	childId: number;
+	startPoint: Location;
+	destination: Location;
+	route: RoutePoint[];
+	shoppingList: ReturnType<typeof getShoppingList>;
+}
