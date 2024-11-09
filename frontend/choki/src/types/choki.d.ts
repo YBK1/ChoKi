@@ -154,19 +154,6 @@ interface Window {
 	receiveDataFromUnity: (data: string) => void; // Unity에서 데이터를 받을 함수 타입
 }
 
-// TODO - 서버 연동시 이름 변경
-// TODO - 서버 연동시 이미지 S3 주소 추가 예정
-interface ShoppingItem {
-	title: string;
-	count: number;
-}
-
-interface ShoppingCardProps {
-	role: string;
-	ParentsShoppingItem: ShoppingItem;
-	ChildrenShoppingItem: ShoppingItem;
-}
-
 interface Speech {
 	speech: string;
 }

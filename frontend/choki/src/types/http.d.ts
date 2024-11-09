@@ -64,6 +64,7 @@ interface KidDataResponse {
 }
 
 // 웹 소켓 연결 관련 타입
+// 쇼핑 아이템의 구조
 interface CartItem {
 	barcode: string;
 	category: string;
@@ -74,6 +75,7 @@ interface CartItem {
 	status: string;
 }
 
+// 메인 쇼핑 아이템의 구조
 interface ShoppingItem {
 	barcode: string;
 	category: string;
@@ -81,4 +83,19 @@ interface ShoppingItem {
 	image: string;
 	quantity: number;
 	cartItem: CartItem;
+}
+
+// ProductCard에서 사용하는 Props
+interface ShoppingCardProps {
+	role: 'CHILD' | 'PARENTS';
+	ParentsShoppingItem: {
+		title: string;
+		count: number;
+		image: string;
+	};
+	ChildrenShoppingItem: {
+		title: string;
+		count: number;
+		image: string;
+	};
 }
