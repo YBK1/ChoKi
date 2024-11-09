@@ -9,9 +9,9 @@ class WebSocketClient {
 		this.client = new StompJs.Client({
 			brokerURL: 'wss://choki.co.kr/ws/shopping',
 			reconnectDelay: 20000,
-			debug: str => {
-				console.log(str);
-			},
+			// debug: str => {
+			// 	console.log(str);
+			// },
 			onConnect: () => {
 				console.log(`${this.role} connected to WebSocket`);
 				this.sendMessage('/app/check-connection', {
@@ -45,7 +45,6 @@ class WebSocketClient {
 		if (token) {
 			this.client.connectHeaders = { access: token }; // Add token to connect headers
 			this.client.activate();
-			console.log(`Activating ${this.role} WebSocket Client...`);
 		} else {
 			console.error('Access token not found');
 		}
@@ -59,9 +58,7 @@ class WebSocketClient {
 	subscribe(topic: string, callback: (message: StompJs.Message) => void) {
 		this.client.onConnect = () => {
 			const token = this.getAccessToken() || '';
-			console.log(`${this.role} connected to topic: ${topic}`);
 
-			// Perform subscription with connectHeaders containing token
 			this.client.subscribe(
 				topic,
 				message => {
