@@ -89,6 +89,11 @@ interface ModalProps {
 	size: ModalSize;
 	children: React.ReactNode;
 }
+
+interface nonCloseModalProps {
+	children: React.ReactNode;
+}
+
 // 초대코드 모달 Props
 interface InviteCodeModalProps {
 	children: React.ReactNode;
@@ -146,6 +151,22 @@ interface Window {
 	receiveDataFromUnity: (data: string) => void; // Unity에서 데이터를 받을 함수 타입
 }
 
+// TODO - 서버 연동시 이름 변경
+// TODO - 서버 연동시 이미지 S3 주소 추가 예정
+interface ShoppingItem {
+	title: string;
+	count: number;
+}
+
+interface ShoppingCardProps {
+	role: string;
+	ParentsShoppingItem: ShoppingItem;
+	ChildrenShoppingItem: ShoppingItem;
+}
+
+interface Speech {
+	speech: string;
+}
 // 카메라 인터페이스
 interface CamProps {
 	onCaptureChange: (captured: boolean) => void;
