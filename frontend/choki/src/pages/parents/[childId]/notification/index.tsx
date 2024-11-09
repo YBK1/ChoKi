@@ -3,8 +3,8 @@ import Image from 'next/image';
 import previous_icon from '@/assets/icons/previous.svg';
 import { MISSION_IMAGES } from '@/constants/mission';
 import right_arrow from '@/assets/icons/right_arrow.svg';
-import { parentWebSocketClient } from '@/lib/ws/socketUtils';
-import * as StompJs from '@stomp/stompjs';
+import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
+
 export default function NotificationPage() {
 	const router = useRouter();
 
@@ -32,22 +32,19 @@ export default function NotificationPage() {
 		},
 	];
 
-	const handleWebSocket = () => {
+	const handleGoBack = () => {
+		router.back();
+	};
+
+	const subscribeWebSocket = () => {
 		parentWebSocketClient.connect();
 
 		parentWebSocketClient.subscribe(
 			`/sub/shopping/672df1def4c5cb7ca5d36532`,
-			(msg: StompJs.Message) => {
-				console.log('Received message:', msg.body);
+			msg => {
+				console.log('받은 문자:', msg.body);
 			},
 		);
-		return () => {
-			console.log('Disconnecting from WebSocket...');
-			parentWebSocketClient.disconnect();
-		};
-	};
-	const handleGoBack = () => {
-		router.back();
 	};
 
 	return (
@@ -86,7 +83,7 @@ export default function NotificationPage() {
 								alt="detail"
 								width={24}
 								height={24}
-								onClick={handleWebSocket}
+								onClick={subscribeWebSocket}
 							/>
 						</div>
 					</div>
