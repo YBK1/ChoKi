@@ -116,8 +116,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public OtherUserResponseDto getOtherUserInfo(String username) {
-        User user = findByUsername(username);
+    public OtherUserResponseDto getOtherUserInfo(Long userId) {
+        User user = findById(userId);
         List<Collected> collected = collectedRepository.findByUser(user.getId());
 
         return OtherUserResponseDto.from(user, collected);
