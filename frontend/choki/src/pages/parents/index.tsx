@@ -45,7 +45,7 @@ export default function ParentPages() {
 		};
 		fetchUserData();
 		fetchFamilyData();
-	}, [setUser]);
+	}, [setUser, user.userId]);
 
 	// 초대 코드 가져오기
 	const fetchInviteCode = async () => {
