@@ -4,33 +4,52 @@ import previous_icon from '@/assets/icons/previous.svg';
 import { MISSION_IMAGES } from '@/constants/mission';
 import right_arrow from '@/assets/icons/right_arrow.svg';
 import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
+import { useState, useEffect } from 'react';
+import { getNotification } from '@/lib/api/parent';
 
 export default function NotificationPage() {
+	const [notificationList, setNotificationList] =
+		useState<NotificationResponse[]>();
+
 	const router = useRouter();
 
-	const notifications: NotificationResponse[] = [
-		{
-			childId: 2,
-			content: '아이가 장보기를 시작했어요!',
-			type: 'SHOP',
-			id: 1,
-			time: '24.07.01 08:02',
-		},
-		{
-			childId: 2,
-			content: '아이가 재활용 미션을 완료했어요! 미션 내용을 확인해보세요!',
-			type: 'RECYCLE',
-			id: 2,
-			time: '24.07.01 08:03',
-		},
-		{
-			childId: 2,
-			content: '아이가 추가 미션을 완료했어요! 미션 내용을 확인해보세요!',
-			type: 'EXTRA_MISSION',
-			id: 3,
-			time: '24.07.01 08:02',
-		},
-	];
+	// 현재 선택한 아이 정보 가져오기 함수
+	const getNotifications = async (childId: number) => {
+		try {
+			const notifications: NotificationResponse[] =
+				await getNotification(childId);
+			setNotificationList(notifications);
+		} catch (error) {
+			console.error('데이터를 가져오는 중 오류 발생:', error);
+		}
+	};
+
+	const parseDateTime = (time: string) => {
+		const date = new Date(time);
+
+		// 년, 월, 일, 시, 분, 초 추출
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1; // 월은 0부터 시작하므로 +1
+		const day = date.getDate();
+		const hours = date.getHours();
+		const minutes = date.getMinutes();
+		const seconds = date.getSeconds();
+
+		// 원하는 포맷으로 출력 (예: YYYY-MM-DD HH:mm:ss)
+		const formattedDate = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+		return formattedDate;
+	};
+
+	useEffect(() => {
+		const url = new URL(window.location.href);
+		const pathSegments = url.pathname.split('/');
+
+		// 뒤에서 두 번째 숫자 가져오기
+		const id = parseInt(pathSegments[pathSegments.length - 2] || '0');
+		console.log(id);
+		getNotifications(id);
+	}, []);
 
 	const handleGoBack = () => {
 		router.back();
@@ -58,9 +77,9 @@ export default function NotificationPage() {
 
 			{/* 알림목록 */}
 			<div className="flex flex-col gap-4 p-4">
-				{notifications.map(notification => (
+				{notificationList?.map(notification => (
 					<div
-						key={notification.id}
+						key={notification.missionId}
 						className="flex items-center p-4 shadow-sm"
 					>
 						<div className="relative flex items-center justify-center min-w-[60px] min-h-[60px]">
@@ -75,7 +94,9 @@ export default function NotificationPage() {
 
 						<div className="flex flex-col ml-4 flex-grow">
 							<span className="text-base">{notification.content}</span>
-							<span className="text-sm text-gray-400">{notification.time}</span>
+							<span className="text-sm text-gray-400">
+								{parseDateTime(notification.time)}
+							</span>
 						</div>
 						<div className="min-w-[24px] min-h-[24px]">
 							<Image

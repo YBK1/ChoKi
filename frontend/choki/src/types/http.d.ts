@@ -36,7 +36,7 @@ interface NotificationResponse {
 	childId: number;
 	content: string;
 	type: MissionType;
-	id: number;
+	missionId: string;
 	time: string;
 }
 
@@ -104,4 +104,12 @@ interface KidDataResponseFromParent {
 	exp: number;
 	pastLevel: number;
 	mainAnimal: number;
+}
+
+interface InProgressMissionResponse {
+	content: string;
+	completedAt: string;
+	image: string;
+	type: MissionType;
+	shoppingId: string;
 }
