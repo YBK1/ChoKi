@@ -92,6 +92,56 @@ interface KidDataResponse {
 	animals: number[];
 }
 
+// 웹 소켓 연결 관련 타입
+// 쇼핑 아이템의 구조
+interface CartItem {
+	barcode: string;
+	category: string;
+	productName: string;
+	image: string;
+	quantity: number;
+	reason: string;
+	status: string;
+}
+// ProductCard에서 사용하는 Props
+interface ShoppingCardProps {
+	role: 'CHILD' | 'PARENTS';
+	ParentsShoppingItem: {
+		title: string;
+		count: number;
+		image: string;
+	};
+	ChildrenShoppingItem?: {
+		title: string;
+		count: number;
+		image: string;
+	};
+	onCameraClick: () => void; // 카메라 클릭 핸들러 추가
+}
+interface ShoppingItem {
+	barcode: string;
+	category: string;
+	productName: string;
+	image: string;
+	quantity: number;
+	cartItem?: {
+		productName: string;
+		quantity: number;
+		image: string;
+		reason?: string;
+		status?: string;
+	};
+}
+
+interface UnityMainResponse {
+	id: number;
+	nickname: string;
+	mainAnimalId: number;
+	level: number;
+	exp: number;
+	isLevelUp: string;
+}
+
 interface KidDataResponseFromParent {
 	id: string;
 	username: string;

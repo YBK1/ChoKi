@@ -25,7 +25,7 @@ export default function LoginPage() {
 		if (response?.role === 'PARENT') {
 			router.push('/parents');
 		} else if (response?.role === 'CHILD') {
-			router.push('/child');
+			router.push('/child/main');
 		} else {
 			alert('로그인에 문제가 발생했습니다.');
 		}
