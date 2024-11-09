@@ -103,3 +103,9 @@ interface ShoppingItem {
 		status?: string;
 	};
 }
+
+// 장보기 물품 비교
+interface CompareItemsRequest {
+	originBarcode: string;
+	inputBarcode: string;
+}
