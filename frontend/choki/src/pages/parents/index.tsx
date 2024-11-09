@@ -4,7 +4,7 @@ import code_information from '@/assets/icons/cod-information.svg';
 import child_profile from '@/assets/icons/child_profile.svg';
 import map_icon_blurry from '@/assets/icons/map_icon_blurry.svg';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DogCharacter from '@/assets/icons/dog_character.svg';
 import CommonModal from '@/components/Common/Modal';
 import CommonButton from '@/components/Common/Button';
@@ -18,15 +18,19 @@ export default function ParentPages() {
 	const [showToast, setShowToast] = useState(false);
 	const [children, setChildren] = useState<Child[]>([]);
 
-	const fetchFamilyData = async () => {
-		try {
-			const response = await getFamily();
-			setChildren(response.children);
-		} catch (err) {
-			console.error('가족 정보 가져오기 실패:', err);
-		}
-	};
-	fetchFamilyData();
+	useEffect(() => {
+		const fetchFamilyData = async () => {
+			try {
+				const response = await getFamily();
+				setChildren(response.children);
+			} catch (err) {
+				console.error('가족 데이터 가져오기 실패:', err);
+			}
+		};
+
+		fetchFamilyData();
+	}, []);
+
 	// 초대 코드 가져오기
 	const fetchInviteCode = async () => {
 		try {
