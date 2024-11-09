@@ -4,101 +4,101 @@
 
 /* @font-face 설정 */
 @font-face {
-  font-family: 'pretendard';
-  font-style: normal;
-  font-weight: 100;
-  src: url('/fonts/Pretendard-Thin.woff2') format('woff2');
+	font-family: 'pretendard';
+	font-style: normal;
+	font-weight: 100;
+	src: url('/fonts/Pretendard-Thin.woff2') format('woff2');
 }
 
 /* 다른 폰트 웨이트 설정 */
 @font-face {
-  font-family: 'pretendard';
-  font-style: normal;
-  font-weight: 200;
-  src: url('/fonts/Pretendard-ExtraLight.woff2') format('woff2');
+	font-family: 'pretendard';
+	font-style: normal;
+	font-weight: 200;
+	src: url('/fonts/Pretendard-ExtraLight.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: 'pretendard';
-  font-style: normal;
-  font-weight: 300;
-  src: url('/fonts/Pretendard-Light.woff2') format('woff2');
+	font-family: 'pretendard';
+	font-style: normal;
+	font-weight: 300;
+	src: url('/fonts/Pretendard-Light.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: 'pretendard';
-  font-style: normal;
-  font-weight: 500;
-  src: url('/fonts/Pretendard-Medium.woff2') format('woff2');
+	font-family: 'pretendard';
+	font-style: normal;
+	font-weight: 500;
+	src: url('/fonts/Pretendard-Medium.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: 'pretendard';
-  font-style: normal;
-  font-weight: 600;
-  src: url('/fonts/Pretendard-SemiBold.woff2') format('woff2');
+	font-family: 'pretendard';
+	font-style: normal;
+	font-weight: 600;
+	src: url('/fonts/Pretendard-SemiBold.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: 'pretendard';
-  font-style: normal;
-  font-weight: 700;
-  src: url('/fonts/Pretendard-Bold.woff2') format('woff2');
+	font-family: 'pretendard';
+	font-style: normal;
+	font-weight: 700;
+	src: url('/fonts/Pretendard-Bold.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: 'pretendard';
-  font-style: normal;
-  font-weight: 800;
-  src: url('/fonts/Pretendard-ExtraBold.woff2') format('woff2');
+	font-family: 'pretendard';
+	font-style: normal;
+	font-weight: 800;
+	src: url('/fonts/Pretendard-ExtraBold.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: 'pretendard';
-  font-style: normal;
-  font-weight: 900;
-  src: url('/fonts/Pretendard-Black.woff2') format('woff2');
+	font-family: 'pretendard';
+	font-style: normal;
+	font-weight: 900;
+	src: url('/fonts/Pretendard-Black.woff2') format('woff2');
 }
 
 /* 기본 폰트를 Pretendard로 설정 */
 html {
-  font-family: 'pretendard', sans-serif;
+	font-family: 'pretendard', sans-serif;
 }
 
 /* 전역 CSS 설정 */
 body {
-  @apply m-0 p-0 h-screen overflow-hidden;
-  background-color: #f0f0f0;
+	@apply m-0 p-0 h-screen overflow-hidden;
+	background-color: #f0f0f0;
 }
 
 /* #root 스타일 */
 #root {
-  @apply h-screen bg-white flex flex-col min-h-screen;
-  width: 390px;
-  margin: 0 auto;
+	@apply h-screen bg-white flex flex-col min-h-screen;
+	width: 390px;
+	margin: 0 auto;
 }
 
 /* 390px 미만일 때 풀스크린 적용 */
 @media (max-width: 390px) {
-  #root {
-    @apply w-full h-screen m-0;
-  }
+	#root {
+		@apply w-full h-screen m-0;
+	}
 }
 
 /* outletContainer 스타일 */
 .outletContainer {
-  @apply flex-1 overflow-y-auto;
+	@apply flex-1 overflow-y-auto;
 
-  /* 스크롤바 숨기기 */
-  scrollbar-width: none; /* Firefox용 */
-  -ms-overflow-style: none; /* IE 및 Edge용 */
+	/* 스크롤바 숨기기 */
+	scrollbar-width: none; /* Firefox용 */
+	-ms-overflow-style: none; /* IE 및 Edge용 */
 }
 
 .outletContainer::-webkit-scrollbar {
-  display: none;
+	display: none;
 }
 
 /* outletPadding 스타일 */
 .outletPadding {
-  @apply p-8;
+	@apply p-8;
 }
