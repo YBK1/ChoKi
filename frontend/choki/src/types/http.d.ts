@@ -46,6 +46,35 @@ interface ItemSearchResponse {
 	productName: string;
 	image: string;
 }
+interface CartItem extends ItemSearchResponse {
+	quantity: number;
+}
+
+interface Child {
+	childId: number;
+	name: string;
+	nickname: string;
+	level: number;
+	address: string;
+}
+
+interface FamilyResponse {
+	status: number;
+	message: string;
+	data: {
+		username: string;
+		children: Child[];
+	};
+}
+
+interface ShoppingRequest {
+	parentId: number;
+	childId: number;
+	startPoint: ShoppingLocation;
+	destination: ShoppingLocation;
+	route: RoutePoint[];
+	shoppingList: ReturnType<typeof getShoppingList>;
+}
 
 interface KidDataResponse {
 	id: string;
