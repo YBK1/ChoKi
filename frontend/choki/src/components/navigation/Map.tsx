@@ -5,6 +5,7 @@ import TransitionToLocalView from './TransitionToLocalView';
 import CurrentLocationButton from './CurrentLocationButton';
 import TimeDistanceTracker from './TimeDistanceTracker';
 import UpperNavbar from '../Common/Navbar/UpperNavbar';
+import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
@@ -76,6 +77,17 @@ const MapComponent = () => {
 			setShowLocalViewElements(false);
 		}
 	}, [isGlobeView]);
+
+	useEffect(() => {
+		childWebSocketClient.connect();
+
+		childWebSocketClient.subscribe(
+			`/sub/shopping/672df1def4c5cb7ca5d36532`,
+			msg => {
+				console.log('받은 문자:', msg.body);
+			},
+		);
+	}, []);
 
 	return (
 		<div className="relative w-full h-screen">
