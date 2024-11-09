@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
-import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.shopping.domain.CartItem;
 import com.yeojiphap.choki.domain.shopping.domain.Shopping;
 

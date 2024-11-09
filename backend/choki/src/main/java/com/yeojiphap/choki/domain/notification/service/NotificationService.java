@@ -75,11 +75,10 @@ public class NotificationService {
 			.type(NotificationType.SHOP)
 			.build();
 
+		// 잘못 눌렀다거나 해서 이미 알림이 생성 되었는데 안간 경우
+		// 재시도할 때 시간이 갱신되어야 하니까 그냥 지우고 다시 삽입한다고 생각하자.
 		if(notification.getType() == NotificationType.SHOP){
-			Optional<Long> notificationId = notificationRepository.findIdByChildId(notification.getChild().getId(), NotificationType.SHOP);
-			if(notificationId.isPresent()){
-				return;
-			}
+			notificationRepository.deleteByMissionId(shopping.getMissionId());
 		}
 
 		notificationRepository.save(notification);
