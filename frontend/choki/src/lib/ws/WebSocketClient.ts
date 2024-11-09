@@ -1,6 +1,4 @@
 import * as StompJs from '@stomp/stompjs';
-import { useSetAtom } from 'jotai';
-import { shoppingListAtom } from '@/atoms/shoppingAtom';
 
 class WebSocketClient {
 	private client: StompJs.Client;
@@ -11,9 +9,9 @@ class WebSocketClient {
 		this.client = new StompJs.Client({
 			brokerURL: 'wss://choki.co.kr/ws/shopping',
 			reconnectDelay: 20000,
-			debug: str => {
-				console.log(str);
-			},
+			// debug: str => {
+			// 	console.log(str);
+			// },
 			onConnect: () => {
 				console.log(`${this.role} connected to WebSocket`);
 				this.sendMessage('/app/check-connection', {
@@ -46,7 +44,6 @@ class WebSocketClient {
 		if (token) {
 			this.client.connectHeaders = { access: token };
 			this.client.activate();
-			console.log(`Activating ${this.role} WebSocket Client...`);
 		} else {
 			console.error('Access token not found');
 		}
@@ -60,20 +57,10 @@ class WebSocketClient {
 	subscribe(topic: string, callback: (message: StompJs.Message) => void) {
 		this.client.onConnect = () => {
 			const token = this.getAccessToken() || '';
-			console.log(`${this.role} connected to topic: ${topic}`);
 
 			this.client.subscribe(
 				topic,
 				message => {
-					console.log(
-						`${this.role} received message on topic ${topic}:`,
-						message.body,
-					);
-					// 메시지 body에서 shoppingList 데이터를 추출하여 전역 Atom에 업데이트
-					const data = JSON.parse(message.body);
-					if (data && data.shoppingList) {
-						useSetAtom(shoppingListAtom)(data.shoppingList); // Atom 업데이트
-					}
 					callback(message);
 				},
 				{ access: token },

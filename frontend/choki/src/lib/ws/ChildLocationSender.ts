@@ -1,7 +1,14 @@
+// ChildLocationSender.ts
 import { useEffect } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 
-const ChildLocationSender = (shoppingId: string) => {
+interface ChildLocationSenderProps {
+	shoppingId: string;
+}
+
+const ChildLocationSender: React.FC<ChildLocationSenderProps> = ({
+	shoppingId,
+}) => {
 	useEffect(() => {
 		const sendLocation = () => {
 			navigator.geolocation.getCurrentPosition(
@@ -13,17 +20,15 @@ const ChildLocationSender = (shoppingId: string) => {
 						longitude,
 					};
 					childWebSocketClient.sendMessage('/pub/shopping/point', message);
-					console.log('Location sent:', message);
+					console.log('Sent location:', message);
 				},
-				error => console.error('Error getting location:', error),
-				{ enableHighAccuracy: true },
+				error => console.error('Failed to get current location:', error),
 			);
 		};
 
-		const intervalId = setInterval(sendLocation, 5000); // Send every 5 seconds
-
-		return () => clearInterval(intervalId); // Clean up interval on component unmount
-	}, [shoppingId]); // Add shoppingId as dependency
+		const interval = setInterval(sendLocation, 5000);
+		return () => clearInterval(interval);
+	}, [shoppingId]);
 
 	return null;
 };

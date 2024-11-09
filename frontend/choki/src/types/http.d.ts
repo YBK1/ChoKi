@@ -62,3 +62,23 @@ interface KidDataResponse {
 	mainAnimal: number;
 	animals: number[];
 }
+
+// 웹 소켓 연결 관련 타입
+interface CartItem {
+	barcode: string;
+	category: string;
+	productName: string;
+	image: string;
+	quantity: number;
+	reason: string;
+	status: string;
+}
+
+interface ShoppingItem {
+	barcode: string;
+	category: string;
+	productName: string;
+	image: string;
+	quantity: number;
+	cartItem: CartItem;
+}

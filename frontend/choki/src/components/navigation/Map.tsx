@@ -5,6 +5,7 @@ import TransitionToLocalView from './TransitionToLocalView';
 import CurrentLocationButton from './CurrentLocationButton';
 import TimeDistanceTracker from './TimeDistanceTracker';
 import UpperNavbar from '../Common/Navbar/UpperNavbar';
+import ChildLocationSender from '@/lib/ws/ChildLocationSender';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 
 mapboxgl.accessToken =
@@ -18,6 +19,9 @@ const MapComponent = () => {
 	);
 	const [isGlobeView, setIsGlobeView] = useState(true);
 	const [showLocalViewElements, setShowLocalViewElements] = useState(false);
+	const [route, setRoute] = useState<
+		{ latitude: number; longitude: number }[] | null
+	>(null);
 
 	useEffect(() => {
 		if (!mapContainerRef.current) return;
@@ -85,20 +89,32 @@ const MapComponent = () => {
 			`/sub/shopping/672df1def4c5cb7ca5d36532`,
 			msg => {
 				console.log('받은 문자:', msg.body);
+
+				const missonRoute = JSON.parse(msg.body).route;
+				setRoute(missonRoute);
 			},
 		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	useEffect(() => {
+		if (route) {
+			console.log('Updated route:', route);
+		}
+	}, [route]);
 
 	return (
 		<div className="relative w-full h-screen">
 			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>{' '}
 			<div ref={mapContainerRef} className="w-full h-full" />
+			<ChildLocationSender shoppingId="672df1def4c5cb7ca5d36532" />
 			{isGlobeView ? (
 				<>
 					<TransitionToLocalView
 						map={map}
 						userLocation={userLocation}
 						setIsGlobeView={setIsGlobeView}
+						route={route}
 					/>
 				</>
 			) : (
