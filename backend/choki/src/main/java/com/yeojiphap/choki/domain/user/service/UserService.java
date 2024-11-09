@@ -96,6 +96,13 @@ public class UserService {
         Optional<User> user = userRepository.findById(id);
         return user.orElse(null);
     }
+
+    // 아이 입장에서 부모의 username 조회하기
+    @Transactional(readOnly = true)
+    public String findParentUsernameByChildUsername(String childUsername) {
+        return userRepository.findParentUsernameByChildUsername(childUsername).orElseThrow(UserNotFoundException::new);
+    }
+
     @Transactional(readOnly = true)
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);

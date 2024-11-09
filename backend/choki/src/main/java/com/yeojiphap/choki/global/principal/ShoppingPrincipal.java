@@ -10,7 +10,7 @@ public class ShoppingPrincipal implements Principal {
 	private final String name;
 	@Getter
 	@Setter
-	private String roomId;
+	private String shoppingId;
 
 	public ShoppingPrincipal(String name) {
 		this.name = name;
@@ -18,7 +18,7 @@ public class ShoppingPrincipal implements Principal {
 
 	@Override
 	public String getName() {
-		return name;  // 여기서 userId를 반환
+		return name;
 	}
 }
 
