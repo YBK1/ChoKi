@@ -62,6 +62,8 @@ public class ShoppingWebSocketService {
 		Double latitude = null;
 		Double longitude = null;
 
+		log.info(String.valueOf(currentUser.getRole()));
+
 		// 아이가 시작한 경우에만 알림이 가도록 해야 한다.
 		if(currentUser.getRole() == Role.CHILD){
 			// 시작점 초기 세팅 수행
@@ -87,13 +89,13 @@ public class ShoppingWebSocketService {
 				.longitude(longitude)
 				.build();
 
+			log.info(latitudeStr + " " + longitudeStr);
+
 			if(latitude == null && longitude == null){
 				simpMessagingTemplate.convertAndSendToUser(username, "/sub/shopping/" + shoppingId, "아직 장보기를 시작하지 않았습니다.");
 			}
 			else simpMessagingTemplate.convertAndSendToUser(username,"/sub/shopping/" + shoppingId, point);
 		}
-
-		System.out.println(username);
 		// 그리고 장바구니 정보도 보내야 함
 		simpMessagingTemplate.convertAndSendToUser(username, "/sub/shopping/" + shoppingId, new ShoppingResponseDto(shopping));
 	}
