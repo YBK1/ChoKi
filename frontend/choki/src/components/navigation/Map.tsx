@@ -86,7 +86,7 @@ const MapComponent = () => {
 		childWebSocketClient.connect();
 
 		childWebSocketClient.subscribe(
-			`/user/sub/shopping/672df1def4c5cb7ca5d36532`,
+			`/user/sub/shopping/672f0b493251e83e3031604c`,
 			msg => {
 				console.log('받은 문자:', msg.body);
 
