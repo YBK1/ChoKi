@@ -129,6 +129,7 @@ public class ShoppingWebSocketService {
 	// 아이의 위치를 전송
 	public void sendChildPoint(ChildPointDto childPointDto, String access) {
 		PointResponseDto pointResponseDto = new PointResponseDto(childPointDto);
+		log.info(getParentUserName(access));
 		simpMessagingTemplate.convertAndSendToUser(getParentUserName(access) ,"/sub/shopping/" + childPointDto.getShoppingId(), pointResponseDto);
 	}
 
