@@ -46,3 +46,19 @@ interface ItemSearchResponse {
 	productName: string;
 	image: string;
 }
+
+interface KidDataResponse {
+	id: string;
+	nickname: string;
+	address: string;
+	name: string;
+	tel: string;
+	role: 'PARENT' | 'CHILD';
+	inviteCode: string;
+	familyId: number;
+	level: number;
+	exp: number;
+	pastLevel: number;
+	mainAnimal: number;
+	animals: number[];
+}
