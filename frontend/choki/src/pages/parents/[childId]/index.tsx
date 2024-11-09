@@ -76,13 +76,6 @@ export default function Index() {
 		const polylineRef = useRef<any>(null);
 		const markersRef = useRef<any[]>([]);
 
-		// 예시 장소 리스트
-		// const destinations = [
-		// 	{ id: 1, buildingName: '승필 백화점' },
-		// 	{ id: 2, buildingName: '호현 카페' },
-		// 	{ id: 3, buildingName: '민주 구멍가게' },
-		// ];
-
 		useEffect(() => {
 			// 목적지 목록 가져오기
 			const fetchDestinations = async () => {
