@@ -1,7 +1,12 @@
 package com.yeojiphap.choki.domain.shopping.service;
 
+import java.time.Duration;
+
 import org.bson.types.ObjectId;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.MessageHeaders;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -18,19 +23,25 @@ import com.yeojiphap.choki.domain.shopping.dto.websocketDto.ChangeQuantityRespon
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.DangerRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.DangerResponseDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.DeleteProductFromCartResponseDto;
+import com.yeojiphap.choki.domain.shopping.dto.websocketDto.ExceptionDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.FinishShoppingResponseDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.HelpMessageResponseDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.PointResponseDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.ShoppingResponseDto;
+import com.yeojiphap.choki.domain.shopping.exception.UnauthorizedRoleException;
 import com.yeojiphap.choki.domain.user.domain.Role;
 import com.yeojiphap.choki.domain.user.domain.User;
 import com.yeojiphap.choki.domain.user.service.UserService;
 import com.yeojiphap.choki.global.auth.jwt.JWTUtil;
+import com.yeojiphap.choki.global.principal.ShoppingPrincipal;
 
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ShoppingWebSocketService {
 	private final SimpMessagingTemplate simpMessagingTemplate;
 	private final ShoppingService shoppingService;
@@ -41,9 +52,12 @@ public class ShoppingWebSocketService {
 
 	// 아이의 장보기 시작 메소드
 	public void startShopping(String shoppingId, String access){
-		String userId = jwtUtil.getUsername(access);
-		User currentUser = userService.findByUsername(userId);
+		String username = jwtUtil.getUsername(access);
+		User currentUser = userService.findByUsername(username);
 		Shopping shopping = shoppingService.getShoppingById(new ObjectId(shoppingId));
+
+		// 현재 연결 중인 shoppingId 정보를 레디스에 저장
+		redisTemplate.opsForValue().set(username, shoppingId);
 
 		Double latitude = null;
 		Double longitude = null;
@@ -74,17 +88,18 @@ public class ShoppingWebSocketService {
 				.build();
 
 			if(latitude == null && longitude == null){
-				simpMessagingTemplate.convertAndSend("/sub/shopping/" + shoppingId, "아직 장보기를 시작하지 않았습니다.");
+				simpMessagingTemplate.convertAndSendToUser(username, "/sub/shopping/" + shoppingId, "아직 장보기를 시작하지 않았습니다.");
 			}
-			else simpMessagingTemplate.convertAndSend("/sub/shopping/" + shoppingId, point);
+			else simpMessagingTemplate.convertAndSendToUser(username,"/sub/shopping/" + shoppingId, point);
 		}
 
+		System.out.println(username);
 		// 그리고 장바구니 정보도 보내야 함
-		simpMessagingTemplate.convertAndSend("/sub/shopping/" + shoppingId, new ShoppingResponseDto(shopping));
+		simpMessagingTemplate.convertAndSendToUser(username, "/sub/shopping/" + shoppingId, new ShoppingResponseDto(shopping));
 	}
 
 	// 장바구니에 상품을 담았음을 전송
-	public void sendAddProductMessage(AddProductToCartRequestDto addProductToCartRequestDto) {
+	public void sendAddProductMessage(AddProductToCartRequestDto addProductToCartRequestDto, String access) {
 		// ResponseDto로 변환
 		AddProductToCartResponseDto addProductToCartResponseDto = new AddProductToCartResponseDto(addProductToCartRequestDto);
 		addProductToCartResponseDto.setStatus(
@@ -93,46 +108,84 @@ public class ShoppingWebSocketService {
 					addProductToCartResponseDto.getBarcode()))
 				.getMatchStatus());
 
-		simpMessagingTemplate.convertAndSend("/sub/shopping/" + addProductToCartRequestDto.getShoppingId(), addProductToCartResponseDto);
+		simpMessagingTemplate.convertAndSendToUser(getParentUserName(access),"/sub/shopping/" + addProductToCartRequestDto.getShoppingId(), addProductToCartResponseDto);
 	}
 
 	// 장바구니에서 상품 수량 변경 전송
-	public void sendChangeQuantityMessage(ChangeQuantityRequestDto changeQuantityRequestDto) {
+	public void sendChangeQuantityMessage(ChangeQuantityRequestDto changeQuantityRequestDto, String access) {
 		ChangeQuantityResponseDto changeQuantityResponseDto = new ChangeQuantityResponseDto(changeQuantityRequestDto);
 
-		simpMessagingTemplate.convertAndSend("/sub/shopping/" + changeQuantityRequestDto.getShoppingId(), changeQuantityResponseDto);
+		simpMessagingTemplate.convertAndSendToUser(getParentUserName(access), "/sub/shopping/" + changeQuantityRequestDto.getShoppingId(), changeQuantityResponseDto);
 	}
 
 	// 장바구니에서 상품을 제거했음을 전송
-	public void sendDeleteProductMessage(DeleteProductFromCartRequestDto deleteProductFromCartRequestDto) {
+	public void sendDeleteProductMessage(DeleteProductFromCartRequestDto deleteProductFromCartRequestDto, String access) {
 		DeleteProductFromCartResponseDto deleteProductFromCartResponseDto = new DeleteProductFromCartResponseDto(deleteProductFromCartRequestDto);
 
-		simpMessagingTemplate.convertAndSend("/sub/shopping/" + deleteProductFromCartRequestDto.getShoppingId(),
+		simpMessagingTemplate.convertAndSendToUser(getParentUserName(access), "/sub/shopping/" + deleteProductFromCartRequestDto.getShoppingId(),
 			deleteProductFromCartResponseDto);
 	}
 
 	// 아이의 위치를 전송
-	public void sendChildPoint(ChildPointDto childPointDto) {
+	public void sendChildPoint(ChildPointDto childPointDto, String access) {
 		PointResponseDto pointResponseDto = new PointResponseDto(childPointDto);
-		simpMessagingTemplate.convertAndSend("/sub/shopping/" + childPointDto.getShoppingId(), pointResponseDto);
+		simpMessagingTemplate.convertAndSendToUser(getParentUserName(access) ,"/sub/shopping/" + childPointDto.getShoppingId(), pointResponseDto);
 	}
 
 	// 위기 알림 메세지 전송
-	public void sendDangerNotification(DangerRequestDto dangerRequestDto){
+	public void sendDangerNotification(DangerRequestDto dangerRequestDto, String access){
 		DangerResponseDto dangerResponseDto = new DangerResponseDto(dangerRequestDto);
-		simpMessagingTemplate.convertAndSend("/sub/shoppingId/" + dangerRequestDto.getShoppingId(), dangerResponseDto);
+		simpMessagingTemplate.convertAndSendToUser(getParentUserName(access), "/sub/shoppingId/" + dangerRequestDto.getShoppingId(), dangerResponseDto);
 	}
 
 	// 헬프 메시지 전송
-	public void sendHelpMessage(HelpMessageDto helpMessageDto) {
+	public void sendHelpMessage(HelpMessageDto helpMessageDto, String access) {
+		// 부모의 username 가져오기
+		String username = jwtUtil.getUsername(access);
+
+		if(jwtUtil.getRole(access).equals("CHILD")){
+			throw new UnauthorizedRoleException();
+		}
+
 		HelpMessageResponseDto helpMessageResponseDto = new HelpMessageResponseDto(helpMessageDto);
-		simpMessagingTemplate.convertAndSend("/sub/shopping/" + helpMessageDto.getShoppingId(), helpMessageResponseDto);
+
+		// 이건 어쩔 수 없이 shopping에서 찾아서 전송해야 할듯..
+		Shopping shopping = shoppingService.getShoppingById(new ObjectId(helpMessageDto.getShoppingId()));
+		Long childId = shopping.getChildId();
+		User user = userService.findById(childId);
+
+		simpMessagingTemplate.convertAndSendToUser(user.getUsername(),"/sub/shopping/" + helpMessageDto.getShoppingId(), helpMessageResponseDto);
 	}
 
 	// 장보기 종료 메시지 전송
-	public void sendFinishMessage(String shoppingId){
+	public void sendFinishMessage(String shoppingId, String access){
 		String message = "장보기가 종료되었습니다.";
 		FinishShoppingResponseDto finishShoppingResponseDto = new FinishShoppingResponseDto(message);
-		simpMessagingTemplate.convertAndSend("/sub/shopping/" + shoppingId, finishShoppingResponseDto);
+		simpMessagingTemplate.convertAndSendToUser(getParentUserName(access), "/sub/shopping/" + shoppingId, finishShoppingResponseDto);
 	}
+
+	// 에러 발생시 메시지 전송
+	public void sendErrorMessage(ShoppingPrincipal user, ExceptionDto exceptionDto){
+		String shoppingId = (String) redisTemplate.opsForValue().get(user.getName());
+		simpMessagingTemplate.convertAndSendToUser(user.getName(), "/sub/shopping/" + shoppingId, exceptionDto);
+	}
+
+	public String getParentUserName(String access){
+		// 아이의 username 가져오기
+		String username = jwtUtil.getUsername(access);
+
+		if(jwtUtil.getRole(access).equals("PARENT")){
+			throw new UnauthorizedRoleException();
+		}
+
+		// 부모의 username 조회..
+		return userService.findParentUsernameByChildUsername(username);
+	}
+
+	// private MessageHeaders createHeaders(@Nullable String sessionId) {
+	// 	SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+	// 	if (sessionId != null) headerAccessor.setSessionId(sessionId);
+	// 	headerAccessor.setLeaveMutable(true);
+	// 	return headerAccessor.getMessageHeaders();
+	// }
 }

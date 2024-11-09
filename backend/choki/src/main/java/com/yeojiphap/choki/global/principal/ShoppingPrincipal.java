@@ -4,17 +4,21 @@ import java.security.Principal;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
-@Getter
-@AllArgsConstructor
 public class ShoppingPrincipal implements Principal {
-	private final String id;
-	private final String shoppingId;
+	private final String name;
+	@Getter
+	@Setter
+	private String shoppingId;
 
-	// 필수 함수라서 뺼 수는 없고.. 일단 id 반환하게 두긴 하자
+	public ShoppingPrincipal(String name) {
+		this.name = name;
+	}
+
 	@Override
 	public String getName() {
-		return id;
+		return name;
 	}
 }
 
