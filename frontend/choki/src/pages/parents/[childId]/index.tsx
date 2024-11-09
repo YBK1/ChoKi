@@ -325,7 +325,7 @@ export default function Index() {
 							key={index}
 							className="flex items-center space-x-3 p-2 border rounded-lg"
 						>
-							<div className="w-16 h-16rounded-lg overflow-hidden">
+							<div className="w-16 h-16 rounded-lg overflow-hidden">
 								<Image
 									src={item.image}
 									alt={item.productName || '상품 이미지'}
@@ -429,35 +429,35 @@ export default function Index() {
 							key={item.barcode}
 							className="flex items-center space-x-3 p-2 border rounded-lg mb-2"
 						>
-							<div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
+							<div className="flex aligh-center w-16 h-16">
 								<Image
 									src={item.image}
 									alt={item.productName}
-									width={48}
-									height={48}
+									width={64}
+									height={64}
 									className="object-cover"
 								/>
 							</div>
-							<div className="flex-1">
-								<div className="font-medium">{item.productName}</div>
+							<div className="flex max-w-[90px]">
+								<div className="text-sm">{item.productName}</div>
 							</div>
-							<div className="flex items-center space-x-2">
+							<div className="flex items-center w-[100px]">
 								<button
 									onClick={() => handleQuantityChange(item.barcode, -1)}
-									className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
+									className="w-4 h-4 rounded-full bg-light_yellow_dark flex items-center justify-center"
 								>
 									-
 								</button>
-								<span className="w-8 text-center">{item.quantity}</span>
+								<span className="w-8 text-center text-sm">{item.quantity}</span>
 								<button
 									onClick={() => handleQuantityChange(item.barcode, 1)}
-									className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center"
+									className="w-4 h-4 rounded-full bg-light_yellow_dark flex items-center justify-center"
 								>
 									+
 								</button>
 								<button
 									onClick={() => handleDelete(item.barcode)}
-									className="ml-2 px-3 py-1 bg-orange-100 text-orange_main rounded-lg"
+									className="ml-2 w-12 h-6 bg-orange-100 text-orange_main rounded-lg text-sm"
 								>
 									삭제
 								</button>
