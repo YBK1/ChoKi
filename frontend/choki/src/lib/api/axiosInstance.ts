@@ -6,7 +6,8 @@ import {
 } from '@/lib/utils/localUtils';
 
 // 환경 변수에서 API 기본 URL 가져오기
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
+// const baseURL = process.env.NEXT_PUBLIC_API_URL;
+const baseURL = 'https://choki.co.kr';
 // const STATE = import.meta.env.VITE_APP_STATE;
 
 // Axios 인스턴스 생성
