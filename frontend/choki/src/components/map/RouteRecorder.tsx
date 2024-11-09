@@ -13,8 +13,10 @@ const RouteRecorder = ({
 	const [route, setRoute] = useState<{ latitude: number; longitude: number }[]>(
 		[],
 	);
+	const [polyline, setPolyline] = useState<any | null>(null);
 
 	const startRecording = () => {
+		if (isRecording) return;
 		setIsRecording(true);
 		console.log('기록 시작');
 		setRoute([]);
@@ -25,7 +27,11 @@ const RouteRecorder = ({
 				console.log(`위도: ${latitude}, 경도: ${longitude}`);
 				const newPoint = { latitude, longitude };
 
-				setRoute(prevRoute => [...prevRoute, newPoint]);
+				setRoute(prevRoute => {
+					const updatedRoute = [...prevRoute, newPoint];
+					drawRoute(updatedRoute);
+					return updatedRoute;
+				});
 			},
 			error => {
 				console.error('위치 가져오는 중 오류 발생:', error);
@@ -37,6 +43,7 @@ const RouteRecorder = ({
 	};
 
 	const stopRecording = () => {
+		if (!isRecording) return;
 		if (watchId !== null) {
 			navigator.geolocation.clearWatch(watchId);
 			setWatchId(null);
@@ -46,29 +53,36 @@ const RouteRecorder = ({
 		console.log('최종 경로:', route);
 		setFinalRoute(route);
 		onRecordingFinish();
+	};
 
-		// Draw polyline directly on the map
-		if (map && route.length > 0) {
-			const kakao = (window as any).kakao;
+	const drawRoute = (
+		currentRoute: { latitude: number; longitude: number }[],
+	) => {
+		const kakao = (window as any).kakao;
 
-			// Map the route points to LatLng objects
-			const path = route.map(
-				point => new kakao.maps.LatLng(point.latitude, point.longitude),
-			);
+		if (!map || !currentRoute.length) return;
 
-			const polyline = new kakao.maps.Polyline({
-				path: path,
-				strokeWeight: 5,
-				strokeColor: '#FF0000',
-				strokeOpacity: 0.7,
-				strokeStyle: 'solid',
-			});
-
-			polyline.setMap(map);
-
-			// Pan the map to the last point of the route
-			map.panTo(path[path.length - 1]);
+		// Remove existing polyline if any
+		if (polyline) {
+			polyline.setMap(null);
 		}
+
+		// Map route points to Kakao's LatLng objects
+		const path = currentRoute.map(
+			point => new kakao.maps.LatLng(point.latitude, point.longitude),
+		);
+
+		// Create a new polyline and add it to the map
+		const newPolyline = new kakao.maps.Polyline({
+			path: path,
+			strokeWeight: 5,
+			strokeColor: '#FF0000',
+			strokeOpacity: 0.7,
+			strokeStyle: 'solid',
+		});
+
+		newPolyline.setMap(map);
+		setPolyline(newPolyline);
 	};
 
 	useEffect(() => {
