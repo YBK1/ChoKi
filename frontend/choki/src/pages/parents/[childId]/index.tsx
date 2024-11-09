@@ -477,10 +477,52 @@ export default function Index() {
 		console.log('장바구니 목록', selectedItems);
 		return (
 			<div className="flex flex-col h-full">
-				<h3 className="text-xl font-bold text-center m-4">
+				<h3 className="text-xl font-bold text-center m-4 mb-6">
 					심부름 정보가 <br />
 					맞는지 확인해주세요!
 				</h3>
+				<span className="font-bold ml-2">경로</span>
+				<span className="font-bold ml-2 mb-2">장바구니</span>
+				<div className="flex-1 overflow-y-auto">
+					<div className="grid grid-cols-2 gap-2 ">
+						{selectedItems.map(item => (
+							<div
+								key={item.barcode}
+								className="bg-white p-3 rounded-3xl shadow-md"
+							>
+								<div className="flex justify-center mb-2">
+									<Image
+										src={item.image}
+										alt={item.productName}
+										width={40}
+										height={40}
+										className="object-cover"
+									/>
+								</div>
+								<div className="text-center">
+									<p className="text-sm mb-1">{item.productName}</p>
+									<p className="text-sm text-gray-500">
+										수량: {item.quantity}개
+									</p>
+								</div>
+							</div>
+						))}
+					</div>
+					<div className="flex justify-between mt-4">
+						<button
+							className="px-4 py-2 rounded bg-gray-100 text-gray-500"
+							onClick={handlePrev}
+						>
+							이전
+						</button>
+						<button
+							className="px-4 py-2 rounded bg-orange_main text-white"
+							onClick={handleCloseModal}
+						>
+							완료
+						</button>
+					</div>
+				</div>
 			</div>
 		);
 	};
