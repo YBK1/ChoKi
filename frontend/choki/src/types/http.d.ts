@@ -64,11 +64,11 @@ interface FamilyResponse {
 	};
 }
 
-interface ShopRequset {
+interface ShoppingRequset {
 	parentId: number;
 	childId: number;
-	startPoint: Location;
-	destination: Location;
+	startPoint: ShoppingLocation;
+	destination: ShoppingLocation;
 	route: RoutePoint[];
 	shoppingList: ReturnType<typeof getShoppingList>;
 }
