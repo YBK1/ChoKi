@@ -75,3 +75,33 @@ interface ShoppingRequest {
 	route: RoutePoint[];
 	shoppingList: ReturnType<typeof getShoppingList>;
 }
+
+interface KidDataResponse {
+	id: string;
+	nickname: string;
+	address: string;
+	name: string;
+	tel: string;
+	role: 'PARENT' | 'CHILD';
+	inviteCode: string;
+	familyId: number;
+	level: number;
+	exp: number;
+	pastLevel: number;
+	mainAnimal: number;
+	animals: number[];
+}
+
+interface KidDataResponseFromParent {
+	id: string;
+	username: string;
+	nickname: string;
+	address: string;
+	name: string;
+	tel: string;
+	role: 'PARENT' | 'CHILD';
+	level: number;
+	exp: number;
+	pastLevel: number;
+	mainAnimal: number;
+}

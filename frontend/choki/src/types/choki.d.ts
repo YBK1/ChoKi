@@ -34,6 +34,8 @@ type RouteRecorderProps = {
 	map: any;
 	setFinalRoute: (route: { latitude: number; longitude: number }[]) => void;
 	onRecordingFinish: () => void;
+	isRecording: boolean;
+	setIsRecording: (isRecording: boolean) => void;
 };
 
 // 카카오맵 유저 표시 props
@@ -89,6 +91,11 @@ interface ModalProps {
 	size: ModalSize;
 	children: React.ReactNode;
 }
+
+interface nonCloseModalProps {
+	children: React.ReactNode;
+}
+
 // 초대코드 모달 Props
 interface InviteCodeModalProps {
 	children: React.ReactNode;
@@ -111,6 +118,7 @@ interface TransitionToLocalViewProps {
 	map: mapboxgl.Map | null;
 	userLocation: [number, number] | null;
 	setIsGlobeView: (value: boolean) => void;
+	route: { latitude: number; longitude: number }[] | null;
 }
 interface AddressData {
 	address: string;
@@ -146,6 +154,22 @@ interface Window {
 	receiveDataFromUnity: (data: string) => void; // Unity에서 데이터를 받을 함수 타입
 }
 
+// TODO - 서버 연동시 이름 변경
+// TODO - 서버 연동시 이미지 S3 주소 추가 예정
+interface ShoppingItem {
+	title: string;
+	count: number;
+}
+
+interface ShoppingCardProps {
+	role: string;
+	ParentsShoppingItem: ShoppingItem;
+	ChildrenShoppingItem: ShoppingItem;
+}
+
+interface Speech {
+	speech: string;
+}
 // 카메라 인터페이스
 interface CamProps {
 	onCaptureChange: (captured: boolean) => void;
@@ -172,4 +196,13 @@ interface RouteDetails {
 	startPoint: ShoppingLocation;
 	destination: ShoppingLocation;
 	routes: RoutePoint[];
+}
+
+// 아이 메인 페이지 유니티로 보내는 정보
+interface ChildMainUnityProps {
+	level: number;
+	exp: number;
+	pastLevel: number;
+	mainAnimal: number;
+	nickname: string;
 }

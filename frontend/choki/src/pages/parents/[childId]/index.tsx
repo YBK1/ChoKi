@@ -10,8 +10,12 @@ import CommonModal from '@/components/Common/Modal';
 import { useState, useEffect, useRef } from 'react';
 import { searchItem, createShopping } from '@/lib/api/shopping';
 import { getRouteList, getRouteDetails } from '@/lib/api/navigation';
+import { getKidDataFromParent } from '@/lib/api/parent';
+import { useRouter } from 'next/router';
 
 export default function Index() {
+	const [kidInfo, setKidInfo] = useState<KidDataResponseFromParent>();
+
 	const missions: Mission[] = [
 		{ type: 'SHOP', content: '동네 마트 장보기' },
 		{ type: 'RECYCLE', content: '재활용 분리수거하기' },
@@ -33,6 +37,49 @@ export default function Index() {
 
 	const handleNext = () => setCurrentStep(prev => prev + 1);
 	const handlePrev = () => setCurrentStep(prev => prev - 1);
+
+	// 현재 선택한 아이 정보 가져오기 함수
+	const getKidInfo = async (childId: number) => {
+		try {
+			const kidData = await getKidDataFromParent(childId);
+			console.log(kidData);
+			setKidInfo(kidData);
+		} catch (error) {
+			console.error('데이터를 가져오는 중 오류 발생:', error);
+		}
+	};
+
+	// 현재 주소에서 아이디 가져와서 선택된 아이 정보 가져오기
+	useEffect(() => {
+		const url = new URL(window.location.href);
+		const id = parseInt(url.pathname.split('/').pop() || '0');
+		getKidInfo(id);
+	}, []);
+
+	// // 페이지 처음 로딩시 호출
+	// useEffect(() => {
+	// 	// 현재 선택한 아이 정보 가져오기
+	// 	const getKidInfo = async (childId: number) => {
+	// 		try {
+	// 			const kidData = await getKidDataFromParent(childId);
+	// 			console.log(kidData);
+
+	// 			setKidInfo(kidData);
+	// 		} catch (error) {
+	// 			console.error('데이터를 가져오는 중 오류 발생:', error);
+	// 		}
+	// 	};
+
+	// 	// 현재 주소에서 childId 가져오기
+	// 	const router = useRouter();
+	// 	const id =
+	// 		typeof router.query.id === 'string'
+	// 			? parseInt(router.query.id, 10)
+	// 			: router.query.id;
+
+	// 	getKidInfo(id);
+	// }, []);
+
 	// 각 단계별 컴포넌트
 	const StepOne = () => (
 		<div className="flex flex-col h-full">
@@ -638,7 +685,7 @@ export default function Index() {
 				</div>
 				{/* 안내문구 */}
 				<div className="text-xl font-medium mb-6 ml-10">
-					<span className="font-bold">김애기</span>의 성장을 위해,
+					<span className="font-bold">{kidInfo?.name}</span>의 성장을 위해,
 					<br />
 					오늘은 어떤 심부름을 시켜볼까요?
 				</div>
@@ -657,27 +704,27 @@ export default function Index() {
 								/>
 								<div className="flex w-[70px] bg-white rounded-lg justify-center items-center gap-1">
 									<Image src={level_icon} alt="level" width={20} height={20} />
-									<span className="text-sm font-bold">Lv.10</span>
+									<span className="text-sm font-bold">Lv.{kidInfo?.level}</span>
 								</div>
 							</div>
 							<div className="flex flex-col gap-1">
 								<div className="flex items-center gap-2">
 									<span className="text-gray-600">이름:</span>
-									<span className="font-medium">김애기</span>
+									<span className="font-medium">{kidInfo?.name}</span>
 								</div>
 								<div className="flex items-center gap-2">
 									<span className="text-gray-600">닉네임:</span>
-									<span>일 잘하는 애기</span>
+									<span>{kidInfo?.nickname}</span>
 								</div>
 								<div className="flex items-start gap-2">
 									<span className="text-gray-600 min-w-10">주소:</span>
 									<span className="max-w-30 break-words">
-										서울특별시 강남구 테헤란로 426
+										{kidInfo?.address}
 									</span>
 								</div>
 								<div className="flex items-center gap-2">
 									<span className="text-gray-600">연락처:</span>
-									<span>010-1234-5678</span>
+									<span>{kidInfo?.tel}</span>
 								</div>
 							</div>
 						</div>
