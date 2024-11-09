@@ -10,7 +10,9 @@ import CommonModal from '@/components/Common/Modal';
 import CommonButton from '@/components/Common/Button';
 import { Toast } from '@/components/Toast/Toast';
 import { getInviteCode } from '@/lib/api/inviteCode';
-import { getFamily } from '@/lib/api/user';
+import { getFamily, getUserData } from '@/lib/api/user';
+import { useAtom } from 'jotai';
+import { userAtom } from '@/atoms';
 
 export default function ParentPages() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,7 +20,21 @@ export default function ParentPages() {
 	const [showToast, setShowToast] = useState(false);
 	const [children, setChildren] = useState<Child[]>([]);
 
+	const [user, setUser] = useAtom(userAtom);
+
 	useEffect(() => {
+		const fetchUserData = async () => {
+			try {
+				const response = await getUserData();
+				const { userId, name } = response;
+				setUser({
+					userId,
+					username: name,
+				});
+			} catch (err) {
+				console.error('사용자 데이터 가져오기 실패:', err);
+			}
+		};
 		const fetchFamilyData = async () => {
 			try {
 				const response = await getFamily();
@@ -27,9 +43,9 @@ export default function ParentPages() {
 				console.error('가족 데이터 가져오기 실패:', err);
 			}
 		};
-
+		fetchUserData();
 		fetchFamilyData();
-	}, []);
+	}, [setUser]);
 
 	// 초대 코드 가져오기
 	const fetchInviteCode = async () => {
@@ -69,7 +85,7 @@ export default function ParentPages() {
 			{/* 안내 */}
 			<div className="relative w-full h-[190px] rounded-b-3xl bg-light_yellow_dark shadow-xl mb-4">
 				<h1 className="text-2xl font-normal mt-14 ml-8">
-					안녕하세요 username님,
+					안녕하세요 {user.username}님,
 					<br />
 					오늘도 아이들과 함께 파이팅!
 				</h1>
