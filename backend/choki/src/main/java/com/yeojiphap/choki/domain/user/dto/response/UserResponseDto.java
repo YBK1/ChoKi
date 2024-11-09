@@ -6,7 +6,7 @@ import com.yeojiphap.choki.domain.user.domain.User;
 
 import java.util.List;
 
-public record UserResponseDto (Long id, String nickname, String address, String name, String tel, Role role, String inviteCode, Long familyId, int level, int exp, int pastLevel, Long mainAnimalId, List<Long> animals) {
+public record UserResponseDto (Long userId, String nickname, String address, String name, String tel, Role role, String inviteCode, Long familyId, int level, int exp, int pastLevel, Long mainAnimalId, List<Long> animals) {
     public static UserResponseDto from(User user, List<Collected> animalList) {
         return new UserResponseDto(
                 user.getId(),
