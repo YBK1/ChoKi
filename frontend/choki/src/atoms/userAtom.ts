@@ -9,3 +9,5 @@ export const userAtom = atom<UserState>({
 	userId: 0,
 	username: '',
 });
+
+export const selectedChildIdAtom = atom<number | null>(null);
