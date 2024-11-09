@@ -89,3 +89,17 @@ interface ShoppingCardProps {
 	};
 	onCameraClick: () => void; // 카메라 클릭 핸들러 추가
 }
+interface ShoppingItem {
+	barcode: string;
+	category: string;
+	productName: string;
+	image: string;
+	quantity: number;
+	cartItem?: {
+		productName: string;
+		quantity: number;
+		image: string;
+		reason?: string;
+		status?: string;
+	};
+}
