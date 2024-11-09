@@ -58,7 +58,7 @@ export default function MainPage() {
 					level: data.level || 1,
 					exp: data.exp || 0,
 					pastLevel: data.pastLevel || 0,
-					mainAnimal: data.mainAnimal || 0,
+					mainAnimalId: data.mainAnimalId || 0,
 				};
 
 				console.log('보내기 직전임!!!!');

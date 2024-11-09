@@ -103,3 +103,12 @@ interface ShoppingItem {
 		status?: string;
 	};
 }
+
+interface UnityMainResponse {
+	id: number;
+	nickname : string;
+	mainAnimalId : number;
+	level: number;
+	exp: number;
+	isLevelUp: string; 
+}
