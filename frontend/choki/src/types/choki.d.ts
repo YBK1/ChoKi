@@ -168,6 +168,24 @@ interface AnimalSpeechProps {
 	isImageCaptured: boolean;
 }
 
+// 장보기 미션 부여를 위한 위치 정보
+interface ShoppingLocation {
+	latitude: number;
+	longitude: number;
+	buildingName: string;
+}
+
+interface RoutePoint {
+	latitude: number;
+	longitude: number;
+}
+
+interface RouteDetails {
+	startPoint: ShoppingLocation;
+	destination: ShoppingLocation;
+	routes: RoutePoint[];
+}
+
 // 아이 메인 페이지 유니티로 보내는 정보
 interface ChildMainUnityProps {
 	level: number;

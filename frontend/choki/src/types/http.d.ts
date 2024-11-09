@@ -36,7 +36,7 @@ interface NotificationResponse {
 	childId: number;
 	content: string;
 	type: MissionType;
-	id: number;
+	missionId: string;
 	time: string;
 }
 
@@ -45,6 +45,35 @@ interface ItemSearchResponse {
 	category: string;
 	productName: string;
 	image: string;
+}
+interface CartItem extends ItemSearchResponse {
+	quantity: number;
+}
+
+interface Child {
+	childId: number;
+	name: string;
+	nickname: string;
+	level: number;
+	address: string;
+}
+
+interface FamilyResponse {
+	status: number;
+	message: string;
+	data: {
+		username: string;
+		children: Child[];
+	};
+}
+
+interface ShoppingRequest {
+	parentId: number;
+	childId: number;
+	startPoint: ShoppingLocation;
+	destination: ShoppingLocation;
+	route: RoutePoint[];
+	shoppingList: ReturnType<typeof getShoppingList>;
 }
 
 interface KidDataResponse {
@@ -106,9 +135,31 @@ interface ShoppingItem {
 
 interface UnityMainResponse {
 	id: number;
-	nickname : string;
-	mainAnimalId : number;
+	nickname: string;
+	mainAnimalId: number;
 	level: number;
 	exp: number;
-	isLevelUp: string; 
+	isLevelUp: string;
+}
+
+interface KidDataResponseFromParent {
+	id: string;
+	username: string;
+	nickname: string;
+	address: string;
+	name: string;
+	tel: string;
+	role: 'PARENT' | 'CHILD';
+	level: number;
+	exp: number;
+	pastLevel: number;
+	mainAnimal: number;
+}
+
+interface InProgressMissionResponse {
+	content: string;
+	completedAt: string;
+	image: string;
+	type: MissionType;
+	shoppingId: string;
 }
