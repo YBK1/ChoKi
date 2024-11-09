@@ -490,6 +490,9 @@ export default function Index() {
 			</div>
 		);
 	};
+	const ShoppingConfirmation = () => {
+		return <div className="flex flex-col h-full"></div>;
+	};
 
 	// 각 단계별 모달 사이즈 정의
 	const getModalSize = (step: number) => {
@@ -549,6 +552,8 @@ export default function Index() {
 					return <StepTwo />;
 				case 3:
 					return <StepThree />;
+				case 4:
+					return <ShoppingConfirmation />;
 				default:
 					return null;
 			}
