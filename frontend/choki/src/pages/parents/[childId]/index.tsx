@@ -8,7 +8,7 @@ import level_icon from '@/assets/icons/level.svg';
 import mission_plus from '@/assets/icons/mission_plus.svg';
 import CommonModal from '@/components/Common/Modal';
 import { useState, useEffect, useRef } from 'react';
-import { searchItem } from '@/lib/api/shopping';
+import { searchItem, createShopping } from '@/lib/api/shopping';
 import { getRouteList, getRouteDetails } from '@/lib/api/navigation';
 
 export default function Index() {
@@ -21,7 +21,7 @@ export default function Index() {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedErrand, setSelectedErrand] = useState('');
-	// const [routeDetails, setRouteDetails] = useState<any>(null);
+	const [routeDetails, setRouteDetails] = useState<any>(null);
 	const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
 
 	const handleOpenModal = () => setIsModalOpen(true);
@@ -73,7 +73,7 @@ export default function Index() {
 		const [destinations, setDestinations] = useState<
 			{ objectId: string; buildingName: string }[]
 		>([]);
-		const [routeDetails, setRouteDetails] = useState<any>(null);
+		// const [routeDetails, setRouteDetails] = useState<any>(null);
 		const mapRef = useRef<any>(null);
 		const polylineRef = useRef<any>(null);
 		const markersRef = useRef<any[]>([]);
@@ -474,7 +474,30 @@ export default function Index() {
 		);
 	};
 	const ShoppingConfirmation = () => {
-		console.log('장바구니 목록', selectedItems);
+		const handleComplete = async () => {
+			try {
+				if (!routeDetails) {
+					throw new Error('Route details are not available');
+				}
+
+				const requestBody: ShoppingRequest = {
+					parentId: 1,
+					childId: 2,
+					startPoint: routeDetails.startPoint,
+					destination: routeDetails.destination,
+					route: routeDetails.routes,
+					shoppingList: selectedItems.map(item => ({
+						barcode: item.barcode,
+						quantity: item.quantity,
+					})),
+				};
+
+				await createShopping(requestBody);
+				handleCloseModal();
+			} catch (error) {
+				console.error('Failed to create shopping mission:', error);
+			}
+		};
 		return (
 			<div className="flex flex-col h-full">
 				<h3 className="text-xl font-bold text-center m-4 mb-6">
