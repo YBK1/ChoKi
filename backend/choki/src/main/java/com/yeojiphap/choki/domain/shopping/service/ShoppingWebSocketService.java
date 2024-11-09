@@ -62,7 +62,9 @@ public class ShoppingWebSocketService {
 		Double latitude = null;
 		Double longitude = null;
 
-		log.info(String.valueOf(currentUser.getRole()));
+		log.info("username: " + username);
+		log.info("role: " + String.valueOf(currentUser.getRole()));
+		log.info("shoppingId: " + shoppingId);
 
 		// 아이가 시작한 경우에만 알림이 가도록 해야 한다.
 		if(currentUser.getRole() == Role.CHILD){
