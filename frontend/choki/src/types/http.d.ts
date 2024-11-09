@@ -74,17 +74,6 @@ interface CartItem {
 	reason: string;
 	status: string;
 }
-
-// 메인 쇼핑 아이템의 구조
-interface ShoppingItem {
-	barcode: string;
-	category: string;
-	productName: string;
-	image: string;
-	quantity: number;
-	cartItem: CartItem;
-}
-
 // ProductCard에서 사용하는 Props
 interface ShoppingCardProps {
 	role: 'CHILD' | 'PARENTS';
@@ -98,4 +87,5 @@ interface ShoppingCardProps {
 		count: number;
 		image: string;
 	};
+	onCameraClick: () => void; // 카메라 클릭 핸들러 추가
 }
