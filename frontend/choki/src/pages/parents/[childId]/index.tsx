@@ -10,17 +10,21 @@ import CommonModal from '@/components/Common/Modal';
 import { useState, useEffect, useRef } from 'react';
 import { searchItem } from '@/lib/api/searchItem';
 import { getRouteList, getRouteDetails } from '@/lib/api/navigation';
-import { getKidDataFromParent } from '@/lib/api/parent';
-import { useRouter } from 'next/router';
+import {
+	getKidDataFromParent,
+	getInProgressMissionList,
+} from '@/lib/api/parent';
 
 export default function Index() {
 	const [kidInfo, setKidInfo] = useState<KidDataResponseFromParent>();
 
-	const missions: Mission[] = [
-		{ type: 'SHOP', content: '동네 마트 장보기' },
-		{ type: 'RECYCLE', content: '재활용 분리수거하기' },
-		{ type: 'EXTRA_MISSION', content: '양치하기' },
-	];
+	// const missions: Mission[] = [
+	// 	{ type: 'SHOP', content: '동네 마트 장보기' },
+	// 	{ type: 'RECYCLE', content: '재활용 분리수거하기' },
+	// 	{ type: 'EXTRA_MISSION', content: '양치하기' },
+	// ];
+
+	const [missions, setMissions] = useState<Mission[]>();
 
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,9 +43,32 @@ export default function Index() {
 	// 현재 선택한 아이 정보 가져오기 함수
 	const getKidInfo = async (childId: number) => {
 		try {
-			const kidData = await getKidDataFromParent(childId);
-			console.log(kidData);
+			const kidData: KidDataResponseFromParent =
+				await getKidDataFromParent(childId);
 			setKidInfo(kidData);
+		} catch (error) {
+			console.error('데이터를 가져오는 중 오류 발생:', error);
+		}
+	};
+
+	// 현재 부여된 미션 가져오기 함수
+	const getInProgressMissions = async (childId: number) => {
+		try {
+			const missionData: InProgressMissionResponse[] =
+				await getInProgressMissionList(childId);
+
+			if (!missionData) {
+				console.error('No mission data received.');
+				return;
+			} else console.log(missionData);
+
+			// 데이터를 변환하여 mappedMissions로 설정
+			const mappedMissions: Mission[] = missionData.map(mission => ({
+				type: mission.type,
+				content: mission.content,
+			}));
+
+			setMissions(mappedMissions);
 		} catch (error) {
 			console.error('데이터를 가져오는 중 오류 발생:', error);
 		}
@@ -52,31 +79,8 @@ export default function Index() {
 		const url = new URL(window.location.href);
 		const id = parseInt(url.pathname.split('/').pop() || '0');
 		getKidInfo(id);
+		getInProgressMissions(id);
 	}, []);
-
-	// // 페이지 처음 로딩시 호출
-	// useEffect(() => {
-	// 	// 현재 선택한 아이 정보 가져오기
-	// 	const getKidInfo = async (childId: number) => {
-	// 		try {
-	// 			const kidData = await getKidDataFromParent(childId);
-	// 			console.log(kidData);
-
-	// 			setKidInfo(kidData);
-	// 		} catch (error) {
-	// 			console.error('데이터를 가져오는 중 오류 발생:', error);
-	// 		}
-	// 	};
-
-	// 	// 현재 주소에서 childId 가져오기
-	// 	const router = useRouter();
-	// 	const id =
-	// 		typeof router.query.id === 'string'
-	// 			? parseInt(router.query.id, 10)
-	// 			: router.query.id;
-
-	// 	getKidInfo(id);
-	// }, []);
 
 	// 각 단계별 컴포넌트
 	const StepOne = () => (
@@ -621,7 +625,7 @@ export default function Index() {
 						</button>
 					</div>
 					<div className="flex flex-col justify-center items-center">
-						{missions.map((mission, index) => (
+						{missions?.map((mission, index) => (
 							<MissionItem
 								key={index}
 								type={mission.type}

@@ -76,3 +76,11 @@ interface KidDataResponseFromParent {
 	pastLevel: number;
 	mainAnimal: number;
 }
+
+interface InProgressMissionResponse {
+	content: string;
+	completedAt: string;
+	image: string;
+	type: MissionType;
+	shoppingId: string;
+}
