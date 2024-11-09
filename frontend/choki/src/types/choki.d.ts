@@ -111,6 +111,7 @@ interface TransitionToLocalViewProps {
 	map: mapboxgl.Map | null;
 	userLocation: [number, number] | null;
 	setIsGlobeView: (value: boolean) => void;
+	route: { latitude: number; longitude: number }[] | null;
 }
 interface AddressData {
 	address: string;

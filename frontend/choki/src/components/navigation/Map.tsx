@@ -114,6 +114,7 @@ const MapComponent = () => {
 						map={map}
 						userLocation={userLocation}
 						setIsGlobeView={setIsGlobeView}
+						route={route}
 					/>
 				</>
 			) : (
