@@ -155,3 +155,15 @@ interface CamProps {
 interface AnimalSpeechProps {
 	isImageCaptured: boolean;
 }
+
+// 장보기 미션 부여를 위한 위치 정보
+interface Location {
+	latitude: number;
+	longitude: number;
+	buildingName: string;
+}
+
+interface RoutePoint {
+	latitude: number;
+	longitude: number;
+}
