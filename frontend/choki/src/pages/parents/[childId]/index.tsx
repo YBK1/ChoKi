@@ -9,14 +9,10 @@ import CommonModal from '@/components/Common/Modal';
 import { useState, useEffect, useRef } from 'react';
 import { searchItem, createShopping } from '@/lib/api/shopping';
 import { getRouteList, getRouteDetails } from '@/lib/api/navigation';
-<<<<<<< HEAD
-import { getKidDataFromParent } from '@/lib/api/parent';
-=======
 import {
 	getKidDataFromParent,
 	getInProgressMissionList,
 } from '@/lib/api/parent';
->>>>>>> e5be89ef81ecaeb767ca6291e18ff02eee06fdff
 
 export default function Index() {
 	const [kidInfo, setKidInfo] = useState<KidDataResponseFromParent>();
