@@ -8,7 +8,7 @@ import level_icon from '@/assets/icons/level.svg';
 import mission_plus from '@/assets/icons/mission_plus.svg';
 import CommonModal from '@/components/Common/Modal';
 import { useState, useEffect, useRef } from 'react';
-import { searchItem } from '@/lib/api/searchItem';
+import { searchItem } from '@/lib/api/shopping';
 import { getRouteList, getRouteDetails } from '@/lib/api/navigation';
 
 export default function Index() {
