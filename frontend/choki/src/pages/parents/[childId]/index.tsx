@@ -353,7 +353,6 @@ export default function Index() {
 		);
 	};
 
-	// StepThree 컴포넌트 수정
 	interface CartItem extends ItemSearchResponse {
 		quantity: number;
 	}
@@ -364,30 +363,27 @@ export default function Index() {
 
 		const handleItemSelect = (item: ItemSearchResponse) => {
 			setSelectedItems(prev => {
-				// Check if item already exists
 				const existingItem = prev.find(i => i.barcode === item.barcode);
 				if (existingItem) {
 					return prev.map(i =>
 						i.barcode === item.barcode ? { ...i, quantity: i.quantity + 1 } : i,
 					);
 				}
-				// Add new item with quantity 1
 				return [...prev, { ...item, quantity: 1 }];
 			});
 		};
 
 		const handleQuantityChange = (barcode: string, delta: number) => {
-			setSelectedItems(
-				prev =>
-					prev
-						.map(item => {
-							if (item.barcode === barcode) {
-								const newQuantity = Math.max(0, item.quantity + delta);
-								return { ...item, quantity: newQuantity };
-							}
-							return item;
-						})
-						.filter(item => item.quantity > 0), // Remove items with quantity 0
+			setSelectedItems(prev =>
+				prev
+					.map(item => {
+						if (item.barcode === barcode) {
+							const newQuantity = Math.max(0, item.quantity + delta);
+							return { ...item, quantity: newQuantity };
+						}
+						return item;
+					})
+					.filter(item => item.quantity > 0),
 			);
 		};
 
@@ -395,7 +391,7 @@ export default function Index() {
 			setSelectedItems(prev => prev.filter(item => item.barcode !== barcode));
 		};
 
-		// Transform selectedItems to shoppingList format for API
+		// API 요청 보낼 데이터로 형식 변경 (shoppingList)
 		const getShoppingList = () => {
 			return selectedItems.map(item => ({
 				barcode: item.barcode,
