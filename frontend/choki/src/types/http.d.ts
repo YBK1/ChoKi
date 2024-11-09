@@ -46,6 +46,9 @@ interface ItemSearchResponse {
 	productName: string;
 	image: string;
 }
+interface CartItem extends ItemSearchResponse {
+	quantity: number;
+}
 
 interface Child {
 	childId: number;

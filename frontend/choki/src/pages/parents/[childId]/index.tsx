@@ -346,10 +346,6 @@ export default function Index() {
 		);
 	};
 
-	interface CartItem extends ItemSearchResponse {
-		quantity: number;
-	}
-
 	const StepThree = () => {
 		const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 		const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
