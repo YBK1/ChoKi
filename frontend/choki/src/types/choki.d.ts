@@ -157,7 +157,7 @@ interface AnimalSpeechProps {
 }
 
 // 장보기 미션 부여를 위한 위치 정보
-interface Location {
+interface ShoppingLocation {
 	latitude: number;
 	longitude: number;
 	buildingName: string;
@@ -166,4 +166,10 @@ interface Location {
 interface RoutePoint {
 	latitude: number;
 	longitude: number;
+}
+
+interface RouteDetails {
+	startPoint: ShoppingLocation;
+	destination: ShoppingLocation;
+	routes: RoutePoint[];
 }
