@@ -65,10 +65,6 @@ class WebSocketClient {
 			this.client.subscribe(
 				topic,
 				message => {
-					console.log(
-						`${this.role} received message on topic ${topic}:`,
-						message.body,
-					);
 					callback(message);
 				},
 				{ access: token },
