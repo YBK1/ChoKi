@@ -107,7 +107,7 @@ const MapComponent = () => {
 		<div className="relative w-full h-screen">
 			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>{' '}
 			<div ref={mapContainerRef} className="w-full h-full" />
-			<ChildLocationSender shoppingId="672df1def4c5cb7ca5d36532" />
+			<ChildLocationSender shoppingId="672f0b493251e83e3031604c" />
 			{isGlobeView ? (
 				<>
 					<TransitionToLocalView
