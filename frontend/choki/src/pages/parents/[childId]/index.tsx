@@ -21,6 +21,8 @@ export default function Index() {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedErrand, setSelectedErrand] = useState('');
+	// const [routeDetails, setRouteDetails] = useState<any>(null);
+	const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
 
 	const handleOpenModal = () => setIsModalOpen(true);
 	const handleCloseModal = () => {
@@ -348,7 +350,7 @@ export default function Index() {
 
 	const StepThree = () => {
 		const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-		const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
+		// const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
 
 		const handleItemSelect = (item: ItemSearchResponse) => {
 			setSelectedItems(prev => {
@@ -378,14 +380,6 @@ export default function Index() {
 
 		const handleDelete = (barcode: string) => {
 			setSelectedItems(prev => prev.filter(item => item.barcode !== barcode));
-		};
-
-		// API 요청 보낼 데이터로 형식 변경 (shoppingList)
-		const getShoppingList = () => {
-			return selectedItems.map(item => ({
-				barcode: item.barcode,
-				quantity: item.quantity,
-			}));
 		};
 
 		return (
@@ -480,7 +474,15 @@ export default function Index() {
 		);
 	};
 	const ShoppingConfirmation = () => {
-		return <div className="flex flex-col h-full"></div>;
+		console.log('장바구니 목록', selectedItems);
+		return (
+			<div className="flex flex-col h-full">
+				<h3 className="text-xl font-bold text-center m-4">
+					심부름 정보가 <br />
+					맞는지 확인해주세요!
+				</h3>
+			</div>
+		);
 	};
 
 	// 각 단계별 모달 사이즈 정의
