@@ -34,6 +34,8 @@ type RouteRecorderProps = {
 	map: any;
 	setFinalRoute: (route: { latitude: number; longitude: number }[]) => void;
 	onRecordingFinish: () => void;
+	isRecording: boolean;
+	setIsRecording: (isRecording: boolean) => void;
 };
 
 // 카카오맵 유저 표시 props
@@ -116,6 +118,7 @@ interface TransitionToLocalViewProps {
 	map: mapboxgl.Map | null;
 	userLocation: [number, number] | null;
 	setIsGlobeView: (value: boolean) => void;
+	route: { latitude: number; longitude: number }[] | null;
 }
 interface AddressData {
 	address: string;
@@ -150,19 +153,6 @@ interface Window {
 	unityInstance: any; // Unity 인스턴스 타입
 	receiveDataFromUnity: (data: string) => void; // Unity에서 데이터를 받을 함수 타입
 	UnityReadyCallback?: () => void;
-}
-
-// TODO - 서버 연동시 이름 변경
-// TODO - 서버 연동시 이미지 S3 주소 추가 예정
-interface ShoppingItem {
-	title: string;
-	count: number;
-}
-
-interface ShoppingCardProps {
-	role: string;
-	ParentsShoppingItem: ShoppingItem;
-	ChildrenShoppingItem: ShoppingItem;
 }
 
 interface Speech {
