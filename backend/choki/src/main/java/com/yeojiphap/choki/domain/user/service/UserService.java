@@ -123,6 +123,11 @@ public class UserService {
         return OtherUserResponseDto.from(user, collected);
     }
 
+    public ChildResponseDto getChildInfo() {
+        User user = findCurrentUser();
+        return ChildResponseDto.from(user);
+    }
+
     private TokenResponse createToken(String username, Role role) {
         String access = jwtUtil.createJwt("access", username, Role.valueOf(role.toString()), 86400000L);
         String refresh = jwtUtil.createJwt("refresh", username, Role.valueOf(role.toString()), 86400000L);
