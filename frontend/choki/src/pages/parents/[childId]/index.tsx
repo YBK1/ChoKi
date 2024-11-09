@@ -496,6 +496,8 @@ export default function Index() {
 				return 'medium';
 			case 3:
 				return 'large';
+			case 4:
+				return 'large';
 			default:
 				return 'medium';
 		}
