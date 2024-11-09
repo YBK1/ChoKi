@@ -23,3 +23,19 @@ export const searchItem = async (
 		throw error;
 	}
 };
+
+// 장보기 최종 부여 모달
+export const createShopping = async (
+	requestBody: ShoppingRequest,
+): Promise<any> => {
+	try {
+		const response = await axiosInstance.post(
+			`/api/shopping/create`,
+			requestBody,
+		);
+		return response.data;
+	} catch (error) {
+		console.error('장보기 미션 생성 실패:', error);
+		throw error;
+	}
+};
