@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.server.MethodNotAllowedException;
 
@@ -148,7 +149,7 @@ public class ShoppingMessageController {
 		else if(e instanceof UnauthorizedRoleException){
 			exceptionDto.setStatus(((UnauthorizedRoleException)e).getStatus().value());
 		}
-		else if(e instanceof MethodNotAllowedException){
+		else if(e instanceof MethodArgumentNotValidException){
 			exceptionDto.setStatus(400);
 			exceptionDto.setMessage("잘못된 요청입니다.");
 		}
