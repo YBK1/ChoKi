@@ -1,4 +1,6 @@
 import * as StompJs from '@stomp/stompjs';
+import { useSetAtom } from 'jotai';
+import { shoppingListAtom } from '@/atoms/shoppingAtom';
 
 class WebSocketClient {
 	private client: StompJs.Client;
@@ -32,7 +34,6 @@ class WebSocketClient {
 		});
 	}
 
-	// Fetches token from localStorage each time for updated access
 	private getAccessToken() {
 		if (typeof window !== 'undefined') {
 			return localStorage.getItem('access');
@@ -43,7 +44,7 @@ class WebSocketClient {
 	connect() {
 		const token = this.getAccessToken() || '';
 		if (token) {
-			this.client.connectHeaders = { access: token }; // Add token to connect headers
+			this.client.connectHeaders = { access: token };
 			this.client.activate();
 			console.log(`Activating ${this.role} WebSocket Client...`);
 		} else {
@@ -61,7 +62,6 @@ class WebSocketClient {
 			const token = this.getAccessToken() || '';
 			console.log(`${this.role} connected to topic: ${topic}`);
 
-			// Perform subscription with connectHeaders containing token
 			this.client.subscribe(
 				topic,
 				message => {
@@ -69,6 +69,11 @@ class WebSocketClient {
 						`${this.role} received message on topic ${topic}:`,
 						message.body,
 					);
+					// 메시지 body에서 shoppingList 데이터를 추출하여 전역 Atom에 업데이트
+					const data = JSON.parse(message.body);
+					if (data && data.shoppingList) {
+						useSetAtom(shoppingListAtom)(data.shoppingList); // Atom 업데이트
+					}
 					callback(message);
 				},
 				{ access: token },
@@ -85,7 +90,7 @@ class WebSocketClient {
 			this.client.publish({
 				destination,
 				body: JSON.stringify(message),
-				headers: { access: this.getAccessToken() || '' }, // Send token with message
+				headers: { access: this.getAccessToken() || '' },
 			});
 			console.log(`${this.role} sent message to ${destination}:`, message);
 		} else {
