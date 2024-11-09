@@ -7,8 +7,9 @@ const RouteRecorder = ({
 	map,
 	setFinalRoute,
 	onRecordingFinish,
+	isRecording,
+	setIsRecording,
 }: RouteRecorderProps) => {
-	const [isRecording, setIsRecording] = useState(false);
 	const [watchId, setWatchId] = useState<number | null>(null);
 	const [route, setRoute] = useState<{ latitude: number; longitude: number }[]>(
 		[],

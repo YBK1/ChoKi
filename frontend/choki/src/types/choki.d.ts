@@ -34,6 +34,8 @@ type RouteRecorderProps = {
 	map: any;
 	setFinalRoute: (route: { latitude: number; longitude: number }[]) => void;
 	onRecordingFinish: () => void;
+	isRecording: boolean;
+	setIsRecording: (isRecording: boolean) => void;
 };
 
 // 카카오맵 유저 표시 props
