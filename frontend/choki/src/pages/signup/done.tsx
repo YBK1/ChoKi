@@ -6,7 +6,7 @@ import {
 	ClipboardEvent,
 	useEffect,
 } from 'react';
-import InviteCodeModal from '@/components/Common/Modal/inviteCodeModal';
+import InviteCodeModal from '@/components/Common/Modal/nonCloseModal';
 import CommonButton from '@/components/Common/Button';
 import DogCharacter from '@/assets/icons/dog_character.svg';
 import Image from 'next/image';
