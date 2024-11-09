@@ -1,8 +1,7 @@
-import { getKidData } from '@/lib/api/kid';
+import { getUserData } from '@/lib/api/user';
 import { useEffect } from 'react';
 import UnityViewer from '@/components/Unity/UnityVierwer';
 export default function MainPage() {
-	// Unity로 데이터 전송하는 함수
 	// Unity로 데이터 전송하는 함수
 	const sendDataToUnity = (data: ChildMainUnityProps) => {
 		const iframe = document.getElementById('unity-iframe') as HTMLIFrameElement;
@@ -18,7 +17,7 @@ export default function MainPage() {
 	// 데이터 가져오기 함수
 	const getKidInfo = async () => {
 		try {
-			const kidData = await getKidData();
+			const kidData = await getUserData();
 			console.log(kidData);
 
 			// Unity로 데이터 전송
