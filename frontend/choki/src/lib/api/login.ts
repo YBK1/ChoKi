@@ -2,7 +2,7 @@ import axios from 'axios';
 import qs from 'qs';
 import { setAccessToken } from '@/lib/utils/localUtils'; // setAccessToken 함수 import
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
+const baseURL = 'https://choki.co.kr';
 
 // 회원가입
 export const registerUser = async ({
