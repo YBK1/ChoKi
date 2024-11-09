@@ -10,12 +10,23 @@ import CommonModal from '@/components/Common/Modal';
 import CommonButton from '@/components/Common/Button';
 import { Toast } from '@/components/Toast/Toast';
 import { getInviteCode } from '@/lib/api/inviteCode';
+import { getFamily } from '@/lib/api/user';
 
 export default function ParentPages() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [inviteCode, setInviteCode] = useState('');
 	const [showToast, setShowToast] = useState(false);
+	const [children, setChildren] = useState<Child[]>([]);
 
+	const fetchFamilyData = async () => {
+		try {
+			const response = await getFamily();
+			setChildren(response.children);
+		} catch (err) {
+			console.error('가족 정보 가져오기 실패:', err);
+		}
+	};
+	fetchFamilyData();
 	// 초대 코드 가져오기
 	const fetchInviteCode = async () => {
 		try {
@@ -54,7 +65,7 @@ export default function ParentPages() {
 			{/* 안내 */}
 			<div className="relative w-full h-[190px] rounded-b-3xl bg-light_yellow_dark shadow-xl mb-4">
 				<h1 className="text-2xl font-normal mt-14 ml-8">
-					안녕하세요 민주님,
+					안녕하세요 username님,
 					<br />
 					오늘도 아이들과 함께 파이팅!
 				</h1>
@@ -79,16 +90,21 @@ export default function ParentPages() {
 						<br />
 						미션을 부여하실건가요?
 					</h2>
-					<div className="flex justify-center gap-16">
-						<div className="flex flex-col items-center">
-							<Image src={child_profile} alt="child_profile" />
-							<p className="text-sm mt-2">여준이는 심부름왕</p>
-							<p className="text-sm font-bold mt-1">Lv.10</p>
-						</div>
-						<div className="flex flex-col items-center">
-							<Image src={child_profile} alt="child_profile" />
-							<p className="text-sm mt-2">장덕동 심부름왕</p>
-							<p className="text-sm font-bold mt-1">Lv.5</p>
+					<div className="overflow-x-auto px-4">
+						<div className="flex flex-nowrap gap-8 min-w-min pb-4">
+							{children.map(child => (
+								<Link
+									href={`/parents/${child.childId}`}
+									key={child.childId}
+									className="cursor-pointer hover:opacity-80 transition-opacity"
+								>
+									<div className="flex flex-col items-center flex-shrink-0">
+										<Image src={child_profile} alt="child_profile" />
+										<p className="text-sm mt-2">{child.nickname}</p>
+										<p className="text-sm font-bold mt-1">Lv.{child.level}</p>
+									</div>
+								</Link>
+							))}
 						</div>
 					</div>
 				</div>
