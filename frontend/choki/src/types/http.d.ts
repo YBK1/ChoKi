@@ -93,7 +93,7 @@ interface ShoppingCardProps {
 		count: number;
 		image: string;
 	};
-	ChildrenShoppingItem: {
+	ChildrenShoppingItem?: {
 		title: string;
 		count: number;
 		image: string;
