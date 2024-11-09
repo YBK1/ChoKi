@@ -84,10 +84,7 @@ public class ShoppingWebSocketService {
 			latitude = latitudeStr != null ? Double.parseDouble(latitudeStr) : null;
 			longitude = longitudeStr != null ? Double.parseDouble(longitudeStr) : null;
 
-			PointResponseDto point = PointResponseDto.builder()
-				.latitude(latitude)
-				.longitude(longitude)
-				.build();
+			PointResponseDto point = new PointResponseDto(latitude, longitude);
 
 			log.info(latitudeStr + " " + longitudeStr);
 
