@@ -4,6 +4,8 @@ import com.yeojiphap.choki.domain.family.domain.Family;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static com.yeojiphap.choki.domain.user.domain.EXP.*;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -61,5 +63,17 @@ public class User {
 
     public void updateMainAnimal(Long mainAnimal) {
         this.mainAnimal = mainAnimal;
+    }
+
+    public void updatePastLevel(int pastLevel) {
+        this.pastLevel = pastLevel;
+    }
+
+    public void increaseExperience(int amount) {
+        this.exp += amount;
+        if (this.exp >= MAX_EXP.getExp()) {
+            this.exp -= MAX_EXP.getExp();
+            this.level++;
+        }
     }
 }
