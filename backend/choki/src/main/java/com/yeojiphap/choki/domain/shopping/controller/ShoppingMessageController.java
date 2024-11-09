@@ -10,6 +10,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.server.MethodNotAllowedException;
 
 import com.yeojiphap.choki.domain.shopping.dto.AddProductToCartRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.ChangeQuantityRequestDto;
@@ -147,7 +148,12 @@ public class ShoppingMessageController {
 		else if(e instanceof UnauthorizedRoleException){
 			exceptionDto.setStatus(((UnauthorizedRoleException)e).getStatus().value());
 		}
+		else if(e instanceof MethodNotAllowedException){
+			exceptionDto.setStatus(400);
+			exceptionDto.setMessage("잘못된 요청입니다.");
+		}
 		else{
+			e.printStackTrace();
 			exceptionDto.setStatus(500);
 			exceptionDto.setMessage("오류가 발생했습니다.");
 		}
