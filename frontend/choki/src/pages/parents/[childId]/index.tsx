@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import MissionItem from '@/components/Common/MissionItem';
 import Image from 'next/image';
 import notification_icon from '@/assets/icons/notification.svg';
@@ -24,7 +23,7 @@ export default function Index() {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedErrand, setSelectedErrand] = useState('');
-	const [routeDetails, setRouteDetails] = useState<any>(null);
+	const [selectedRouteDetails, setSelectedRouteDetails] = useState<any>(null);
 	const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
 
 	const handleOpenModal = () => setIsModalOpen(true);
@@ -120,7 +119,7 @@ export default function Index() {
 		const [destinations, setDestinations] = useState<
 			{ objectId: string; buildingName: string }[]
 		>([]);
-		// const [routeDetails, setRouteDetails] = useState<any>(null);
+		const [routeDetails, setRouteDetails] = useState<any>(null);
 		const mapRef = useRef<any>(null);
 		const polylineRef = useRef<any>(null);
 		const markersRef = useRef<any[]>([]);
@@ -229,6 +228,8 @@ export default function Index() {
 				new kakao.maps.LatLng(destination.latitude, destination.longitude),
 			];
 
+			console.log(routePoints);
+
 			const startMarkerImage = new kakao.maps.MarkerImage(
 				'/icons/start_icon.svg',
 				new kakao.maps.Size(40, 40),
@@ -303,7 +304,10 @@ export default function Index() {
 					</button>
 					<button
 						className="px-4 py-2 rounded bg-orange-400 text-white"
-						onClick={handleNext}
+						onClick={() => {
+							setSelectedRouteDetails(routeDetails);
+							handleNext();
+						}}
 						disabled={!selectedDestination}
 					>
 						다음
@@ -523,16 +527,16 @@ export default function Index() {
 	const ShoppingConfirmation = () => {
 		const handleComplete = async () => {
 			try {
-				if (!routeDetails) {
+				if (!selectedRouteDetails) {
 					throw new Error('Route details are not available');
 				}
 
 				const requestBody: ShoppingRequest = {
 					parentId: 1,
 					childId: 2,
-					startPoint: routeDetails.startPoint,
-					destination: routeDetails.destination,
-					route: routeDetails.routes,
+					startPoint: selectedRouteDetails.startPoint,
+					destination: selectedRouteDetails.destination,
+					route: selectedRouteDetails.routes,
 					shoppingList: selectedItems.map(item => ({
 						barcode: item.barcode,
 						quantity: item.quantity,
@@ -587,7 +591,7 @@ export default function Index() {
 						</button>
 						<button
 							className="px-4 py-2 rounded bg-orange_main text-white"
-							onClick={handleCloseModal}
+							onClick={handleComplete}
 						>
 							완료
 						</button>
