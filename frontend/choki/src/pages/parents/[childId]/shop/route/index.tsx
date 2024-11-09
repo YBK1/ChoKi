@@ -1,19 +1,27 @@
 import BottomNavbar from '@/components/Common/Navbar/BottomNavbar';
 import Map from '@/components/map/Map';
+import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
+import { useEffect, useState } from 'react';
 
 export default function ChildIsShoppingPage() {
-	const route = [
-		{ latitude: 35.1651676, longitude: 126.8788277 },
-		{ latitude: 35.1655676, longitude: 126.8789277 },
-		{ latitude: 35.1657676, longitude: 126.8786277 },
-		{ latitude: 35.1652676, longitude: 126.8790277 },
-		{ latitude: 35.1649676, longitude: 126.8785277 },
-		{ latitude: 35.1653676, longitude: 126.8787277 },
-		{ latitude: 35.1648676, longitude: 126.8784277 },
-		{ latitude: 35.1654676, longitude: 126.8783277 },
-		{ latitude: 35.1647676, longitude: 126.8791277 },
-		{ latitude: 35.1658676, longitude: 126.8782277 },
-	];
+	const [route, setRoute] = useState<
+		{ latitude: number; longitude: number }[] | undefined
+	>(undefined);
+
+	useEffect(() => {
+		parentWebSocketClient.connect();
+
+		parentWebSocketClient.subscribe(
+			`/user/sub/shopping/672f0b493251e83e3031604c`,
+			msg => {
+				console.log('Received message:', msg.body);
+
+				const missionRoute = JSON.parse(msg.body).route;
+				setRoute(missionRoute);
+			},
+		);
+	}, []);
+
 	return (
 		<div className="relative min-h-screen bg-light_yellow flex flex-col items-center justify-center">
 			<div
