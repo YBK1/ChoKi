@@ -67,7 +67,7 @@ interface FamilyResponse {
 	};
 }
 
-interface ShoppingRequset {
+interface ShoppingRequest {
 	parentId: number;
 	childId: number;
 	startPoint: ShoppingLocation;
