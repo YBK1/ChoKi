@@ -51,6 +51,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public ChildResponseDto getChildInfo(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        return ChildResponseDto.from(user);
+    }
+
+    @Transactional(readOnly = true)
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
@@ -61,6 +67,8 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserLevelDto getLevel() {
         User user = findCurrentUser();
+        boolean isLevelEqual = user.getLevel() == user.getPastLevel();
+        user.updatePastLevel(user.getLevel());
         return new UserLevelDto(user.getLevel(), user.getExp(), user.getLevel() == user.getPastLevel());
     }
 
@@ -73,6 +81,7 @@ public class UserService {
         return UserSuccessMessage.USER_ID_VALIDATION_SUCCESS.getMessage();
     }
 
+    @Transactional(readOnly = true)
     public NearbyUsersDto findNearbyUsers() {
         User user = findCurrentUser();
         List<User> users = userRepository.findUsersWithinRadius(user.getLatitude(), user.getLongitude(), SEARCH_RADIUS_KM);
@@ -96,16 +105,19 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 
+    @Transactional(readOnly = true)
     public User findCurrentUser() {
         return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(UserNotFoundException::new);
     }
 
+    @Transactional
     public void saveUser(User user) {
         userRepository.save(user);
     }
 
-    public OtherUserResponseDto getOtherUserInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    @Transactional(readOnly = true)
+    public OtherUserResponseDto getOtherUserInfo(String username) {
+        User user = findByUsername(username);
         List<Collected> collected = collectedRepository.findByUser(user.getId());
 
         return OtherUserResponseDto.from(user, collected);
