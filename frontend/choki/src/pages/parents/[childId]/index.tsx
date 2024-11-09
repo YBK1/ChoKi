@@ -17,12 +17,7 @@ import {
 
 export default function Index() {
 	const [kidInfo, setKidInfo] = useState<KidDataResponseFromParent>();
-
-	// const missions: Mission[] = [
-	// 	{ type: 'SHOP', content: '동네 마트 장보기' },
-	// 	{ type: 'RECYCLE', content: '재활용 분리수거하기' },
-	// 	{ type: 'EXTRA_MISSION', content: '양치하기' },
-	// ];
+	const [currentChildId, setCurrentChildId] = useState<number>();
 
 	const [missions, setMissions] = useState<Mission[]>();
 
@@ -76,10 +71,11 @@ export default function Index() {
 		}
 	};
 
-	// 현재 주소에서 아이디 가져와서 선택된 아이 정보 가져오기
+	// 현재 주소에서 아이디 가져와서 api 조회하기
 	useEffect(() => {
 		const url = new URL(window.location.href);
 		const id = parseInt(url.pathname.split('/').pop() || '0');
+		setCurrentChildId(id);
 		getKidInfo(id);
 		getInProgressMissions(id);
 	}, []);
@@ -676,7 +672,7 @@ export default function Index() {
 			<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow background min-h-screen">
 				{/* 알림 아이콘 */}
 				<div className="flex justify-end m-4">
-					<Link href="/parents/1/notification">
+					<Link href={`/parents/${currentChildId}/notification`}>
 						<div className="bg-white rounded-xl shadow-sm flex items-center justify-center">
 							<Image
 								src={notification_icon}

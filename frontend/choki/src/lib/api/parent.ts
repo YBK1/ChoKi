@@ -15,3 +15,10 @@ export const getInProgressMissionList = async (
 	);
 	return response.data;
 };
+
+export const getNotification = async (
+	childId: number,
+): Promise<NotificationResponse[]> => {
+	const response = await axiosInstance.get(`/api/notification/${childId}`);
+	return response.data;
+};

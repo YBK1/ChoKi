@@ -36,7 +36,7 @@ interface NotificationResponse {
 	childId: number;
 	content: string;
 	type: MissionType;
-	id: number;
+	missionId: string;
 	time: string;
 }
 
