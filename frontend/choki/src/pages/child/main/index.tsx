@@ -1,5 +1,5 @@
 import { getKidData } from '@/lib/api/kid';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import UnityViewer from '@/components/Unity/UnityVierwer';
 
 export default function MainPage() {
@@ -7,7 +7,7 @@ export default function MainPage() {
 	const [errorMessage, setErrorMessage] = useState<string | null>(null); // 오류 메시지 상태 저장
 
 	// Unity로 데이터 전송하는 함수
-	const sendDataToUnity = (data: ChildMainUnityProps) => {
+	const sendDataToUnity = useCallback((data: ChildMainUnityProps) => {
 		const iframe = document.getElementById('unity-iframe') as HTMLIFrameElement;
 		if (iframe && iframe.contentWindow) {
 			const jsonData = JSON.stringify(data);
@@ -29,10 +29,10 @@ export default function MainPage() {
 			setErrorMessage('Unity iframe을 찾을 수 없습니다.');
 			console.error('Unity iframe을 찾을 수 없습니다.');
 		}
-	};
+	}, []);
 
 	// 데이터 가져오기 함수
-	const getKidInfo = async () => {
+	const getKidInfo = useCallback(async () => {
 		try {
 			const kidData = await getKidData();
 			console.log('kidData', kidData);
@@ -42,11 +42,11 @@ export default function MainPage() {
 		} catch (error) {
 			console.error('데이터를 가져오는 중 오류 발생:', error);
 		}
-	};
+	}, [sendDataToUnity]);
 
 	useEffect(() => {
 		getKidInfo();
-	}, []);
+	}, [getKidInfo]);
 
 	return (
 		<div>
