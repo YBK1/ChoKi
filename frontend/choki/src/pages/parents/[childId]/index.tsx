@@ -13,10 +13,14 @@ import {
 	getKidDataFromParent,
 	getInProgressMissionList,
 } from '@/lib/api/parent';
+import { useAtom } from 'jotai';
+import { userAtom, selectedChildIdAtom } from '@/atoms';
+import { useRouter } from 'next/router';
+import { getUserData } from '@/lib/api/user';
 
 export default function Index() {
 	const [kidInfo, setKidInfo] = useState<KidDataResponseFromParent>();
-	const [currentChildId, setCurrentChildId] = useState<number>();
+	// const [currentChildId, setCurrentChildId] = useState<number>();
 
 	const [missions, setMissions] = useState<Mission[]>();
 
@@ -35,6 +39,10 @@ export default function Index() {
 
 	const handleNext = () => setCurrentStep(prev => prev + 1);
 	const handlePrev = () => setCurrentStep(prev => prev - 1);
+
+	const [user, setUser] = useAtom(userAtom);
+	const router = useRouter();
+	const [selectedChildId, setSelectedChildId] = useAtom(selectedChildIdAtom);
 
 	// 현재 선택한 아이 정보 가져오기 함수
 	const getKidInfo = async (childId: number) => {
@@ -71,14 +79,47 @@ export default function Index() {
 	};
 
 	// 현재 주소에서 아이디 가져와서 api 조회하기
-	useEffect(() => {
-		const url = new URL(window.location.href);
-		const id = parseInt(url.pathname.split('/').pop() || '0');
-		setCurrentChildId(id);
-		getKidInfo(id);
-		getInProgressMissions(id);
-	}, []);
+	// useEffect(() => {
+	// 	const url = new URL(window.location.href);
+	// 	const id = parseInt(url.pathname.split('/').pop() || '0');
+	// 	setCurrentChildId(id);
+	// 	getKidInfo(id);
+	// 	getInProgressMissions(id);
+	// }, []);
+	// 사용자 정보 가져오기
 
+	// useEffect(() => {
+	// 	const fetchUserData = async () => {
+	// 		try {
+	// 			const response = await getUserData();
+	// 			setUser({
+	// 				userId: response.userId,
+	// 				username: response.name,
+	// 			});
+	// 		} catch (error) {
+	// 			console.error('사용자 데이터 가져오기 실패:', error);
+	// 		}
+	// 	};
+
+	// 	fetchUserData();
+	// }, []); // 컴포넌트 마운트 시 한 번만 실행
+
+	useEffect(() => {
+		const { childId } = router.query;
+
+		// 1. childId가 있을 때만 상태 업데이트 및 데이터 fetch
+		if (childId && typeof childId === 'string') {
+			const numChildId = Number(childId);
+			setSelectedChildId(numChildId);
+
+			// 2. 바로 데이터 fetch (userId 체크는 각 API 함수 내부에서 처리)
+			getKidInfo(numChildId);
+			getInProgressMissions(numChildId);
+		}
+	}, [router.query, setSelectedChildId]); // userId 의존성 제거
+
+	// 현재 선택된 childId 확인
+	console.log('parentId,childId', user.userId, selectedChildId);
 	// 각 단계별 컴포넌트
 	const StepOne = () => (
 		<div className="flex flex-col h-full">
@@ -532,8 +573,8 @@ export default function Index() {
 				}
 
 				const requestBody: ShoppingRequest = {
-					parentId: 1,
-					childId: 2,
+					parentId: user.userId,
+					childId: selectedChildId!,
 					startPoint: selectedRouteDetails.startPoint,
 					destination: selectedRouteDetails.destination,
 					route: selectedRouteDetails.routes,
@@ -544,6 +585,9 @@ export default function Index() {
 				};
 
 				await createShopping(requestBody);
+				if (selectedChildId) {
+					await getInProgressMissions(selectedChildId);
+				}
 				handleCloseModal();
 			} catch (error) {
 				console.error('Failed to create shopping mission:', error);
@@ -676,7 +720,7 @@ export default function Index() {
 			<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow background min-h-screen">
 				{/* 알림 아이콘 */}
 				<div className="flex justify-end m-4">
-					<Link href={`/parents/${currentChildId}/notification`}>
+					<Link href={`/parents/${selectedChildId}/notification`}>
 						<div className="bg-white rounded-xl shadow-sm flex items-center justify-center">
 							<Image
 								src={notification_icon}
