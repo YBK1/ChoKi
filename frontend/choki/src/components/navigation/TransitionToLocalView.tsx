@@ -7,9 +7,10 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 	map,
 	userLocation,
 	setIsGlobeView,
+	route,
 }) => {
 	const transitionToLocalView = useCallback(() => {
-		if (!map || !userLocation) return;
+		if (!map || !userLocation || !route) return;
 
 		setIsGlobeView(false);
 
@@ -59,14 +60,10 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 							properties: {},
 							geometry: {
 								type: 'LineString',
-								coordinates: [
-									[126.8124, 35.2014], // 국가대표짬뽕 수완본점
-									[126.8189, 35.1976],
-									[126.8235, 35.1941],
-									[126.8271, 35.1898],
-									[126.8334, 35.1808],
-									[126.8463, 35.1711], // 광주송정역
-								],
+								coordinates: route.map(point => [
+									point.longitude,
+									point.latitude,
+								]),
 							},
 						},
 					],
@@ -143,7 +140,7 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 				MapStyles(map);
 			});
 		}, 2500);
-	}, [map, userLocation, setIsGlobeView]);
+	}, [map, userLocation, setIsGlobeView, route]);
 
 	return (
 		<button
