@@ -13,6 +13,7 @@ const Map = ({
 	showPolyline = true,
 	showPreviousButton = true,
 	showChildNavBar = false,
+	route = [],
 }: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
@@ -20,10 +21,12 @@ const Map = ({
 		{ latitude: number; longitude: number }[]
 	>([]);
 	const [showSetDestination, setShowSetDestination] = useState(false);
+	const [isRecording, setIsRecording] = useState(false);
 	const router = useRouter();
 
 	const handleRecordingFinished = () => {
 		setShowSetDestination(true);
+		setIsRecording(false);
 	};
 
 	const goToPreviousPage = () => {
@@ -66,7 +69,7 @@ const Map = ({
 			{mapInstance && showPolyline && (
 				<RoutePolyline
 					map={mapInstance}
-					finalRoute={finalRoute}
+					route={route.length ? route : finalRoute}
 					polyline={polyline}
 					setPolyline={setPolyline}
 				/>
@@ -78,7 +81,7 @@ const Map = ({
 						bottom: '10px',
 						left: '50%',
 						transform: 'translateX(-50%)',
-						zIndex: 10,
+						zIndex: 11,
 						padding: '10px',
 						borderRadius: '5px',
 					}}
@@ -87,6 +90,8 @@ const Map = ({
 						map={mapInstance}
 						setFinalRoute={setFinalRoute}
 						onRecordingFinish={handleRecordingFinished}
+						isRecording={isRecording}
+						setIsRecording={setIsRecording}
 					/>
 				</div>
 			)}
@@ -100,6 +105,32 @@ const Map = ({
 					}}
 				>
 					<ChildNavBar />
+				</div>
+			)}
+			{isRecording && (
+				<div className="fixed inset-0 flex items-center justify-center z-10">
+					<div className="absolute inset-0 pointer-events-none"></div>
+					<div
+						className="relative bg-white rounded-lg shadow-lg p-6 max-w-xs w-full flex flex-col items-center"
+						style={{
+							animation: 'blink 2s infinite ease-in-out',
+							transform: 'translateY(-170px)',
+						}}
+					>
+						<h3 className="text-lg font-semibold mb-2">경로 기록중...</h3>
+					</div>
+					{/* 반짝이는 효과 */}
+					<style jsx>{`
+						@keyframes blink {
+							0%,
+							100% {
+								opacity: 1;
+							}
+							50% {
+								opacity: 0;
+							}
+						}
+					`}</style>
 				</div>
 			)}
 		</div>

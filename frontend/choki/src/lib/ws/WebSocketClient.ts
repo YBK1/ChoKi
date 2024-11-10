@@ -32,7 +32,6 @@ class WebSocketClient {
 		});
 	}
 
-	// Fetches token from localStorage each time for updated access
 	private getAccessToken() {
 		if (typeof window !== 'undefined') {
 			return localStorage.getItem('access');
@@ -43,9 +42,8 @@ class WebSocketClient {
 	connect() {
 		const token = this.getAccessToken() || '';
 		if (token) {
-			this.client.connectHeaders = { access: token }; // Add token to connect headers
+			this.client.connectHeaders = { access: token };
 			this.client.activate();
-			console.log(`Activating ${this.role} WebSocket Client...`);
 		} else {
 			console.error('Access token not found');
 		}
@@ -59,16 +57,10 @@ class WebSocketClient {
 	subscribe(topic: string, callback: (message: StompJs.Message) => void) {
 		this.client.onConnect = () => {
 			const token = this.getAccessToken() || '';
-			console.log(`${this.role} connected to topic: ${topic}`);
 
-			// Perform subscription with connectHeaders containing token
 			this.client.subscribe(
 				topic,
 				message => {
-					console.log(
-						`${this.role} received message on topic ${topic}:`,
-						message.body,
-					);
 					callback(message);
 				},
 				{ access: token },
@@ -85,7 +77,7 @@ class WebSocketClient {
 			this.client.publish({
 				destination,
 				body: JSON.stringify(message),
-				headers: { access: this.getAccessToken() || '' }, // Send token with message
+				headers: { access: this.getAccessToken() || '' },
 			});
 			console.log(`${this.role} sent message to ${destination}:`, message);
 		} else {
