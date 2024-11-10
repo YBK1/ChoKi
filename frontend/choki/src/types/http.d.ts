@@ -100,8 +100,8 @@ interface CartItem {
 	productName: string;
 	image: string;
 	quantity: number;
-	reason: string;
-	status: string;
+	reason?: string;
+	status?: string;
 }
 // ProductCard에서 사용하는 Props
 interface ShoppingCardProps {
