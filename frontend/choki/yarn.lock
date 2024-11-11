@@ -1065,11 +1065,14 @@
   dependencies:
     fast-glob "3.3.1"
 
+<<<<<<< HEAD
 "@next/swc-win32-x64-msvc@13.5.7":
   version "13.5.7"
   resolved "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-13.5.7.tgz"
   integrity sha512-PLyD3Dl6jTTkLG8AoqhPGd5pXtSs8wbqIhWPQt3yEMfnYld/dGYuF2YPs3YHaVFrijCIF9pXY3+QOyvP23Zn7g==
 
+=======
+>>>>>>> origin/develop/fe
 "@next/swc-win32-x64-msvc@15.0.1":
   version "15.0.1"
   resolved "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-15.0.1.tgz"
