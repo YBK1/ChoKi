@@ -201,3 +201,8 @@ interface ChildMainUnityProps {
 	mainAnimal: number;
 	nickname: string;
 }
+
+interface ProductCardProps {
+	conpareResult: string;
+	ProductName: string;
+}
