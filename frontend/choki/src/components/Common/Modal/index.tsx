@@ -7,7 +7,8 @@ const CommonModal = ({
 	onClose,
 	size = 'medium',
 	children,
-}: ModalProps) => {
+	hideBackdrop = false, // hideBackdrop prop 추가
+}: ModalProps & { hideBackdrop?: boolean }) => {
 	if (!isOpen) return null;
 
 	const sizeStyles = {
@@ -18,19 +19,21 @@ const CommonModal = ({
 
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center">
-			{/* Backdrop */}
-			<div className="absolute inset-0 bg-black/50" onClick={onClose} />
+			{/* Backdrop - hideBackdrop이 true일 때는 배경 효과 제거 */}
+			{!hideBackdrop && (
+				<div className="absolute inset-0 bg-black/50" onClick={onClose} />
+			)}
 
 			{/* Modal */}
 			<div
 				className={`
-          relative 
-          bg-white 
-          rounded-lg 
-          shadow-lg 
-          ${sizeStyles[size]}
-          p-6
-        `}
+			  relative 
+			  bg-white 
+			  rounded-lg 
+			  shadow-lg 
+			  ${sizeStyles[size]}
+			  p-6
+			`}
 			>
 				{/* Close Button */}
 				<button
@@ -45,7 +48,6 @@ const CommonModal = ({
 						className="object-contain"
 					/>
 				</button>
-
 				{/* Content */}
 				<div className="h-full w-full">{children}</div>
 			</div>
