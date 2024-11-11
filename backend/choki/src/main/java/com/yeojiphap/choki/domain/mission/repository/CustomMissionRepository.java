@@ -9,7 +9,7 @@ import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.domain.Status;
 
 public interface CustomMissionRepository {
-	Mission findById(ObjectId missionId);
+	Optional<Mission> findById(ObjectId missionId);
 
 	Mission saveMission(Mission mission);
 
