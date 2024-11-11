@@ -25,14 +25,6 @@ export default function MainPage() {
 		};
 	}, []);
 
-	useEffect(() => {
-		if (isUnityLoaded && pendingData) {
-			console.log('Unity가 로드되었고, 데이터를 전송합니다.');
-			sendDataToUnity(pendingData);
-			setPendingData(null);
-		}
-	}, [isUnityLoaded, pendingData]);
-
 	const sendDataToUnity = useCallback(
 		(data: any) => {
 			console.log('와우 이건 찍히겠지??????');
@@ -86,6 +78,14 @@ export default function MainPage() {
 		},
 		[isUnityLoaded],
 	);
+
+	useEffect(() => {
+		if (isUnityLoaded && pendingData) {
+			console.log('Unity가 로드되었고, 데이터를 전송합니다.');
+			sendDataToUnity(pendingData);
+			setPendingData(null);
+		}
+	}, [isUnityLoaded, pendingData, sendDataToUnity]);
 
 	const getKidInfo = useCallback(async () => {
 		try {
