@@ -1,4 +1,4 @@
-import { getKidData } from '@/lib/api/kid';
+import { getUserData } from '@/lib/api/user';
 import { useCallback, useEffect, useState } from 'react';
 import UnityViewer from '@/components/Unity/UnityViewer';
 
@@ -89,7 +89,7 @@ export default function MainPage() {
 
 	const getKidInfo = useCallback(async () => {
 		try {
-			const kidData = await getKidData();
+			const kidData = await getUserData();
 			console.log('Kid data received:', kidData);
 			return kidData;
 		} catch (error) {
