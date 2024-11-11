@@ -16,7 +16,6 @@ import {
 import { useAtom } from 'jotai';
 import { userAtom, selectedChildIdAtom } from '@/atoms';
 import { useRouter } from 'next/router';
-import { getUserData } from '@/lib/api/user';
 
 export default function Index() {
 	const [kidInfo, setKidInfo] = useState<KidDataResponseFromParent>();
@@ -87,22 +86,6 @@ export default function Index() {
 	// 	getInProgressMissions(id);
 	// }, []);
 	// 사용자 정보 가져오기
-
-	// useEffect(() => {
-	// 	const fetchUserData = async () => {
-	// 		try {
-	// 			const response = await getUserData();
-	// 			setUser({
-	// 				userId: response.userId,
-	// 				username: response.name,
-	// 			});
-	// 		} catch (error) {
-	// 			console.error('사용자 데이터 가져오기 실패:', error);
-	// 		}
-	// 	};
-
-	// 	fetchUserData();
-	// }, []); // 컴포넌트 마운트 시 한 번만 실행
 
 	useEffect(() => {
 		const { childId } = router.query;
