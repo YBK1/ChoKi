@@ -7,7 +7,7 @@ const CommonModal = ({
 	onClose,
 	size = 'medium',
 	children,
-	hideBackdrop = false, // hideBackdrop prop 추가
+	hideBackdrop = true, // hideBackdrop prop 추가
 }: ModalProps & { hideBackdrop?: boolean }) => {
 	if (!isOpen) return null;
 
