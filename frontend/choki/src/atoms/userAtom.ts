@@ -1,11 +1,12 @@
 import { atom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
 
 interface UserState {
 	userId: number;
 	username: string;
 }
 
-export const userAtom = atom<UserState>({
+export const userAtom = atomWithStorage<UserState>('user', {
 	userId: 0,
 	username: '',
 });
