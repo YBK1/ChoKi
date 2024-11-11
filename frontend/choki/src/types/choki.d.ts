@@ -175,3 +175,9 @@ interface ChildMainUnityProps {
 	mainAnimal: number;
 	nickname: string;
 }
+
+// 상품 담기 페이지로 보낼 props
+interface ProductCardProps {
+	conpareResult: string;
+	ProductName: string;
+}

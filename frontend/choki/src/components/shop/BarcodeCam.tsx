@@ -65,7 +65,7 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, onCaptureImage }) => {
 					try {
 						const result = await codeReader.decodeFromImageElement(imgElement);
 						if (result) {
-							console.log('인식된 바코드:', result.getText());
+							// console.log('인식된 바코드:', result.getText());
 							if (onCaptureImage) {
 								onCaptureImage(result.getText());
 							}
