@@ -10,7 +10,7 @@ const UserLocationMarker = ({ map }: UserLocationMarkerProps) => {
 		const kakao = (window as any).kakao;
 
 		const markerImage = new kakao.maps.MarkerImage(
-			'/choki192x192.png',
+			'/maskable_icon_x192.png',
 			new kakao.maps.Size(30, 30),
 			{ offset: new kakao.maps.Point(15, 30) },
 		);
