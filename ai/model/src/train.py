@@ -2,14 +2,20 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import os
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D
-from tensorflow.keras.layers import Flatten, Dense, ZeroPadding2D
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, ZeroPadding2D
 from PIL import Image
 import numpy as np
 import re
 
 train_image_path = "../../data/train"
 test_image_path = "../../data/test"
+
+# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+# os.environ['CUDA_HOME']='/home/j-k11c102/.conda/envs/chokiAi'
+# os.environ['LD_LIBRARY_PATH']='/home/j-k11c102/.conda/envs/chokiAi/'
+
+# train_image_path = "../../aihub/datasets/train"
+# test_image_path = "../../aihub/datasets/test"
 
 def load_custom_dataset(image_path, target_size=(224, 224)):
     images = []
@@ -19,15 +25,23 @@ def load_custom_dataset(image_path, target_size=(224, 224)):
                      key=lambda x: int(re.match(r'(\d+)\.', x).group(1)) if re.match(r'(\d+)\.', x) else float('inf'))
 
     for folder in folders:
-        class_num = int(re.match(r'(\d+)\.', folder).group(1))
-        folder_path = os.path.join(image_path, folder)
+        parsed = re.match(r'(\d+)\.', folder)
+        if parsed:
+            class_num = int(parsed.group(1))
+            # 정상적으로 매칭된 경우, 폴더 경로를 사용해 작업을 진행
+            folder_path = os.path.join(image_path, folder)
+            # 나머지 로직 이어서 작성
+        else:
+            print(f"Skipping folder with unexpected format: {folder}")
+            # 매칭 실패 시 건너뜀
+            continue
+        # folder_path = os.path.join(image_path, folder)
 
         if os.path.isdir(folder_path):
             for filename in os.listdir(folder_path):
                 if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
                     try:
                         img_path = os.path.join(folder_path, filename)
-                        # RGB로 이미지 로드
                         img = Image.open(img_path)
                         if img.mode != 'RGB':
                             img = img.convert('RGB')
@@ -51,10 +65,12 @@ def load_custom_dataset(image_path, target_size=(224, 224)):
 
     return x_train, y_train
 
+# GPU 사용을 명시
+physical_devices = tf.config.list_physical_devices('GPU')
+tf.config.set_visible_devices(physical_devices[0], 'GPU')
 
-# 모델 정의 - 3채널(RGB) 입력을 받도록 수정
+# 모델 정의
 model = Sequential([
-    # input_shape를 (224, 224, 3)으로 변경
     ZeroPadding2D(padding=2, input_shape=(224, 224, 3)),
     Conv2D(filters=32, kernel_size=5, padding="valid", strides=1, activation="relu"),
     MaxPooling2D(pool_size=2, strides=2),
@@ -65,7 +81,7 @@ model = Sequential([
     Flatten(),
     Dense(units=256, activation="relu"),
     Dense(units=128, activation="relu"),
-    Dense(units=10, activation="softmax")  # 클래스 수에 맞게 조정
+    Dense(units=10, activation="softmax")
 ])
 
 # 데이터 로드
@@ -94,7 +110,11 @@ history = model.fit(x_train, y_train,
 test_loss, test_acc = model.evaluate(x_test, y_test)
 print(f"Test accuracy: {test_acc:.4f}")
 
-# 학습 과정 시각화 (선택사항)
+# 학습된 모델 저장
+model.save("../models/trained_model.keras")
+print("모델이 'trained_model.keras'로 저장되었습니다.")
+
+# 학습 과정 시각화 저장
 plt.figure(figsize=(12, 4))
 
 plt.subplot(1, 2, 1)
@@ -113,5 +133,7 @@ plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
 
+# 그래프 이미지로 저장
+plt.savefig("../models/training_history.png")
+print("학습 과정 시각화가 'training_history.png'로 저장되었습니다.")
 plt.show()
-
