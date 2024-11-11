@@ -594,8 +594,8 @@ export default function Index() {
 					{selectedRouteDetails.destination.buildingName}
 				</div>
 				<span className="font-bold ml-2 mb-3">장바구니</span>
-				<div className="flexoverflow-y-auto">
-					<div className="grid grid-cols-2 gap-2 ">
+				<div className="overflow-y-auto">
+					<div className="grid grid-cols-2 gap-2">
 						{selectedItems.map(item => (
 							<div
 								key={item.barcode}
@@ -611,7 +611,7 @@ export default function Index() {
 									/>
 								</div>
 								<div className="text-center">
-									<p className="text-sm mb-1">{item.productName}</p>
+									<p className="text-sm mb-1 truncate">{item.productName}</p>
 									<p className="text-sm text-gray-500">
 										수량: {item.quantity}개
 									</p>
