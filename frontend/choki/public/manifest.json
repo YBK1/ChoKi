@@ -54,5 +54,17 @@
 	"orientation": "portrait",
 	"lang": "ko",
 	"id": "choki",
-	"categories": ["education", "entertainment", "kids"]
+	"categories": ["education", "entertainment", "kids"],
+	"display_override": ["standalone"],
+	"window_controls_overlay": "overlay",
+	"file_handlers": [
+		{
+			"action": "/open-file",
+			"accept": {
+				"application/pdf": [".pdf"],
+				"image/png": [".png"]
+			}
+		}
+	],
+	"handle_links": "preferred"
 }
