@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import TransitionToLocalView from './TransitionToLocalView';
@@ -22,6 +23,11 @@ const MapComponent = () => {
 	const [route, setRoute] = useState<
 		{ latitude: number; longitude: number }[] | null
 	>(null);
+	const router = useRouter();
+
+	const goBack = () => {
+		router.push('/child/main');
+	};
 
 	useEffect(() => {
 		if (!mapContainerRef.current) return;
@@ -126,6 +132,12 @@ const MapComponent = () => {
 					</>
 				)
 			)}
+			<button
+				onClick={goBack}
+				className="absolute top-4 left-4 bg-white p-2 rounded-full shadow-lg"
+			>
+				돌아가기
+			</button>
 		</div>
 	);
 };
