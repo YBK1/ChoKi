@@ -16,6 +16,7 @@ import {
 import { useAtom } from 'jotai';
 import { userAtom, selectedChildIdAtom } from '@/atoms';
 import { useRouter } from 'next/router';
+import BottomNavbar from '@/components/Common/Navbar/BottomNavbar';
 
 export default function Index() {
 	const [kidInfo, setKidInfo] = useState<KidDataResponseFromParent>();
@@ -593,8 +594,8 @@ export default function Index() {
 					{selectedRouteDetails.destination.buildingName}
 				</div>
 				<span className="font-bold ml-2 mb-3">장바구니</span>
-				<div className="flexoverflow-y-auto">
-					<div className="grid grid-cols-2 gap-2 ">
+				<div className="overflow-y-auto">
+					<div className="grid grid-cols-2 gap-2">
 						{selectedItems.map(item => (
 							<div
 								key={item.barcode}
@@ -610,7 +611,7 @@ export default function Index() {
 									/>
 								</div>
 								<div className="text-center">
-									<p className="text-sm mb-1">{item.productName}</p>
+									<p className="text-sm mb-1 truncate">{item.productName}</p>
 									<p className="text-sm text-gray-500">
 										수량: {item.quantity}개
 									</p>
@@ -709,9 +710,9 @@ export default function Index() {
 
 	return (
 		<>
-			<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow background min-h-screen">
+			<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow background min-h-screen pb-24">
 				{/* 알림 아이콘 */}
-				<div className="flex justify-end m-4">
+				<div className="flex justify-end m-3 mr-5">
 					<Link href={`/parents/${selectedChildId}/notification`}>
 						<div className="bg-white rounded-xl shadow-sm flex items-center justify-center">
 							<Image
@@ -731,7 +732,7 @@ export default function Index() {
 				</div>
 				{/* 아이정보 */}
 				<div className="flex justify-center items-center">
-					<div className="w-[330px] bg-light_yellow_dark rounded-2xl p-6 mb-8">
+					<div className="w-[330px] bg-light_yellow_dark rounded-2xl p-6 mb-4">
 						<h2 className="text-lg font-bold mb-4">아이 정보</h2>
 						<div className="flex justify-center items-center gap-4">
 							<div className="flex flex-col">
@@ -783,7 +784,7 @@ export default function Index() {
 							/>
 						</button>
 					</div>
-					<div className="flex flex-col justify-center items-center">
+					<div className="flex flex-col items-center h-[260px] overflow-y-auto px-4">
 						{missions?.map((mission, index) => (
 							<MissionItem
 								key={index}
@@ -805,6 +806,7 @@ export default function Index() {
 					{renderContent()}
 				</CommonModal>
 			</div>
+			<BottomNavbar />
 		</>
 	);
 }

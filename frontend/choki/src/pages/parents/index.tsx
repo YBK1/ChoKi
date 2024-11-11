@@ -106,13 +106,13 @@ export default function ParentPages() {
 			{/* 내용 */}
 			<div className="flex flex-col justify-center items-center gap-4 mt-12">
 				{/* 아이 선택 */}
-				<div className="w-[350px] h-[280px] bg-white rounded-3xl shadow-sm border-4 border-light_yellow_side mb-5">
+				<div className="w-[350px] h-[300px] bg-white rounded-3xl shadow-sm border-4 border-light_yellow_side mb-5">
 					<h2 className="text-lg font-bold mt-8 ml-7 mb-4">
 						오늘은 어떤 아이에게
 						<br />
 						미션을 부여하실건가요?
 					</h2>
-					<div className="overflow-x-auto px-4">
+					<div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-100 scrollbar-track-transparent">
 						<div className="flex flex-nowrap gap-8 min-w-min pb-4">
 							{children.map(child => (
 								<Link
@@ -120,9 +120,17 @@ export default function ParentPages() {
 									key={child.childId}
 									className="cursor-pointer hover:opacity-80 transition-opacity"
 								>
-									<div className="flex flex-col items-center flex-shrink-0">
-										<Image src={child_profile} alt="child_profile" />
-										<p className="text-sm mt-2">{child.nickname}</p>
+									<div className="flex flex-col items-center w-24 ml-2">
+										<div className="w-24 h-24 flex-shrink-0">
+											<Image
+												src={child_profile}
+												alt="child_profile"
+												className="w-full h-full object-cover"
+											/>
+										</div>
+										<p className="text-sm mt-2 truncate w-full text-center">
+											{child.nickname}
+										</p>
 										<p className="text-sm font-bold mt-1">Lv.{child.level}</p>
 									</div>
 								</Link>
