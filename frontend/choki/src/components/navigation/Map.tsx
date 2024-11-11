@@ -130,7 +130,7 @@ const MapComponent = () => {
 			{isMissionFinishModalOpen && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 					<div className="relative">
-						<MissionCompleteModal />
+						<MissionCompleteModal missionId="672f0b493251e83e3031604c" />
 						<button
 							onClick={closeMissionFinishModal}
 							className="absolute top-2 right-2 bg-white text-black px-2 py-1 rounded-full"

@@ -2,7 +2,13 @@ import Image from 'next/image';
 import React, { useRef, useState } from 'react';
 import dog_character from '@/assets/icons/dog_character.svg';
 
-const MissionCompleteModal = () => {
+interface MissionFinishComponentProps {
+	missionId: string; // Add shoppingId as a prop
+}
+
+const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
+	missionId,
+}) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -34,8 +40,13 @@ const MissionCompleteModal = () => {
 				canvas.width = video.videoWidth;
 				canvas.height = video.videoHeight;
 				context.drawImage(video, 0, 0, canvas.width, canvas.height);
-				setCapturedImage(canvas.toDataURL('image/png')); // Convert the image to a data URL
+
+				const imageUrl = canvas.toDataURL('image/png');
+				setCapturedImage(imageUrl); // Convert the image to a data URL
 				setImageDimensions({ width: canvas.width, height: canvas.height });
+
+				console.log('Captured Image URL:', imageUrl);
+				console.log('Shopping ID:', missionId);
 			} else {
 				console.error('Error: Unable to get 2D context from canvas');
 			}
