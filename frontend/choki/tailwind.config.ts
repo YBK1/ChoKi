@@ -1,5 +1,5 @@
 import type { Config } from 'tailwindcss';
-
+import tailwindScrollbar from 'tailwind-scrollbar';
 const config: Config = {
 	content: [
 		'./src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -8,10 +8,13 @@ const config: Config = {
 	],
 	theme: {
 		extend: {
+			backgroundImage: {
+				'custom-icon': "url('/src/assets/icons/mart_background.svg')",
+			},
 			colors: {
 				black: '#000000',
 				white: '#FFFFFF',
-				ligin_yellow_nav: '#FFF5B9',
+				light_yellow_nav: '#FFF5B9',
 				light_yellow_mid: '#FEF4BA',
 				orange_main: '#FF9D3D',
 				light_yellow_dark: '#FEEE91',
@@ -52,7 +55,10 @@ const config: Config = {
 			},
 		},
 	},
-	plugins: [],
+	plugins: [tailwindScrollbar],
+	variants: {
+		scrollbar: ['rounded'],
+	},
 };
 
 export default config;

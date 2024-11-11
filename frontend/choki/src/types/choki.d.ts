@@ -2,6 +2,79 @@ type ButtonSize = 'small' | 'medium' | 'large' | 'small_mid' | 'call_large';
 type ButtonColor = 'orange' | 'white' | 'blue' | 'gray' | 'red' | 'white_call';
 type ModalSize = 'small' | 'medium' | 'large';
 type InputType = 'text' | 'password';
+// 목적지 검색 input
+type DestinationSearchProps = {
+	map: KakaoMap | null;
+};
+
+// 카카오맵 종합 props
+type MapProps = {
+	showRouteRecorder?: boolean;
+	showPolyline?: boolean;
+	showDestinationSearch?: boolean;
+	showPreviousButton?: boolean;
+	showChildNavBar: boolean;
+	route?: LatLng[];
+};
+
+// 카카오맵 실제 지도 props
+type MapContainerProps = {
+	onMapLoad: (map: any) => void;
+};
+
+// 카카오맵 위에 선 그리는 props
+type LatLng = {
+	latitude: number;
+	longitude: number;
+};
+
+// Define a type for the RoutePolyline component props
+interface RoutePolylineProps {
+	map: kakao.maps.Map | null;
+	route: LatLng[];
+	polyline: kakao.maps.Polyline | null;
+	setPolyline: React.Dispatch<React.SetStateAction<kakao.maps.Polyline | null>>;
+}
+
+// 카카오맵 경로 기록하는 props
+type RouteRecorderProps = {
+	map: any;
+	setFinalRoute: (route: { latitude: number; longitude: number }[]) => void;
+	onRecordingFinish: () => void;
+	isRecording: boolean;
+	setIsRecording: (isRecording: boolean) => void;
+};
+
+// 카카오맵 유저 표시 props
+type UserLocationMarkerProps = {
+	map: any;
+};
+type MissionType = 'SHOP' | 'RECYCLE' | 'EXTRA_MISSION';
+type KakaoMaps = {
+	load: () => void;
+	services: {
+		Geocoder: {
+			new (): {
+				addressSearch: (
+					address: string,
+					callback: (
+						result: Array<{
+							x: string;
+							y: string;
+						}>,
+						status: string,
+					) => void,
+				) => void;
+			};
+		};
+		Status: {
+			OK: string;
+			ZERO_RESULT: string;
+			ERROR: string;
+		};
+	};
+};
+
 // 버튼 Props
 interface ButtonProps {
 	size: ButtonSize;
@@ -25,6 +98,11 @@ interface ModalProps {
 	size: ModalSize;
 	children: React.ReactNode;
 }
+
+interface nonCloseModalProps {
+	children: React.ReactNode;
+}
+
 // 초대코드 모달 Props
 interface InviteCodeModalProps {
 	children: React.ReactNode;
@@ -35,16 +113,4 @@ interface PasswordForm {
 	passwordConfirm: string;
 	isMatch: boolean;
 	message: string;
-}
-
-// 유니티 관련 Props
-interface UnityContextProps {
-	loaderUrl: string;
-	dataUrl: string;
-	frameworkUrl: string;
-	codeUrl: string;
-	streamingAssetsUrl?: string;
-	companyName?: string;
-	productName?: string;
-	productVersion?: string;
 }
