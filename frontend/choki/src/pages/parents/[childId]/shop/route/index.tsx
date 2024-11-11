@@ -43,7 +43,7 @@ export default function ChildIsShoppingPage() {
 				>
 					<Map
 						showPolyline={true}
-						showPreviousButton={true}
+						showPreviousButton={false}
 						showRouteRecorder={false}
 						showChildNavBar={false}
 						route={route}

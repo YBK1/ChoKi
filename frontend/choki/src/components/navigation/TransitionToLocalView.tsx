@@ -1,7 +1,14 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import SkyLayer from './SkyLayer';
 import ThreeDBuildingsLayer from './3DBuildingsLayer';
 import MapStyles from './MapStyles';
+
+interface TransitionToLocalViewProps {
+	map: mapboxgl.Map | null;
+	userLocation: [number, number] | null;
+	setIsGlobeView: (value: boolean) => void;
+	route: { latitude: number; longitude: number }[] | null;
+}
 
 const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 	map,
@@ -9,6 +16,44 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 	setIsGlobeView,
 	route,
 }) => {
+	const stepRef = useRef(0);
+
+	const animateDashArray = useCallback(
+		(timestamp: number) => {
+			if (!map || !map.isStyleLoaded() || !map.getLayer('line-dashed')) return;
+
+			const dashArraySequence = [
+				[0, 4, 3],
+				[0.5, 4, 2.5],
+				[1, 4, 2],
+				[1.5, 4, 1.5],
+				[2, 4, 1],
+				[2.5, 4, 0.5],
+				[3, 4, 0],
+				[0, 0.5, 3, 3.5],
+				[0, 1, 3, 3],
+				[0, 1.5, 3, 2.5],
+				[0, 2, 3, 2],
+				[0, 2.5, 3, 1.5],
+				[0, 3, 3, 1],
+				[0, 3.5, 3, 0.5],
+			];
+			const newStep = Math.floor((timestamp / 50) % dashArraySequence.length);
+
+			if (newStep !== stepRef.current) {
+				map.setPaintProperty(
+					'line-dashed',
+					'line-dasharray',
+					dashArraySequence[newStep] as number[],
+				);
+				stepRef.current = newStep;
+			}
+
+			requestAnimationFrame(animateDashArray);
+		},
+		[map],
+	);
+
 	const transitionToLocalView = useCallback(() => {
 		if (!map || !userLocation || !route) return;
 
@@ -69,10 +114,12 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 					],
 				};
 
-				map.addSource('line', {
-					type: 'geojson',
-					data: geojson,
-				});
+				if (!map.getSource('line')) {
+					map.addSource('line', {
+						type: 'geojson',
+						data: geojson,
+					});
+				}
 
 				map.addLayer({
 					id: 'line-background',
@@ -96,43 +143,6 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 					},
 				});
 
-				// 애니메이션
-				const dashArraySequence = [
-					[0, 4, 3],
-					[0.5, 4, 2.5],
-					[1, 4, 2],
-					[1.5, 4, 1.5],
-					[2, 4, 1],
-					[2.5, 4, 0.5],
-					[3, 4, 0],
-					[0, 0.5, 3, 3.5],
-					[0, 1, 3, 3],
-					[0, 1.5, 3, 2.5],
-					[0, 2, 3, 2],
-					[0, 2.5, 3, 1.5],
-					[0, 3, 3, 1],
-					[0, 3.5, 3, 0.5],
-				];
-
-				let step = 0;
-
-				function animateDashArray(timestamp: number): void {
-					const newStep: number = Math.floor(
-						(timestamp / 50) % dashArraySequence.length,
-					);
-
-					if (newStep !== step) {
-						map?.setPaintProperty(
-							'line-dashed',
-							'line-dasharray',
-							dashArraySequence[newStep] as number[],
-						);
-						step = newStep;
-					}
-
-					requestAnimationFrame(animateDashArray);
-				}
-
 				animateDashArray(0);
 
 				SkyLayer(map);
@@ -140,7 +150,7 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 				MapStyles(map);
 			});
 		}, 2500);
-	}, [map, userLocation, setIsGlobeView, route]);
+	}, [map, userLocation, setIsGlobeView, route, animateDashArray]);
 
 	return (
 		<button

@@ -134,12 +134,13 @@ interface ShoppingItem {
 }
 
 interface UnityMainResponse {
-	id: number;
+	userId: number;
 	nickname: string;
-	mainAnimalId: number;
 	level: number;
 	exp: number;
-	isLevelUp: string;
+	isLevelUp: number; // Unity expects 0 or 1
+	mainAnimalId: number;
+	animals: number[];
 }
 
 interface KidDataResponseFromParent {
