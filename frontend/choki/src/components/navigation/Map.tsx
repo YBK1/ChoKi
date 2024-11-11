@@ -8,6 +8,7 @@ import TimeDistanceTracker from './TimeDistanceTracker';
 import UpperNavbar from '../Common/Navbar/UpperNavbar';
 import ChildLocationSender from '@/lib/ws/ChildLocationSender';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
+import MissionCompleteModal from '../Common/Modal/MissionCompleteModal';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
@@ -23,10 +24,20 @@ const MapComponent = () => {
 	const [route, setRoute] = useState<
 		{ latitude: number; longitude: number }[] | null
 	>(null);
+	const [isMissionFinishModalOpen, setIsMissionFinishModalOpen] =
+		useState(false);
 	const router = useRouter();
 
 	const goBack = () => {
 		router.push('/child/main');
+	};
+
+	const openMissionFinishModal = () => {
+		setIsMissionFinishModalOpen(true);
+	};
+
+	const closeMissionFinishModal = () => {
+		setIsMissionFinishModalOpen(false);
 	};
 
 	useEffect(() => {
@@ -111,9 +122,25 @@ const MapComponent = () => {
 
 	return (
 		<div className="relative w-full h-screen">
-			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>{' '}
+			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>
 			<div ref={mapContainerRef} className="w-full h-full" />
 			<ChildLocationSender shoppingId="672f0b493251e83e3031604c" />
+
+			{/* MissionFinishComponent Modal */}
+			{isMissionFinishModalOpen && (
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+					<div className="relative">
+						<MissionCompleteModal />
+						<button
+							onClick={closeMissionFinishModal}
+							className="absolute top-2 right-2 bg-white text-black px-2 py-1 rounded-full"
+						>
+							X
+						</button>
+					</div>
+				</div>
+			)}
+
 			{isGlobeView ? (
 				<>
 					<TransitionToLocalView
@@ -124,7 +151,7 @@ const MapComponent = () => {
 					/>
 					<button
 						onClick={goBack}
-						className="absolute top-4 left-4 bg-white p-2 rounded-full shadow-lg"
+						className="absolute top-4 left-4 px-4 py-2 bg-white rounded-lg shadow-lg text-lg font-semibold transition-all duration-300"
 					>
 						돌아가기
 					</button>
@@ -132,6 +159,13 @@ const MapComponent = () => {
 			) : (
 				showLocalViewElements && (
 					<>
+						{/* "완료" Button */}
+						<button
+							onClick={openMissionFinishModal}
+							className="absolute top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-10"
+						>
+							완료
+						</button>
 						<UpperNavbar />
 						<CurrentLocationButton map={map} />
 						<TimeDistanceTracker

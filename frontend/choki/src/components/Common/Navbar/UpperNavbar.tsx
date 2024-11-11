@@ -12,7 +12,7 @@ export default function UpperNavbar() {
 				{' '}
 				<div className="h-full flex justify-center items-center gap-5">
 					{/* 나가기 버튼 */}
-					<Link href="/child">
+					<Link href="/child/main">
 						<div className="flex mt-2">
 							<Image src={back_icon_kid_yellow} alt="back_icon" />
 						</div>
