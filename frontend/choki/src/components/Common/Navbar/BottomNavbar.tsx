@@ -5,7 +5,7 @@ import gallery_nav from '@/assets/icons/gallery_nav.svg';
 
 export default function BottomNavbar() {
 	const router = useRouter();
-	const { childId } = router.query; // URL에서 childId를 직접 추출
+	const { childId } = router.query;
 
 	const handleHomeClick = () => {
 		router.push('/parents');
