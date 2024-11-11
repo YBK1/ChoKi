@@ -40,7 +40,7 @@ export default function Index() {
 	const handleNext = () => setCurrentStep(prev => prev + 1);
 	const handlePrev = () => setCurrentStep(prev => prev - 1);
 
-	const [user, setUser] = useAtom(userAtom);
+	const [user] = useAtom(userAtom);
 	const router = useRouter();
 	const [selectedChildId, setSelectedChildId] = useAtom(selectedChildIdAtom);
 
