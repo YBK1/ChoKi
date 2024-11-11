@@ -11,10 +11,13 @@ type TimeDistanceTrackerProps = {
 	userLocation: [number, number] | null;
 };
 
-const AVERAGE_WALKING_SPEED = 1.4;
-const AVERAGE_STEP_LENGTH = 0.7;
+const AVERAGE_WALKING_SPEED = 1.0;
+const AVERAGE_STEP_LENGTH = 0.5;
 
-const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
+const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
+	route,
+	userLocation,
+}) => {
 	const [remainingTime, setRemainingTime] = useState(0);
 	const [remainingSteps, setRemainingSteps] = useState(0);
 
@@ -38,9 +41,37 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 	};
 
 	useEffect(() => {
-		let totalDistance = 0;
-		for (let i = 0; i < route.length - 1; i++) {
-			totalDistance += calculateDistance(
+		if (!userLocation || route.length === 0) {
+			return;
+		}
+
+		let remainingDistance = 0;
+		let closestPointIndex = 0;
+
+		// 가장 근접한 경로 상의 점 찾기
+		for (let i = 0; i < route.length; i++) {
+			const distance = calculateDistance(
+				userLocation[1],
+				userLocation[0],
+				route[i].latitude,
+				route[i].longitude,
+			);
+			if (
+				distance <
+				calculateDistance(
+					userLocation[1],
+					userLocation[0],
+					route[closestPointIndex].latitude,
+					route[closestPointIndex].longitude,
+				)
+			) {
+				closestPointIndex = i;
+			}
+		}
+
+		// 남은 거리 계산
+		for (let i = closestPointIndex; i < route.length - 1; i++) {
+			remainingDistance += calculateDistance(
 				route[i].latitude,
 				route[i].longitude,
 				route[i + 1].latitude,
@@ -48,12 +79,12 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 			);
 		}
 
-		const timeInSeconds = totalDistance / AVERAGE_WALKING_SPEED;
-		const steps = totalDistance / AVERAGE_STEP_LENGTH;
+		const timeInSeconds = remainingDistance / AVERAGE_WALKING_SPEED;
+		const steps = remainingDistance / AVERAGE_STEP_LENGTH;
 
 		setRemainingTime(Math.ceil(timeInSeconds / 60));
 		setRemainingSteps(Math.ceil(steps));
-	}, [route]);
+	}, [route, userLocation]);
 
 	return (
 		<div
