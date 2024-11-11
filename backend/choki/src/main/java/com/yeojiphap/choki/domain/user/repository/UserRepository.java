@@ -18,4 +18,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
             " AND u.role = 'CHILD'")
     List<User> findUsersWithinRadius(@Param("latitude") double latitude,
                                      @Param("longitude") double longitude, Double distance);
+
+    @Query("SELECT u.username FROM User u "
+        + "where u.family.id = "
+        + "(SELECT child.family.id FROM User child WHERE child.username = :childUsername) "
+        + "AND u.role = 'PARENT'")
+    Optional<String> findParentUsernameByChildUsername(@Param("childUsername") String childUsername);
 }
