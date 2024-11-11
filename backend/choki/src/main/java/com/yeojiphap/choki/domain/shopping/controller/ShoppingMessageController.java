@@ -111,19 +111,6 @@ public class ShoppingMessageController {
 		shoppingWebSocketService.sendDangerNotification(dangerRequestDto, access);
 	}
 
-	// 장보기 종료 메세지
-	@MessageMapping("/shopping/finish/{shoppingId}")
-	public void sendFinishMessage(@DestinationVariable String shoppingId, @Header("access") String access){
-		// log
-		log.info("장보기 종료");
-
-		// 완료 처리 수행하기
-		shoppingService.completeShopping(shoppingId);
-
-		// 완료 메세지 전송
-		shoppingWebSocketService.sendFinishMessage(shoppingId, access);
-	}
-
 	// 부모의 도움 메세지 전송
 	@MessageMapping("/shopping/message")
 	public void sendHelpMessage(HelpMessageDto helpMessageDto, @Header("access") String access){

@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yeojiphap.choki.domain.shopping.domain.CartItem;
 import com.yeojiphap.choki.domain.shopping.domain.Shopping;
@@ -236,19 +237,13 @@ public class ShoppingService {
 	// 2. 그에 따른 알림 생성
 	// 3. FCM 메세지 보내기
 	@Transactional
-	public void completeShopping(String shoppingId){
-		Optional<Shopping> shoppingOptional = shoppingRepository.findById(shoppingId);
-		if(shoppingOptional.isPresent()) {
-			Shopping shopping = shoppingOptional.get();
+	public void finishShopping(FinishShoppingRequestDto finishShoppingRequestDto, MultipartFile image){
+		Shopping shopping = shoppingRepository.findById(finishShoppingRequestDto.getShoppingId()).orElseThrow(ShoppingNotFoundException::new);
+		// 미션의 상태를 변경
+		ObjectId missionId = new ObjectId(shopping.getMissionId());
+		missionService.setMissionStatusPending(missionId);
 
-			// 미션의 상태를 변경
-			ObjectId missionId = new ObjectId(shopping.getMissionId());
-			missionService.setMissionStatusPending(missionId);
-
-			// 그에 따른 알림
-			notificationService.addNotificationIfShoppingEnd(shopping);
-
-			// FCM 가능?;;
-		}
+		// 그에 따른 알림
+		notificationService.addNotificationIfShoppingEnd(shopping);
 	}
 }

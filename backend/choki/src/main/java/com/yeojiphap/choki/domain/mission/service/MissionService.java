@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.domain.MissionType;
 import com.yeojiphap.choki.domain.mission.domain.Status;
+import com.yeojiphap.choki.domain.mission.dto.MissionDetailResponseDto;
+import com.yeojiphap.choki.domain.mission.dto.MissionImageReqeustDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionResponseDto;
 import com.yeojiphap.choki.domain.mission.exception.MissionNotFoundException;
 import com.yeojiphap.choki.domain.mission.repository.MissionRepository;
@@ -21,8 +23,10 @@ public class MissionService {
 	private final MissionRepository missionRepository;
 
 	// 미션 조회하기
-	public Mission getMission(ObjectId id) {
-		return missionRepository.findById(id);
+	public MissionDetailResponseDto getMission(String id) {
+		Mission mission = missionRepository.findById(new ObjectId(id)).orElseThrow(MissionNotFoundException::new);
+
+		return new MissionDetailResponseDto(mission);
 	}
 
 	// 장보기 미션 저장하기
@@ -78,8 +82,13 @@ public class MissionService {
 		return missionResponseDtos;
 	}
 
-	// 미션 완료 처리 하기
+	// 미션 Pending으로 상태 변환 하기
 	public void setMissionStatusPending(ObjectId missionId){
 		missionRepository.setMissionStatusPending(missionId).orElseThrow(MissionNotFoundException::new);
+	}
+
+	// 미션에 이미지 추가 하기
+	public void setCommentAndCompleteMission(MissionImageReqeustDto missionImageReqeustDto){
+
 	}
 }

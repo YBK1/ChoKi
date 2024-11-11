@@ -21,9 +21,9 @@ public class CustomMissionRepositoryImpl implements CustomMissionRepository{
 	private final MongoTemplate mongoTemplate;
 
 	@Override
-	public Mission findById(ObjectId missionId) {
+	public Optional<Mission> findById(ObjectId missionId) {
 		Query query = new Query(Criteria.where("_id").is(missionId));
-		return mongoTemplate.findOne(query, Mission.class);
+		return Optional.ofNullable(mongoTemplate.findOne(query, Mission.class));
 	}
 
 	@Override

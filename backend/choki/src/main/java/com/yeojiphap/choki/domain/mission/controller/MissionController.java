@@ -3,11 +3,14 @@ package com.yeojiphap.choki.domain.mission.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.yeojiphap.choki.domain.mission.domain.Status;
+import com.yeojiphap.choki.domain.mission.dto.MissionImageReqeustDto;
 import com.yeojiphap.choki.domain.mission.service.MissionService;
 import com.yeojiphap.choki.global.ApiResponse;
 
@@ -24,8 +27,8 @@ public class MissionController implements SpringDocMissionController {
 		return ApiResponse.success(HttpStatus.OK, missionService.getMissions(userId, Status.IN_PROGRESS), "미션 조회 성공");
 	}
 
-	// @GetMapping("/{missionId}")
-	// public ApiResponse getMission(@PathVariable("missionId") Long missionId) {
-	//
-	// }
+	@GetMapping("/{missionId}")
+	public ApiResponse getMission(@PathVariable("missionId") String missionId) {
+		return ApiResponse.success(HttpStatus.OK, missionService.getMission(missionId), "미션 조회 성공");
+	}
 }
