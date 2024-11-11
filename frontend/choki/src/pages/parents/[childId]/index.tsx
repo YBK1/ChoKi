@@ -800,6 +800,7 @@ export default function Index() {
 					isOpen={isModalOpen}
 					onClose={handleCloseModal}
 					size={getModalSize(currentStep)}
+					hideBackdrop={true}
 				>
 					{renderContent()}
 				</CommonModal>
