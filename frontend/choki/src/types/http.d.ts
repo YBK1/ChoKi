@@ -134,7 +134,7 @@ interface ShoppingItem {
 }
 
 interface UnityMainResponse {
-	id: number;
+	userId: number;
 	nickname: string;
 	level: number;
 	exp: number;
