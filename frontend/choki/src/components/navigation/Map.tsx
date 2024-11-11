@@ -122,22 +122,25 @@ const MapComponent = () => {
 						setIsGlobeView={setIsGlobeView}
 						route={route}
 					/>
+					<button
+						onClick={goBack}
+						className="absolute top-4 left-4 bg-white p-2 rounded-full shadow-lg"
+					>
+						돌아가기
+					</button>
 				</>
 			) : (
 				showLocalViewElements && (
 					<>
 						<CurrentLocationButton map={map} />
-						<TimeDistanceTracker />
+						<TimeDistanceTracker
+							route={route ?? []}
+							userLocation={userLocation}
+						/>
 						<UpperNavbar />
 					</>
 				)
 			)}
-			<button
-				onClick={goBack}
-				className="absolute top-4 left-4 bg-white p-2 rounded-full shadow-lg"
-			>
-				돌아가기
-			</button>
 		</div>
 	);
 };
