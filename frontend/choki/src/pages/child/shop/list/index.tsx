@@ -14,7 +14,7 @@ import * as StompJs from '@stomp/stompjs';
 export default function ChildShoppingPage() {
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
 	const [isCameraOpen, setIsCameraOpen] = useState(false);
-	const [barcodeData, setBarcodeData] = useState<string | null>(null);
+	const [originBarcode, setOriginBarcode] = useState<string | null>(null); // originBarcode 상태 추가
 
 	useEffect(() => {
 		console.log('Shopping list:', shoppingList);
@@ -38,17 +38,14 @@ export default function ChildShoppingPage() {
 		};
 	}, [setShoppingList]);
 
-	const handleCaptureImage = (imageDataUrl: string) => {
-		setBarcodeData(imageDataUrl);
-		closeCameraModal();
-	};
-
-	const openCameraModal = () => {
+	const openCameraModal = (barcode: string) => {
+		setOriginBarcode(barcode); // 클릭된 barcode를 originBarcode로 설정
 		setIsCameraOpen(true);
 	};
 
 	const closeCameraModal = () => {
 		setIsCameraOpen(false);
+		setOriginBarcode(null); // 카메라 모달 닫힐 때 originBarcode 초기화
 	};
 
 	return (
@@ -65,7 +62,7 @@ export default function ChildShoppingPage() {
 				{isCameraOpen ? (
 					<Cam
 						onCaptureChange={closeCameraModal}
-						onCaptureImage={handleCaptureImage}
+						originBarcode={originBarcode || ''}
 					/>
 				) : (
 					<Modal>
@@ -89,14 +86,9 @@ export default function ChildShoppingPage() {
 												}
 											: undefined
 									}
-									onCameraClick={openCameraModal}
+									onCameraClick={() => openCameraModal(item.barcode)} // barcode를 매개변수로 전달
 								/>
 							))}
-							{barcodeData && (
-								<p className="mt-4 text-lg text-green-600">
-									인식된 바코드: {barcodeData}
-								</p>
-							)}
 						</div>
 					</Modal>
 				)}

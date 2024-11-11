@@ -164,3 +164,12 @@ interface InProgressMissionResponse {
 	type: MissionType;
 	shoppingId: string;
 }
+
+interface conmpareRequest {
+	originBarcode: string;
+	inputBarcode: string;
+}
+
+interface matchStatusReponse {
+	matchStatusReponse: string;
+}

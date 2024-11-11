@@ -1,6 +1,6 @@
 import axiosInstance from '@/lib/api/axiosInstance';
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
-// const baseURL = 'https://choki.co.kr';
+// const baseURL = process.env.NEXT_PUBLIC_API_URL;
+const baseURL = 'https://choki.co.kr';
 
 // 상품 검색 API
 export const searchItem = async (
@@ -36,6 +36,24 @@ export const createShopping = async (
 		return response.data;
 	} catch (error) {
 		console.error('장보기 미션 생성 실패:', error);
+		throw error;
+	}
+};
+
+// 장보기 비교
+export const compareShopping = async ({
+	originBarcode,
+	inputBarcode,
+}: conmpareRequest): Promise<matchStatusReponse> => {
+	try {
+		console.log('장보기 비교 요청2:', originBarcode, inputBarcode);
+		const response = await axiosInstance.post(`/api/shopping/item/compare`, {
+			originBarcode,
+			inputBarcode,
+		});
+		return response.data;
+	} catch (error) {
+		console.error('장보기 비교 실패:', error);
 		throw error;
 	}
 };

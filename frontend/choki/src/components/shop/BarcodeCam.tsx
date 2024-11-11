@@ -2,15 +2,22 @@ import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Button from '../Common/Button';
 import { BrowserMultiFormatReader } from '@zxing/browser';
+import { compareShopping } from '@/lib/api/shopping';
 
-interface CamProps {
-	onCaptureChange: (captured: boolean) => void;
-	onCaptureImage?: (imageDataUrl: string) => void;
-}
-
-const Cam: React.FC<CamProps> = ({ onCaptureChange, onCaptureImage }) => {
+const Cam: React.FC<CamProps> = ({ onCaptureChange, originBarcode }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [capturedImage, setCapturedImage] = useState<string | null>(null);
+
+	const goCompare = async (originBarcode: string, inputBarcode: string) => {
+		try {
+			console.log('장보기 비교 요청:', originBarcode, inputBarcode);
+			const response = await compareShopping({ originBarcode, inputBarcode });
+			console.log('장보기 비교 결과:', response);
+			//TODO - 비교 결과에 따른 아래 로직 추가
+		} catch (error) {
+			console.error('장보기 비교 실패:', error);
+		}
+	};
 
 	const startCamera = async () => {
 		try {
@@ -40,7 +47,6 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, onCaptureImage }) => {
 
 	const captureImage = async () => {
 		if (videoRef.current) {
-			// 비디오의 실제 해상도를 기반으로 캔버스 크기 설정
 			const videoWidth = videoRef.current.videoWidth;
 			const videoHeight = videoRef.current.videoHeight;
 			const canvas = document.createElement('canvas');
@@ -49,7 +55,6 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, onCaptureImage }) => {
 
 			const ctx = canvas.getContext('2d');
 			if (ctx) {
-				// video 요소에 표시된 화면을 그대로 캡처
 				ctx.drawImage(videoRef.current, 0, 0, videoWidth, videoHeight);
 
 				const imageDataUrl = canvas.toDataURL('image/png');
@@ -65,10 +70,11 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, onCaptureImage }) => {
 					try {
 						const result = await codeReader.decodeFromImageElement(imgElement);
 						if (result) {
-							console.log('인식된 바코드:', result.getText());
-							if (onCaptureImage) {
-								onCaptureImage(result.getText());
-							}
+							const inputBarcode = result.getText();
+							console.log('인식된 바코드:', inputBarcode);
+
+							// 인식된 바코드를 originBarcode와 비교
+							goCompare(originBarcode, inputBarcode);
 						}
 					} catch {
 						console.log('바코드를 찾을 수 없습니다. 재촬영 해주세요.');

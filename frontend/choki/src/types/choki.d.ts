@@ -168,6 +168,7 @@ interface Speech {
 // 카메라 인터페이스
 interface CamProps {
 	onCaptureChange: (captured: boolean) => void;
+	originBarcode: string;
 }
 
 // 재활용 동물 대화 인터페이스
