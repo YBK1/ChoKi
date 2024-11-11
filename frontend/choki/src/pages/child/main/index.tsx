@@ -68,11 +68,23 @@ export default function MainPage() {
 	function sendMissionDataToUnity(missions: InProgressMissionResponse) {
 		console.log('일단 여기까지 왔고??222222');
 		const jsonData = JSON.stringify({ missions });
-		unityInstance.SendMessage(
-			'DataReceiver',
-			'receiveMissionDataFromUnity',
-			jsonData,
-		);
+
+		// unityInstance를 iframe을 통해 가져오도록 변경
+		const iframe = document.getElementById('unity-iframe') as HTMLIFrameElement;
+		if (iframe && iframe.contentWindow && iframe.contentWindow.unityInstance) {
+			try {
+				iframe.contentWindow.unityInstance.SendMessage(
+					'DataReceiver',
+					'receiveMissionDataFromUnity',
+					jsonData,
+				);
+				console.log('Mission data sent to Unity:', missions);
+			} catch (error) {
+				console.error('Error sending mission data to Unity:', error);
+			}
+		} else {
+			console.error('iframe 또는 unityInstance가 정의되지 않았습니다.');
+		}
 	}
 
 	const sendDataToUnity = useCallback(
