@@ -36,7 +36,7 @@ interface NotificationResponse {
 	childId: number;
 	content: string;
 	type: MissionType;
-	id: number;
+	missionId: string;
 	time: string;
 }
 
@@ -46,9 +46,38 @@ interface ItemSearchResponse {
 	productName: string;
 	image: string;
 }
+interface CartItem extends ItemSearchResponse {
+	quantity: number;
+}
 
-interface KidDataResponse {
-	id: string;
+interface Child {
+	childId: number;
+	name: string;
+	nickname: string;
+	level: number;
+	address: string;
+}
+
+interface FamilyResponse {
+	status: number;
+	message: string;
+	data: {
+		username: string;
+		children: Child[];
+	};
+}
+
+interface ShoppingRequest {
+	parentId: number;
+	childId: number;
+	startPoint: ShoppingLocation;
+	destination: ShoppingLocation;
+	route: RoutePoint[];
+	shoppingList: ReturnType<typeof getShoppingList>;
+}
+
+interface userDataResponse {
+	userId: number;
 	nickname: string;
 	address: string;
 	name: string;
@@ -71,8 +100,8 @@ interface CartItem {
 	productName: string;
 	image: string;
 	quantity: number;
-	reason: string;
-	status: string;
+	reason?: string;
+	status?: string;
 }
 // ProductCard에서 사용하는 Props
 interface ShoppingCardProps {
@@ -104,8 +133,33 @@ interface ShoppingItem {
 	};
 }
 
-// 장보기 물품 비교
-interface CompareItemsRequest {
-	originBarcode: string;
-	inputBarcode: string;
+interface UnityMainResponse {
+	id: number;
+	nickname: string;
+	mainAnimalId: number;
+	level: number;
+	exp: number;
+	isLevelUp: string;
+}
+
+interface KidDataResponseFromParent {
+	id: string;
+	username: string;
+	nickname: string;
+	address: string;
+	name: string;
+	tel: string;
+	role: 'PARENT' | 'CHILD';
+	level: number;
+	exp: number;
+	pastLevel: number;
+	mainAnimal: number;
+}
+
+interface InProgressMissionResponse {
+	content: string;
+	completedAt: string;
+	image: string;
+	type: MissionType;
+	shoppingId: string;
 }

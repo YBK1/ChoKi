@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import MissionItem from '@/components/Common/MissionItem';
 import Image from 'next/image';
 import notification_icon from '@/assets/icons/notification.svg';
@@ -8,30 +7,103 @@ import level_icon from '@/assets/icons/level.svg';
 import mission_plus from '@/assets/icons/mission_plus.svg';
 import CommonModal from '@/components/Common/Modal';
 import { useState, useEffect, useRef } from 'react';
-import { searchItem } from '@/lib/api/searchItem';
+import { searchItem, createShopping } from '@/lib/api/shopping';
 import { getRouteList, getRouteDetails } from '@/lib/api/navigation';
+import {
+	getKidDataFromParent,
+	getInProgressMissionList,
+} from '@/lib/api/parent';
+import { useAtom } from 'jotai';
+import { userAtom, selectedChildIdAtom } from '@/atoms';
+import { useRouter } from 'next/router';
 
 export default function Index() {
-	const missions: Mission[] = [
-		{ type: 'SHOP', content: '동네 마트 장보기' },
-		{ type: 'RECYCLE', content: '재활용 분리수거하기' },
-		{ type: 'EXTRA_MISSION', content: '양치하기' },
-	];
+	const [kidInfo, setKidInfo] = useState<KidDataResponseFromParent>();
+	// const [currentChildId, setCurrentChildId] = useState<number>();
+
+	const [missions, setMissions] = useState<Mission[]>();
 
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedErrand, setSelectedErrand] = useState('');
+	const [selectedRouteDetails, setSelectedRouteDetails] = useState<any>(null);
+	const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
 
 	const handleOpenModal = () => setIsModalOpen(true);
 	const handleCloseModal = () => {
 		setIsModalOpen(false);
 		setCurrentStep(1);
 		setSelectedErrand('');
+		setSelectedItems([]);
 	};
 
 	const handleNext = () => setCurrentStep(prev => prev + 1);
 	const handlePrev = () => setCurrentStep(prev => prev - 1);
 
+	const [user] = useAtom(userAtom);
+	const router = useRouter();
+	const [selectedChildId, setSelectedChildId] = useAtom(selectedChildIdAtom);
+
+	// 현재 선택한 아이 정보 가져오기 함수
+	const getKidInfo = async (childId: number) => {
+		try {
+			const kidData: KidDataResponseFromParent =
+				await getKidDataFromParent(childId);
+			setKidInfo(kidData);
+		} catch (error) {
+			console.error('데이터를 가져오는 중 오류 발생:', error);
+		}
+	};
+
+	// 현재 부여된 미션 가져오기 함수
+	const getInProgressMissions = async (childId: number) => {
+		try {
+			const missionData: InProgressMissionResponse[] =
+				await getInProgressMissionList(childId);
+
+			if (!missionData) {
+				console.error('No mission data received.');
+				return;
+			} else console.log(missionData);
+
+			// 데이터를 변환하여 mappedMissions로 설정
+			const mappedMissions: Mission[] = missionData.map(mission => ({
+				type: mission.type,
+				content: mission.content,
+			}));
+
+			setMissions(mappedMissions);
+		} catch (error) {
+			console.error('데이터를 가져오는 중 오류 발생:', error);
+		}
+	};
+
+	// 현재 주소에서 아이디 가져와서 api 조회하기
+	// useEffect(() => {
+	// 	const url = new URL(window.location.href);
+	// 	const id = parseInt(url.pathname.split('/').pop() || '0');
+	// 	setCurrentChildId(id);
+	// 	getKidInfo(id);
+	// 	getInProgressMissions(id);
+	// }, []);
+	// 사용자 정보 가져오기
+
+	useEffect(() => {
+		const { childId } = router.query;
+
+		// 1. childId가 있을 때만 상태 업데이트 및 데이터 fetch
+		if (childId && typeof childId === 'string') {
+			const numChildId = Number(childId);
+			setSelectedChildId(numChildId);
+
+			// 2. 바로 데이터 fetch (userId 체크는 각 API 함수 내부에서 처리)
+			getKidInfo(numChildId);
+			getInProgressMissions(numChildId);
+		}
+	}, [router.query, setSelectedChildId]); // userId 의존성 제거
+
+	// 현재 선택된 childId 확인
+	console.log('parentId,childId', user.userId, selectedChildId);
 	// 각 단계별 컴포넌트
 	const StepOne = () => (
 		<div className="flex flex-col h-full">
@@ -76,13 +148,6 @@ export default function Index() {
 		const mapRef = useRef<any>(null);
 		const polylineRef = useRef<any>(null);
 		const markersRef = useRef<any[]>([]);
-
-		// 예시 장소 리스트
-		// const destinations = [
-		// 	{ id: 1, buildingName: '승필 백화점' },
-		// 	{ id: 2, buildingName: '호현 카페' },
-		// 	{ id: 3, buildingName: '민주 구멍가게' },
-		// ];
 
 		useEffect(() => {
 			// 목적지 목록 가져오기
@@ -188,6 +253,8 @@ export default function Index() {
 				new kakao.maps.LatLng(destination.latitude, destination.longitude),
 			];
 
+			console.log(routePoints);
+
 			const startMarkerImage = new kakao.maps.MarkerImage(
 				'/icons/start_icon.svg',
 				new kakao.maps.Size(40, 40),
@@ -262,7 +329,10 @@ export default function Index() {
 					</button>
 					<button
 						className="px-4 py-2 rounded bg-orange-400 text-white"
-						onClick={handleNext}
+						onClick={() => {
+							setSelectedRouteDetails(routeDetails);
+							handleNext();
+						}}
 						disabled={!selectedDestination}
 					>
 						다음
@@ -326,7 +396,7 @@ export default function Index() {
 							key={index}
 							className="flex items-center space-x-3 p-2 border rounded-lg"
 						>
-							<div className="w-16 h-16rounded-lg overflow-hidden">
+							<div className="w-16 h-16 rounded-lg overflow-hidden">
 								<Image
 									src={item.image}
 									alt={item.productName || '상품 이미지'}
@@ -354,13 +424,43 @@ export default function Index() {
 		);
 	};
 
-	// StepThree 컴포넌트 수정
 	const StepThree = () => {
 		const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
-		const [selectedItems, setSelectedItems] = useState<any[]>([]);
+		// const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
 
-		const handleItemSelect = (item: any) => {
-			setSelectedItems(prev => [...prev, item]);
+		const handleItemSelect = (item: ItemSearchResponse) => {
+			setSelectedItems(prev => {
+				const existingItem = prev.find(i => i.barcode === item.barcode);
+				if (existingItem) {
+					return prev.map(i =>
+						i.barcode === item.barcode ? { ...i, quantity: i.quantity + 1 } : i,
+					);
+				}
+				return [...prev, { ...item, quantity: 1 }];
+			});
+		};
+
+		const handleQuantityChange = (barcode: string, delta: number) => {
+			setSelectedItems(prev =>
+				prev
+					.map(item => {
+						if (item.barcode === barcode) {
+							const newQuantity = Math.max(0, item.quantity + delta);
+							return { ...item, quantity: newQuantity };
+						}
+						return item;
+					})
+					.filter(item => item.quantity > 0),
+			);
+		};
+
+		const handleDelete = (barcode: string) => {
+			setSelectedItems(prev => prev.filter(item => item.barcode !== barcode));
+		};
+
+		const handleStepThreePrev = () => {
+			setSelectedItems([]);
+			handlePrev();
 		};
 
 		return (
@@ -384,28 +484,48 @@ export default function Index() {
 
 				<div className="ml-2 mb-2">장바구니 목록</div>
 				<div className="flex-1 overflow-y-auto">
-					{selectedItems.map((item, index) => (
+					{selectedItems.map(item => (
 						<div
-							key={index}
+							key={item.barcode}
 							className="flex items-center space-x-3 p-2 border rounded-lg mb-2"
 						>
-							<div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
+							<div className="flex aligh-center w-16 h-16">
 								<Image
 									src={item.image}
-									alt={item.productName || '상품 이미지'}
-									width={48}
-									height={48}
+									alt={item.productName}
+									width={64}
+									height={64}
 									className="object-cover"
 								/>
 							</div>
-							<div className="flex-1">
-								<div className="font-medium">{item.productName}</div>
+							<div className="flex max-w-[90px]">
+								<div className="text-sm">{item.productName}</div>
+							</div>
+							<div className="flex items-center w-[100px]">
+								<button
+									onClick={() => handleQuantityChange(item.barcode, -1)}
+									className="w-4 h-4 rounded-full bg-light_yellow_dark flex items-center justify-center"
+								>
+									-
+								</button>
+								<span className="w-8 text-center text-sm">{item.quantity}</span>
+								<button
+									onClick={() => handleQuantityChange(item.barcode, 1)}
+									className="w-4 h-4 rounded-full bg-light_yellow_dark flex items-center justify-center"
+								>
+									+
+								</button>
+								<button
+									onClick={() => handleDelete(item.barcode)}
+									className="ml-2 w-12 h-6 bg-orange-100 text-orange_main rounded-lg text-sm"
+								>
+									삭제
+								</button>
 							</div>
 						</div>
 					))}
 				</div>
 
-				{/* 검색 모달 */}
 				<CommonModal
 					isOpen={isSearchModalOpen}
 					onClose={() => setIsSearchModalOpen(false)}
@@ -420,7 +540,7 @@ export default function Index() {
 				<div className="flex justify-between mt-4">
 					<button
 						className="px-4 py-2 rounded bg-gray-100 text-gray-500"
-						onClick={handlePrev}
+						onClick={handleStepThreePrev}
 					>
 						이전
 					</button>
@@ -434,6 +554,89 @@ export default function Index() {
 			</div>
 		);
 	};
+	const ShoppingConfirmation = () => {
+		const handleComplete = async () => {
+			try {
+				if (!selectedRouteDetails) {
+					throw new Error('Route details are not available');
+				}
+
+				const requestBody: ShoppingRequest = {
+					parentId: user.userId,
+					childId: selectedChildId!,
+					startPoint: selectedRouteDetails.startPoint,
+					destination: selectedRouteDetails.destination,
+					route: selectedRouteDetails.routes,
+					shoppingList: selectedItems.map(item => ({
+						barcode: item.barcode,
+						quantity: item.quantity,
+					})),
+				};
+
+				await createShopping(requestBody);
+				if (selectedChildId) {
+					await getInProgressMissions(selectedChildId);
+				}
+				handleCloseModal();
+			} catch (error) {
+				console.error('Failed to create shopping mission:', error);
+			}
+		};
+		return (
+			<div className="flex flex-col h-full">
+				<h3 className="text-xl font-bold text-center m-4 mb-6">
+					심부름 정보가 <br />
+					맞는지 확인해주세요!
+				</h3>
+				<span className="font-bold ml-2 mb-2">목적지</span>
+				<div className="p-2  border-2 border-light_yellow_dark rounded-xl mb-5 ml-1">
+					{selectedRouteDetails.destination.buildingName}
+				</div>
+				<span className="font-bold ml-2 mb-3">장바구니</span>
+				<div className="flexoverflow-y-auto">
+					<div className="grid grid-cols-2 gap-2 ">
+						{selectedItems.map(item => (
+							<div
+								key={item.barcode}
+								className="bg-white p-3 rounded-3xl shadow-md"
+							>
+								<div className="flex justify-center mb-2">
+									<Image
+										src={item.image}
+										alt={item.productName}
+										width={40}
+										height={40}
+										className="object-cover"
+									/>
+								</div>
+								<div className="text-center">
+									<p className="text-sm mb-1">{item.productName}</p>
+									<p className="text-sm text-gray-500">
+										수량: {item.quantity}개
+									</p>
+								</div>
+							</div>
+						))}
+					</div>
+					<div className="flex justify-between mt-10">
+						<button
+							className="px-4 py-2 rounded bg-gray-100 text-gray-500"
+							onClick={handlePrev}
+						>
+							이전
+						</button>
+						<button
+							className="px-4 py-2 rounded bg-orange_main text-white"
+							onClick={handleComplete}
+						>
+							완료
+						</button>
+					</div>
+				</div>
+			</div>
+		);
+	};
+
 	// 각 단계별 모달 사이즈 정의
 	const getModalSize = (step: number) => {
 		switch (step) {
@@ -442,6 +645,8 @@ export default function Index() {
 			case 2:
 				return 'medium';
 			case 3:
+				return 'large';
+			case 4:
 				return 'large';
 			default:
 				return 'medium';
@@ -479,6 +684,7 @@ export default function Index() {
 			</div>
 		</div>
 	);
+
 	// 현재 단계와 선택된 심부름에 따른 컨텐츠 렌더링
 	const renderContent = () => {
 		if (currentStep === 1) {
@@ -491,6 +697,8 @@ export default function Index() {
 					return <StepTwo />;
 				case 3:
 					return <StepThree />;
+				case 4:
+					return <ShoppingConfirmation />;
 				default:
 					return null;
 			}
@@ -504,7 +712,7 @@ export default function Index() {
 			<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow background min-h-screen">
 				{/* 알림 아이콘 */}
 				<div className="flex justify-end m-4">
-					<Link href="/parents/1/notification">
+					<Link href={`/parents/${selectedChildId}/notification`}>
 						<div className="bg-white rounded-xl shadow-sm flex items-center justify-center">
 							<Image
 								src={notification_icon}
@@ -517,7 +725,7 @@ export default function Index() {
 				</div>
 				{/* 안내문구 */}
 				<div className="text-xl font-medium mb-6 ml-10">
-					<span className="font-bold">김애기</span>의 성장을 위해,
+					<span className="font-bold">{kidInfo?.name}</span>의 성장을 위해,
 					<br />
 					오늘은 어떤 심부름을 시켜볼까요?
 				</div>
@@ -536,32 +744,33 @@ export default function Index() {
 								/>
 								<div className="flex w-[70px] bg-white rounded-lg justify-center items-center gap-1">
 									<Image src={level_icon} alt="level" width={20} height={20} />
-									<span className="text-sm font-bold">Lv.10</span>
+									<span className="text-sm font-bold">Lv.{kidInfo?.level}</span>
 								</div>
 							</div>
 							<div className="flex flex-col gap-1">
 								<div className="flex items-center gap-2">
 									<span className="text-gray-600">이름:</span>
-									<span className="font-medium">김애기</span>
+									<span className="font-medium">{kidInfo?.name}</span>
 								</div>
 								<div className="flex items-center gap-2">
 									<span className="text-gray-600">닉네임:</span>
-									<span>일 잘하는 애기</span>
+									<span>{kidInfo?.nickname}</span>
 								</div>
 								<div className="flex items-start gap-2">
 									<span className="text-gray-600 min-w-10">주소:</span>
 									<span className="max-w-30 break-words">
-										서울특별시 강남구 테헤란로 426
+										{kidInfo?.address}
 									</span>
 								</div>
 								<div className="flex items-center gap-2">
 									<span className="text-gray-600">연락처:</span>
-									<span>010-1234-5678</span>
+									<span>{kidInfo?.tel}</span>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
+
 				{/* 심부름 목록 */}
 				<div>
 					<div className="flex ml-8 mb-4 gap-2">
@@ -575,7 +784,7 @@ export default function Index() {
 						</button>
 					</div>
 					<div className="flex flex-col justify-center items-center">
-						{missions.map((mission, index) => (
+						{missions?.map((mission, index) => (
 							<MissionItem
 								key={index}
 								type={mission.type}
@@ -591,6 +800,7 @@ export default function Index() {
 					isOpen={isModalOpen}
 					onClose={handleCloseModal}
 					size={getModalSize(currentStep)}
+					hideBackdrop={false}
 				>
 					{renderContent()}
 				</CommonModal>
