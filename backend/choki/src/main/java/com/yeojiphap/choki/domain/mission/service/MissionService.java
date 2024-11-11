@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.domain.MissionType;
 import com.yeojiphap.choki.domain.mission.domain.Status;
+import com.yeojiphap.choki.domain.mission.dto.MissionCommentRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionDetailResponseDto;
-import com.yeojiphap.choki.domain.mission.dto.MissionImageReqeustDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionResponseDto;
 import com.yeojiphap.choki.domain.mission.exception.MissionNotFoundException;
 import com.yeojiphap.choki.domain.mission.repository.MissionRepository;
@@ -83,12 +83,13 @@ public class MissionService {
 	}
 
 	// 미션 Pending으로 상태 변환 하기
-	public void setMissionStatusPending(ObjectId missionId){
-		missionRepository.setMissionStatusPending(missionId).orElseThrow(MissionNotFoundException::new);
+	public void setMissionStatusPending(ObjectId missionId, String image){
+		missionRepository.setMissionStatusPending(missionId, image).orElseThrow(MissionNotFoundException::new);
 	}
 
-	// 미션에 이미지 추가 하기
-	public void setCommentAndCompleteMission(MissionImageReqeustDto missionImageReqeustDto){
-
+	public void addMissionComment(MissionCommentRequestDto missionCommentRequestDto){
+		ObjectId missionId = new ObjectId(missionCommentRequestDto.getMissionId());
+		String comment = missionCommentRequestDto.getComment();
+		missionRepository.setMissionComment(missionId, comment).orElseThrow(MissionNotFoundException::new);
 	}
 }

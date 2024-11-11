@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class MissionImageReqeustDto {
+public class MissionCommentRequestDto {
 	private String missionId;
-	private String image;
+	private String comment;
 }
