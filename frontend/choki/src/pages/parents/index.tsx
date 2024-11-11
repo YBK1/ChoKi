@@ -35,6 +35,7 @@ export default function ParentPages() {
 				console.error('사용자 데이터 가져오기 실패:', err);
 			}
 		};
+
 		const fetchFamilyData = async () => {
 			try {
 				const response = await getFamily();
@@ -43,9 +44,10 @@ export default function ParentPages() {
 				console.error('가족 데이터 가져오기 실패:', err);
 			}
 		};
+
 		fetchUserData();
 		fetchFamilyData();
-	}, [setUser, user.userId]);
+	}, [setUser]);
 
 	// 초대 코드 가져오기
 	const fetchInviteCode = async () => {
