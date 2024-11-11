@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import CommonButton from '@/components/Common/Button';
 import CommonInput from '@/components/Common/Input';
 import Image from 'next/image';
-import MainLogo from '@/assets/icons/choki_icon.svg';
+// import MainLogo from '@/../public/icons/choki_icon.svg';
 import { loginUser } from '@/lib/api/login';
 
 export default function LoginPage() {
@@ -25,7 +25,7 @@ export default function LoginPage() {
 		if (response?.role === 'PARENT') {
 			router.push('/parents');
 		} else if (response?.role === 'CHILD') {
-			router.push('/child');
+			router.push('/child/main');
 		} else {
 			alert('로그인에 문제가 발생했습니다.');
 		}
@@ -35,7 +35,12 @@ export default function LoginPage() {
 		<div className="bg-light_yellow_mid flex flex-col items-center h-screen pt-[20vh]">
 			{/* Logo Container */}
 			<div className="w-[120px] h-[120px] mb-16">
-				<Image src={MainLogo} alt="Choki Logo" width={120} height={120} />
+				<Image
+					src="/icons/choki_icon.svg"
+					alt="Choki Logo"
+					width={120}
+					height={120}
+				/>
 			</div>
 
 			{/* Form Container */}

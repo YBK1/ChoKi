@@ -4,17 +4,50 @@ import code_information from '@/assets/icons/cod-information.svg';
 import child_profile from '@/assets/icons/child_profile.svg';
 import map_icon_blurry from '@/assets/icons/map_icon_blurry.svg';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DogCharacter from '@/assets/icons/dog_character.svg';
 import CommonModal from '@/components/Common/Modal';
 import CommonButton from '@/components/Common/Button';
 import { Toast } from '@/components/Toast/Toast';
 import { getInviteCode } from '@/lib/api/inviteCode';
+import { getFamily, getUserData } from '@/lib/api/user';
+import { useAtom } from 'jotai';
+import { userAtom } from '@/atoms';
 
 export default function ParentPages() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [inviteCode, setInviteCode] = useState('');
 	const [showToast, setShowToast] = useState(false);
+	const [children, setChildren] = useState<Child[]>([]);
+
+	const [user, setUser] = useAtom(userAtom);
+
+	useEffect(() => {
+		const fetchUserData = async () => {
+			try {
+				const response = await getUserData();
+				const { userId, name } = response;
+				setUser({
+					userId,
+					username: name,
+				});
+			} catch (err) {
+				console.error('사용자 데이터 가져오기 실패:', err);
+			}
+		};
+
+		const fetchFamilyData = async () => {
+			try {
+				const response = await getFamily();
+				setChildren(response.children);
+			} catch (err) {
+				console.error('가족 데이터 가져오기 실패:', err);
+			}
+		};
+
+		fetchUserData();
+		fetchFamilyData();
+	}, [setUser]);
 
 	// 초대 코드 가져오기
 	const fetchInviteCode = async () => {
@@ -54,7 +87,7 @@ export default function ParentPages() {
 			{/* 안내 */}
 			<div className="relative w-full h-[190px] rounded-b-3xl bg-light_yellow_dark shadow-xl mb-4">
 				<h1 className="text-2xl font-normal mt-14 ml-8">
-					안녕하세요 민주님,
+					안녕하세요 {user.username}님,
 					<br />
 					오늘도 아이들과 함께 파이팅!
 				</h1>
@@ -73,22 +106,35 @@ export default function ParentPages() {
 			{/* 내용 */}
 			<div className="flex flex-col justify-center items-center gap-4 mt-12">
 				{/* 아이 선택 */}
-				<div className="w-[350px] h-[280px] bg-white rounded-3xl shadow-sm border-4 border-light_yellow_side mb-5">
+				<div className="w-[350px] h-[300px] bg-white rounded-3xl shadow-sm border-4 border-light_yellow_side mb-5">
 					<h2 className="text-lg font-bold mt-8 ml-7 mb-4">
 						오늘은 어떤 아이에게
 						<br />
 						미션을 부여하실건가요?
 					</h2>
-					<div className="flex justify-center gap-16">
-						<div className="flex flex-col items-center">
-							<Image src={child_profile} alt="child_profile" />
-							<p className="text-sm mt-2">여준이는 심부름왕</p>
-							<p className="text-sm font-bold mt-1">Lv.10</p>
-						</div>
-						<div className="flex flex-col items-center">
-							<Image src={child_profile} alt="child_profile" />
-							<p className="text-sm mt-2">장덕동 심부름왕</p>
-							<p className="text-sm font-bold mt-1">Lv.5</p>
+					<div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-100 scrollbar-track-transparent">
+						<div className="flex flex-nowrap gap-8 min-w-min pb-4">
+							{children.map(child => (
+								<Link
+									href={`/parents/${child.childId}`}
+									key={child.childId}
+									className="cursor-pointer hover:opacity-80 transition-opacity"
+								>
+									<div className="flex flex-col items-center w-24 ml-2">
+										<div className="w-24 h-24 flex-shrink-0">
+											<Image
+												src={child_profile}
+												alt="child_profile"
+												className="w-full h-full object-cover"
+											/>
+										</div>
+										<p className="text-sm mt-2 truncate w-full text-center">
+											{child.nickname}
+										</p>
+										<p className="text-sm font-bold mt-1">Lv.{child.level}</p>
+									</div>
+								</Link>
+							))}
 						</div>
 					</div>
 				</div>

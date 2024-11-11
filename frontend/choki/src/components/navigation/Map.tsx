@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import TransitionToLocalView from './TransitionToLocalView';
 import CurrentLocationButton from './CurrentLocationButton';
 import TimeDistanceTracker from './TimeDistanceTracker';
 import UpperNavbar from '../Common/Navbar/UpperNavbar';
+import ChildLocationSender from '@/lib/ws/ChildLocationSender';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 
 mapboxgl.accessToken =
@@ -18,6 +20,14 @@ const MapComponent = () => {
 	);
 	const [isGlobeView, setIsGlobeView] = useState(true);
 	const [showLocalViewElements, setShowLocalViewElements] = useState(false);
+	const [route, setRoute] = useState<
+		{ latitude: number; longitude: number }[] | null
+	>(null);
+	const router = useRouter();
+
+	const goBack = () => {
+		router.push('/child/main');
+	};
 
 	useEffect(() => {
 		if (!mapContainerRef.current) return;
@@ -82,31 +92,52 @@ const MapComponent = () => {
 		childWebSocketClient.connect();
 
 		childWebSocketClient.subscribe(
-			`/sub/shopping/672df1def4c5cb7ca5d36532`,
+			`/user/sub/shopping/672f0b493251e83e3031604c`,
 			msg => {
 				console.log('받은 문자:', msg.body);
+
+				const missonRoute = JSON.parse(msg.body).route;
+				setRoute(missonRoute);
 			},
 		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	useEffect(() => {
+		if (route) {
+			console.log('Updated route:', route);
+		}
+	}, [route]);
 
 	return (
 		<div className="relative w-full h-screen">
 			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>{' '}
 			<div ref={mapContainerRef} className="w-full h-full" />
+			<ChildLocationSender shoppingId="672f0b493251e83e3031604c" />
 			{isGlobeView ? (
 				<>
 					<TransitionToLocalView
 						map={map}
 						userLocation={userLocation}
 						setIsGlobeView={setIsGlobeView}
+						route={route}
 					/>
+					<button
+						onClick={goBack}
+						className="absolute top-4 left-4 bg-white p-2 rounded-full shadow-lg"
+					>
+						돌아가기
+					</button>
 				</>
 			) : (
 				showLocalViewElements && (
 					<>
-						<CurrentLocationButton map={map} />
-						<TimeDistanceTracker />
 						<UpperNavbar />
+						<CurrentLocationButton map={map} />
+						<TimeDistanceTracker
+							route={route ?? []}
+							userLocation={userLocation}
+						/>
 					</>
 				)
 			)}
