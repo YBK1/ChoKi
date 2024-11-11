@@ -1,5 +1,6 @@
 package com.yeojiphap.choki.domain.mission.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +13,6 @@ import org.springframework.data.mongodb.core.query.Update;
 
 import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.domain.Status;
-import com.yeojiphap.choki.domain.shopping.domain.Shopping;
 
 import lombok.RequiredArgsConstructor;
 
@@ -60,9 +60,24 @@ public class CustomMissionRepositoryImpl implements CustomMissionRepository{
 	}
 
 	@Override
-	public Optional<Mission> setMissionStatusPending(ObjectId missionId){
+	public Optional<Mission> setMissionStatusPending(ObjectId missionId, String image){
 		Query query = new Query(Criteria.where("_id").is(missionId));
-		Update update = new Update().set("status", "PENDING");
+		Update update = new Update().set("status", "PENDING").set("image", image);
+		return Optional.ofNullable(mongoTemplate.findAndModify(
+			query,
+			update,
+			FindAndModifyOptions.options().returnNew(true),
+			Mission.class
+		));
+	}
+
+	@Override
+	public Optional<Mission> setMissionComment(ObjectId missionId, String comment){
+		Query query = new Query(Criteria.where("_id").is(missionId));
+		Update update = new Update()
+			.set("status", "COMPLETED")
+			.set("comment", comment)
+			.set("completedAt", LocalDateTime.now().toString());
 		return Optional.ofNullable(mongoTemplate.findAndModify(
 			query,
 			update,

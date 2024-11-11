@@ -19,5 +19,7 @@ public interface CustomMissionRepository {
 
 	List<Mission> findAllByChildIdAndStatus(Long childId, Status status);
 
-	Optional<Mission> setMissionStatusPending(ObjectId missionId);
+	Optional<Mission> setMissionStatusPending(ObjectId missionId, String image);
+
+	Optional<Mission> setMissionComment(ObjectId missionId, String comment);
 }

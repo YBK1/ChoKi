@@ -1,5 +1,6 @@
 package com.yeojiphap.choki.domain.shopping.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,9 +26,12 @@ import com.yeojiphap.choki.domain.shopping.domain.Product;
 import com.yeojiphap.choki.domain.shopping.domain.ProductDocument;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.DangerRequestDto;
 import com.yeojiphap.choki.domain.shopping.exception.BadRequestException;
+import com.yeojiphap.choki.domain.shopping.exception.ProductNotFoundException;
 import com.yeojiphap.choki.domain.shopping.exception.ShoppingNotFoundException;
 import com.yeojiphap.choki.domain.shopping.repository.ShoppingRepository;
 import com.yeojiphap.choki.domain.shopping.repository.ProductRepository;
+import com.yeojiphap.choki.global.s3.S3Service;
+import com.yeojiphap.choki.global.s3.S3UploadFailedException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,6 +44,7 @@ public class ShoppingService {
 	private final MissionService missionService;
 	private final NotificationService notificationService;
 	private final RedisTemplate<String, Object> redisTemplate;
+	private final S3Service s3Service;
 
 	// 쇼핑 정보 검색하기
 	public Shopping getShoppingById(ObjectId id) {
@@ -157,27 +162,14 @@ public class ShoppingService {
 
 	// 바코드 기반 단일 상품 검색
 	public ProductDto searchProductByBarcode(String barcode) {
-		Optional<ProductDocument> productOptional = productRepository.findById(barcode);
-		if(productOptional.isPresent()){
-			// DTO 변환
-			return ProductDto.builder()
-				.barcode(productOptional.get().getNumber().toString())
-				.productName(productOptional.get().getName())
-				.category(productOptional.get().getCategory())
-				.image(productOptional.get().getImage())
-				.build();
-		}
-		else{
-			return null;
-		}
-
-
-		// excpetion은 나중에 만들고 분류하자 일단 놔둬
-		// if(productDto.isPresent()){
-		// }
-		// else{
-		// 	throw new RuntimeException();
-		// }
+		ProductDocument productOptional = productRepository.findById(barcode).orElseThrow(
+			ProductNotFoundException::new);
+		return ProductDto.builder()
+			.barcode(productOptional.getNumber().toString())
+			.productName(productOptional.getName())
+			.category(productOptional.getCategory())
+			.image(productOptional.getImage())
+			.build();
 	}
 
 	public ProductCompareResponseDto compareBarcode(ProductCompareRequestDto productCompareRequestDto) {
@@ -187,7 +179,7 @@ public class ShoppingService {
 		// 장바구니 리스트 바코드 정보 확인
 		ProductDto originProduct = searchProductByBarcode(productCompareRequestDto.getOriginBarcode());
 		// 입력 바코드 정보 확인
-		ProductDto inputProduct = searchProductByBarcode(productCompareRequestDto.getOriginBarcode());
+		ProductDto inputProduct = searchProductByBarcode(productCompareRequestDto.getInputBarcode());
 
 		ProductCompareResponseDto productCompareResponseDto = new ProductCompareResponseDto();
 		if(originProduct.getBarcode().equals(inputProduct.getBarcode())) {
@@ -241,7 +233,16 @@ public class ShoppingService {
 		Shopping shopping = shoppingRepository.findById(finishShoppingRequestDto.getShoppingId()).orElseThrow(ShoppingNotFoundException::new);
 		// 미션의 상태를 변경
 		ObjectId missionId = new ObjectId(shopping.getMissionId());
-		missionService.setMissionStatusPending(missionId);
+		// s3에 이미지를 등록하기
+		String imagePath = "";
+		try{
+			imagePath =  s3Service.uploadFile(image);
+		}
+		catch(IOException e){
+			throw new S3UploadFailedException();
+		}
+		// 미션 상태 변경
+		missionService.setMissionStatusPending(missionId, imagePath);
 
 		// 그에 따른 알림
 		notificationService.addNotificationIfShoppingEnd(shopping);

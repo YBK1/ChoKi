@@ -4,6 +4,7 @@ import com.yeojiphap.choki.domain.character.exception.AnimalNotFoundException;
 import com.yeojiphap.choki.domain.collected.exception.AllAnimalsOwnedException;
 import com.yeojiphap.choki.domain.collected.exception.AnimalAlreadyExistException;
 import com.yeojiphap.choki.domain.shopping.exception.BadRequestException;
+import com.yeojiphap.choki.domain.shopping.exception.ProductNotFoundException;
 import com.yeojiphap.choki.domain.shopping.exception.ShoppingNotFoundException;
 import com.yeojiphap.choki.domain.family.exception.ChildNotExistException;
 import com.yeojiphap.choki.domain.family.exception.FamilyNotFoundException;
@@ -15,6 +16,8 @@ import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
 import com.yeojiphap.choki.global.auth.exception.ExpiredRefreshTokenException;
 import com.yeojiphap.choki.global.auth.exception.InvalidRefreshTokenException;
 import com.yeojiphap.choki.global.auth.exception.NotFoundRefreshTokenException;
+import com.yeojiphap.choki.global.s3.S3UploadFailedException;
+
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -96,6 +99,16 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ShoppingNotFoundException.class)
     public ApiResponse<Void> handleNotFoundRefreshTokenException(ShoppingNotFoundException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
+
+    @ExceptionHandler(S3UploadFailedException.class)
+    public ApiResponse<Void> handleS3UploadFailedException(S3UploadFailedException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ApiResponse<Void> handleProductNotFoundException(ProductNotFoundException e) {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 }
