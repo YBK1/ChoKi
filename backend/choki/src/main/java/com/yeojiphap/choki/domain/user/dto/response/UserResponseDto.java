@@ -6,7 +6,8 @@ import com.yeojiphap.choki.domain.user.domain.User;
 
 import java.util.List;
 
-public record UserResponseDto (Long userId, String nickname, String address, String name, String tel, Role role, String inviteCode, Long familyId, int level, int exp, int pastLevel, Long mainAnimalId, List<Long> animals) {
+public record UserResponseDto (Long userId, String nickname, String address, String name, String tel, Role role, String inviteCode, Long familyId, int level, int exp, boolean isLevelUp, Long mainAnimalId, List<Long> animals) {
+
     public static UserResponseDto from(User user, List<Collected> animalList) {
         return new UserResponseDto(
                 user.getId(),
@@ -19,11 +20,15 @@ public record UserResponseDto (Long userId, String nickname, String address, Str
                 user.getFamily().getId(),
                 user.getLevel(),
                 user.getExp(),
-                user.getPastLevel(),
+                levelUpValidation(user.getLevel(), user.getPastLevel()),
                 user.getMainAnimal(),
                 animalList.stream()
                         .map(collected -> collected.getAnimal().getId())
                         .toList()
         );
+    }
+
+    private static boolean levelUpValidation (int level, int pastLevel) {
+        return level > pastLevel;
     }
 }
