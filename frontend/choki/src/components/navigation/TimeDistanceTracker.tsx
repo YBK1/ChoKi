@@ -13,13 +13,15 @@ type TimeDistanceTrackerProps = {
 
 const AVERAGE_WALKING_SPEED = 1.0;
 const AVERAGE_STEP_LENGTH = 0.5;
+const OFF_ROUTE_THRESHOLD = 20;
 
-const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
-	route,
-	userLocation,
-}) => {
+const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
+	const [userLocation, setUserLocation] = useState<[number, number] | null>(
+		null,
+	);
 	const [remainingTime, setRemainingTime] = useState(0);
 	const [remainingSteps, setRemainingSteps] = useState(0);
+	const [isOffRoute, setIsOffRoute] = useState(false);
 
 	const calculateDistance = (
 		lat1: number,
@@ -28,17 +30,54 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
 		lon2: number,
 	): number => {
 		const R = 6371000;
-		const dLat = (lat2 - lat1) * (Math.PI / 180);
-		const dLon = (lon2 - lon1) * (Math.PI / 180);
+		const phi1 = (lat1 * Math.PI) / 180;
+		const phi2 = (lat2 * Math.PI) / 180;
+		const deltaPhi = ((lat2 - lat1) * Math.PI) / 180;
+		const deltaLambda = ((lon2 - lon1) * Math.PI) / 180;
+
 		const a =
-			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-			Math.cos(lat1 * (Math.PI / 180)) *
-				Math.cos(lat2 * (Math.PI / 180)) *
-				Math.sin(dLon / 2) *
-				Math.sin(dLon / 2);
+			Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+			Math.cos(phi1) *
+				Math.cos(phi2) *
+				Math.sin(deltaLambda / 2) *
+				Math.sin(deltaLambda / 2);
 		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
 		return R * c;
 	};
+
+	useEffect(() => {
+		// Fetch initial position with getCurrentPosition
+		navigator.geolocation.getCurrentPosition(
+			position => {
+				const { latitude, longitude } = position.coords;
+				setUserLocation([longitude, latitude]);
+			},
+			error => console.error('Error getting initial location:', error),
+			{
+				enableHighAccuracy: true,
+				timeout: 10000,
+				maximumAge: 0,
+			},
+		);
+
+		// Set up continuous location tracking with watchPosition
+		const watchId = navigator.geolocation.watchPosition(
+			position => {
+				const { latitude, longitude } = position.coords;
+				setUserLocation([longitude, latitude]);
+			},
+			error => console.error('Error watching location:', error),
+			{
+				enableHighAccuracy: true,
+				timeout: 10000,
+				maximumAge: 0,
+			},
+		);
+
+		// Clear watch on component unmount
+		return () => navigator.geolocation.clearWatch(watchId);
+	}, []);
 
 	useEffect(() => {
 		if (!userLocation || route.length === 0) {
@@ -47,8 +86,8 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
 
 		let remainingDistance = 0;
 		let closestPointIndex = 0;
+		let minDistanceToRoute = Infinity;
 
-		// 가장 근접한 경로 상의 점 찾기
 		for (let i = 0; i < route.length; i++) {
 			const distance = calculateDistance(
 				userLocation[1],
@@ -56,20 +95,15 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
 				route[i].latitude,
 				route[i].longitude,
 			);
-			if (
-				distance <
-				calculateDistance(
-					userLocation[1],
-					userLocation[0],
-					route[closestPointIndex].latitude,
-					route[closestPointIndex].longitude,
-				)
-			) {
+
+			if (distance < minDistanceToRoute) {
+				minDistanceToRoute = distance;
 				closestPointIndex = i;
 			}
 		}
 
-		// 남은 거리 계산
+		setIsOffRoute(minDistanceToRoute > OFF_ROUTE_THRESHOLD);
+
 		for (let i = closestPointIndex; i < route.length - 1; i++) {
 			remainingDistance += calculateDistance(
 				route[i].latitude,
@@ -92,7 +126,7 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
 				position: 'absolute',
 				bottom: '0',
 				width: '100%',
-				backgroundColor: '#ADD8E6',
+				backgroundColor: isOffRoute ? '#FF6347' : '#ADD8E6',
 				borderTopLeftRadius: '20px',
 				borderTopRightRadius: '20px',
 				padding: '20px',

@@ -25,10 +25,6 @@ const MapComponent = () => {
 	>(null);
 	const router = useRouter();
 
-	const userLocationFormatted = userLocation
-		? ([userLocation[1], userLocation[0]] as [number, number])
-		: null;
-
 	const goBack = () => {
 		router.push('/child/main');
 	};
@@ -136,12 +132,12 @@ const MapComponent = () => {
 			) : (
 				showLocalViewElements && (
 					<>
+						<UpperNavbar />
 						<CurrentLocationButton map={map} />
 						<TimeDistanceTracker
 							route={route ?? []}
-							userLocation={userLocationFormatted}
+							userLocation={userLocation}
 						/>
-						<UpperNavbar />
 					</>
 				)
 			)}

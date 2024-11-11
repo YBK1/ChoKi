@@ -8,7 +8,8 @@ import Link from 'next/link';
 export default function UpperNavbar() {
 	return (
 		<>
-			<nav className="top-5 z-50 w-full left-[50%]">
+			<nav className="fixed top-5 z-100 w-full left-[50%] transform -translate-x-1/2">
+				{' '}
 				<div className="h-full flex justify-center items-center gap-5">
 					{/* 나가기 버튼 */}
 					<Link href="/child">
@@ -18,14 +19,14 @@ export default function UpperNavbar() {
 					</Link>
 
 					{/* 경로 및 장바구니 버튼 */}
-					<div className="w-[190px] h-[60px] bg-ligin_yellow_nav rounded-full flex justify-center items-center shadow-lg">
+					<div className="w-[190px] h-[60px] bg-light_yellow_nav rounded-full flex justify-center items-center shadow-lg">
 						<Link href="/child/shop/route">
 							<button className="p-2">
 								<Image src={map} alt="map_icon" />
 							</button>
 						</Link>
 
-						<div className="w-px h-8 bg-ligin_yellow_nav mx-2" />
+						<div className="w-px h-8 bg-light_yellow_nav mx-2" />
 
 						<Link href="/child/shop/list">
 							<button className="p-2">
