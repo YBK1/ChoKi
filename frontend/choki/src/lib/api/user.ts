@@ -11,3 +11,8 @@ export const getFamily = async () => {
 		throw error;
 	}
 };
+
+export const getUserData = async (): Promise<userDataResponse> => {
+	const response = await axiosInstance.get('/api/user/mypage');
+	return response.data;
+};

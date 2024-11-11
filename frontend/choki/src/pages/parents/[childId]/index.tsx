@@ -13,10 +13,13 @@ import {
 	getKidDataFromParent,
 	getInProgressMissionList,
 } from '@/lib/api/parent';
+import { useAtom } from 'jotai';
+import { userAtom, selectedChildIdAtom } from '@/atoms';
+import { useRouter } from 'next/router';
 
 export default function Index() {
 	const [kidInfo, setKidInfo] = useState<KidDataResponseFromParent>();
-	const [currentChildId, setCurrentChildId] = useState<number>();
+	// const [currentChildId, setCurrentChildId] = useState<number>();
 
 	const [missions, setMissions] = useState<Mission[]>();
 
@@ -31,10 +34,15 @@ export default function Index() {
 		setIsModalOpen(false);
 		setCurrentStep(1);
 		setSelectedErrand('');
+		setSelectedItems([]);
 	};
 
 	const handleNext = () => setCurrentStep(prev => prev + 1);
 	const handlePrev = () => setCurrentStep(prev => prev - 1);
+
+	const [user] = useAtom(userAtom);
+	const router = useRouter();
+	const [selectedChildId, setSelectedChildId] = useAtom(selectedChildIdAtom);
 
 	// 현재 선택한 아이 정보 가져오기 함수
 	const getKidInfo = async (childId: number) => {
@@ -71,14 +79,31 @@ export default function Index() {
 	};
 
 	// 현재 주소에서 아이디 가져와서 api 조회하기
-	useEffect(() => {
-		const url = new URL(window.location.href);
-		const id = parseInt(url.pathname.split('/').pop() || '0');
-		setCurrentChildId(id);
-		getKidInfo(id);
-		getInProgressMissions(id);
-	}, []);
+	// useEffect(() => {
+	// 	const url = new URL(window.location.href);
+	// 	const id = parseInt(url.pathname.split('/').pop() || '0');
+	// 	setCurrentChildId(id);
+	// 	getKidInfo(id);
+	// 	getInProgressMissions(id);
+	// }, []);
+	// 사용자 정보 가져오기
 
+	useEffect(() => {
+		const { childId } = router.query;
+
+		// 1. childId가 있을 때만 상태 업데이트 및 데이터 fetch
+		if (childId && typeof childId === 'string') {
+			const numChildId = Number(childId);
+			setSelectedChildId(numChildId);
+
+			// 2. 바로 데이터 fetch (userId 체크는 각 API 함수 내부에서 처리)
+			getKidInfo(numChildId);
+			getInProgressMissions(numChildId);
+		}
+	}, [router.query, setSelectedChildId]); // userId 의존성 제거
+
+	// 현재 선택된 childId 확인
+	console.log('parentId,childId', user.userId, selectedChildId);
 	// 각 단계별 컴포넌트
 	const StepOne = () => (
 		<div className="flex flex-col h-full">
@@ -433,6 +458,11 @@ export default function Index() {
 			setSelectedItems(prev => prev.filter(item => item.barcode !== barcode));
 		};
 
+		const handleStepThreePrev = () => {
+			setSelectedItems([]);
+			handlePrev();
+		};
+
 		return (
 			<div className="flex flex-col h-full">
 				<h2 className="text-xl font-bold text-center m-4">장바구니 설정</h2>
@@ -510,7 +540,7 @@ export default function Index() {
 				<div className="flex justify-between mt-4">
 					<button
 						className="px-4 py-2 rounded bg-gray-100 text-gray-500"
-						onClick={handlePrev}
+						onClick={handleStepThreePrev}
 					>
 						이전
 					</button>
@@ -532,8 +562,8 @@ export default function Index() {
 				}
 
 				const requestBody: ShoppingRequest = {
-					parentId: 1,
-					childId: 2,
+					parentId: user.userId,
+					childId: selectedChildId!,
 					startPoint: selectedRouteDetails.startPoint,
 					destination: selectedRouteDetails.destination,
 					route: selectedRouteDetails.routes,
@@ -544,6 +574,9 @@ export default function Index() {
 				};
 
 				await createShopping(requestBody);
+				if (selectedChildId) {
+					await getInProgressMissions(selectedChildId);
+				}
 				handleCloseModal();
 			} catch (error) {
 				console.error('Failed to create shopping mission:', error);
@@ -555,9 +588,12 @@ export default function Index() {
 					심부름 정보가 <br />
 					맞는지 확인해주세요!
 				</h3>
-				<span className="font-bold ml-2">경로</span>
-				<span className="font-bold ml-2 mb-2">장바구니</span>
-				<div className="flex-1 overflow-y-auto">
+				<span className="font-bold ml-2 mb-2">목적지</span>
+				<div className="p-2  border-2 border-light_yellow_dark rounded-xl mb-5 ml-1">
+					{selectedRouteDetails.destination.buildingName}
+				</div>
+				<span className="font-bold ml-2 mb-3">장바구니</span>
+				<div className="flexoverflow-y-auto">
 					<div className="grid grid-cols-2 gap-2 ">
 						{selectedItems.map(item => (
 							<div
@@ -582,7 +618,7 @@ export default function Index() {
 							</div>
 						))}
 					</div>
-					<div className="flex justify-between mt-4">
+					<div className="flex justify-between mt-10">
 						<button
 							className="px-4 py-2 rounded bg-gray-100 text-gray-500"
 							onClick={handlePrev}
@@ -676,7 +712,7 @@ export default function Index() {
 			<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow background min-h-screen">
 				{/* 알림 아이콘 */}
 				<div className="flex justify-end m-4">
-					<Link href={`/parents/${currentChildId}/notification`}>
+					<Link href={`/parents/${selectedChildId}/notification`}>
 						<div className="bg-white rounded-xl shadow-sm flex items-center justify-center">
 							<Image
 								src={notification_icon}
@@ -764,6 +800,7 @@ export default function Index() {
 					isOpen={isModalOpen}
 					onClose={handleCloseModal}
 					size={getModalSize(currentStep)}
+					hideBackdrop={false}
 				>
 					{renderContent()}
 				</CommonModal>
