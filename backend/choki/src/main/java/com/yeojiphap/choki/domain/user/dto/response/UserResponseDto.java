@@ -28,6 +28,8 @@ public record UserResponseDto (Long id, String nickname, String address, String 
     }
 
     private static boolean levelUpValidation (int level, int pastLevel) {
+        System.out.println("level : " + level + " pastLevel : " + pastLevel);
+        System.out.println(" 레벨업 확인: " + (level>pastLevel));
         return level > pastLevel;
     }
 }
