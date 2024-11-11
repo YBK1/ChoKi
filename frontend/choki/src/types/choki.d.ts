@@ -114,3 +114,20 @@ interface PasswordForm {
 	isMatch: boolean;
 	message: string;
 }
+
+// pendingData
+interface UserProfile {
+	address: string;
+	animals: number[]; // 각 동물의 ID를 저장하는 배열
+	exp: number;
+	familyId: number;
+	inviteCode: string;
+	isLevelUp: boolean;
+	level: number;
+	mainAnimalId: number;
+	name: string;
+	nickname: string;
+	role: 'CHILD' | 'PARENT'; // 가능한 값이 'CHILD' 또는 'PARENT'일 경우 Union Type으로 정의
+	tel: string;
+	userId: number;
+}

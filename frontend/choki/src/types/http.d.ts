@@ -164,3 +164,11 @@ interface InProgressMissionResponse {
 	type: MissionType;
 	shoppingId: string;
 }
+
+interface MissionListResponse {
+	content: string;
+	type: string;
+	completedAt: string;
+	image: string;
+	shoppingId: string;
+}

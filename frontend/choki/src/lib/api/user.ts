@@ -16,3 +16,12 @@ export const getUserData = async (): Promise<userDataResponse> => {
 	const response = await axiosInstance.get('/api/user/mypage');
 	return response.data;
 };
+
+export const getMissionList = async (
+	userId: number,
+): Promise<MissionListResponse> => {
+	const response = await axiosInstance.get('/api/mission/list', {
+		params: { userId: userId },
+	});
+	return response.data;
+};
