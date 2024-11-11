@@ -4,27 +4,54 @@ import code_information from '@/assets/icons/cod-information.svg';
 import child_profile from '@/assets/icons/child_profile.svg';
 import map_icon_blurry from '@/assets/icons/map_icon_blurry.svg';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DogCharacter from '@/assets/icons/dog_character.svg';
 import CommonModal from '@/components/Common/Modal';
 import CommonButton from '@/components/Common/Button';
-const Toast = ({ message }: { message: string }) => (
-	<div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 animate-fade-up">
-		<div className="bg-black bg-opacity-80 text-white px-6 py-3 rounded-full shadow-lg">
-			{message}
-		</div>
-	</div>
-);
+import { Toast } from '@/components/Toast/Toast';
+import { getInviteCode } from '@/lib/api/inviteCode';
+import { getFamily } from '@/lib/api/user';
+
 export default function ParentPages() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [inviteCode] = useState('123456');
+	const [inviteCode, setInviteCode] = useState('');
 	const [showToast, setShowToast] = useState(false);
-	const handleInviteCodeModal = () => {
+	const [children, setChildren] = useState<Child[]>([]);
+
+	useEffect(() => {
+		const fetchFamilyData = async () => {
+			try {
+				const response = await getFamily();
+				setChildren(response.children);
+			} catch (err) {
+				console.error('가족 데이터 가져오기 실패:', err);
+			}
+		};
+
+		fetchFamilyData();
+	}, []);
+
+	// 초대 코드 가져오기
+	const fetchInviteCode = async () => {
+		try {
+			const response = await getInviteCode();
+			const code = response.inviteCode;
+			// console.log('초대 코드:', code);
+			setInviteCode(code);
+		} catch (err) {
+			console.error('초대 코드 가져오기 실패:', err);
+		}
+	};
+
+	const handleInviteCodeModal = async () => {
+		await fetchInviteCode(); // 모달 열기 전에 초대 코드 가져오기
 		setIsModalOpen(true);
 	};
+
 	const handleCloseModal = () => {
 		setIsModalOpen(false);
 	};
+
 	const handleCopyCode = async () => {
 		try {
 			await navigator.clipboard.writeText(inviteCode);
@@ -42,7 +69,7 @@ export default function ParentPages() {
 			{/* 안내 */}
 			<div className="relative w-full h-[190px] rounded-b-3xl bg-light_yellow_dark shadow-xl mb-4">
 				<h1 className="text-2xl font-normal mt-14 ml-8">
-					안녕하세요 민주님,
+					안녕하세요 username님,
 					<br />
 					오늘도 아이들과 함께 파이팅!
 				</h1>
@@ -67,16 +94,21 @@ export default function ParentPages() {
 						<br />
 						미션을 부여하실건가요?
 					</h2>
-					<div className="flex justify-center gap-16">
-						<div className="flex flex-col items-center">
-							<Image src={child_profile} alt="child_profile" />
-							<p className="text-sm mt-2">여준이는 심부름왕</p>
-							<p className="text-sm font-bold mt-1">Lv.10</p>
-						</div>
-						<div className="flex flex-col items-center">
-							<Image src={child_profile} alt="child_profile" />
-							<p className="text-sm mt-2">장덕동 심부름왕</p>
-							<p className="text-sm font-bold mt-1">Lv.5</p>
+					<div className="overflow-x-auto px-4">
+						<div className="flex flex-nowrap gap-8 min-w-min pb-4">
+							{children.map(child => (
+								<Link
+									href={`/parents/${child.childId}`}
+									key={child.childId}
+									className="cursor-pointer hover:opacity-80 transition-opacity"
+								>
+									<div className="flex flex-col items-center flex-shrink-0">
+										<Image src={child_profile} alt="child_profile" />
+										<p className="text-sm mt-2">{child.nickname}</p>
+										<p className="text-sm font-bold mt-1">Lv.{child.level}</p>
+									</div>
+								</Link>
+							))}
 						</div>
 					</div>
 				</div>
