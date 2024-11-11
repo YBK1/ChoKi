@@ -34,6 +34,7 @@ export default function Index() {
 		setIsModalOpen(false);
 		setCurrentStep(1);
 		setSelectedErrand('');
+		setSelectedItems([]);
 	};
 
 	const handleNext = () => setCurrentStep(prev => prev + 1);
@@ -457,6 +458,11 @@ export default function Index() {
 			setSelectedItems(prev => prev.filter(item => item.barcode !== barcode));
 		};
 
+		const handleStepThreePrev = () => {
+			setSelectedItems([]);
+			handlePrev();
+		};
+
 		return (
 			<div className="flex flex-col h-full">
 				<h2 className="text-xl font-bold text-center m-4">장바구니 설정</h2>
@@ -534,7 +540,7 @@ export default function Index() {
 				<div className="flex justify-between mt-4">
 					<button
 						className="px-4 py-2 rounded bg-gray-100 text-gray-500"
-						onClick={handlePrev}
+						onClick={handleStepThreePrev}
 					>
 						이전
 					</button>
