@@ -582,9 +582,12 @@ export default function Index() {
 					심부름 정보가 <br />
 					맞는지 확인해주세요!
 				</h3>
-				<span className="font-bold ml-2">경로</span>
-				<span className="font-bold ml-2 mb-2">장바구니</span>
-				<div className="flex-1 overflow-y-auto">
+				<span className="font-bold ml-2 mb-2">목적지</span>
+				<div className="p-2  border-2 border-light_yellow_dark rounded-xl mb-5 ml-1">
+					{selectedRouteDetails.destination.buildingName}
+				</div>
+				<span className="font-bold ml-2 mb-3">장바구니</span>
+				<div className="flexoverflow-y-auto">
 					<div className="grid grid-cols-2 gap-2 ">
 						{selectedItems.map(item => (
 							<div
@@ -609,7 +612,7 @@ export default function Index() {
 							</div>
 						))}
 					</div>
-					<div className="flex justify-between mt-4">
+					<div className="flex justify-between mt-10">
 						<button
 							className="px-4 py-2 rounded bg-gray-100 text-gray-500"
 							onClick={handlePrev}
