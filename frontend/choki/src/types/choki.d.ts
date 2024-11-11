@@ -14,6 +14,7 @@ type MapProps = {
 	showDestinationSearch?: boolean;
 	showPreviousButton?: boolean;
 	showChildNavBar: boolean;
+	route?: LatLng[];
 };
 
 // 카카오맵 실제 지도 props
@@ -22,12 +23,18 @@ type MapContainerProps = {
 };
 
 // 카카오맵 위에 선 그리는 props
-type RoutePolylineProps = {
-	map: any;
-	finalRoute: { latitude: number; longitude: number }[];
-	setPolyline: (polyline: any) => void;
-	polyline: any;
+type LatLng = {
+	latitude: number;
+	longitude: number;
 };
+
+// Define a type for the RoutePolyline component props
+interface RoutePolylineProps {
+	map: kakao.maps.Map | null;
+	route: LatLng[];
+	polyline: kakao.maps.Polyline | null;
+	setPolyline: React.Dispatch<React.SetStateAction<kakao.maps.Polyline | null>>;
+}
 
 // 카카오맵 경로 기록하는 props
 type RouteRecorderProps = {
@@ -152,19 +159,7 @@ interface Window {
 	UnityLoader: any; // Unity 로더 타입
 	unityInstance: any; // Unity 인스턴스 타입
 	receiveDataFromUnity: (data: string) => void; // Unity에서 데이터를 받을 함수 타입
-}
-
-// TODO - 서버 연동시 이름 변경
-// TODO - 서버 연동시 이미지 S3 주소 추가 예정
-interface ShoppingItem {
-	title: string;
-	count: number;
-}
-
-interface ShoppingCardProps {
-	role: string;
-	ParentsShoppingItem: ShoppingItem;
-	ChildrenShoppingItem: ShoppingItem;
+	UnityReadyCallback?: () => void;
 }
 
 interface Speech {

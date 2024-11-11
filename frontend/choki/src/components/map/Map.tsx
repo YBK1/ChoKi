@@ -13,6 +13,7 @@ const Map = ({
 	showPolyline = true,
 	showPreviousButton = true,
 	showChildNavBar = false,
+	route = [],
 }: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
@@ -68,7 +69,7 @@ const Map = ({
 			{mapInstance && showPolyline && (
 				<RoutePolyline
 					map={mapInstance}
-					finalRoute={finalRoute}
+					route={route.length ? route : finalRoute}
 					polyline={polyline}
 					setPolyline={setPolyline}
 				/>

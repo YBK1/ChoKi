@@ -1,7 +1,27 @@
 import BottomNavbar from '@/components/Common/Navbar/BottomNavbar';
 import Map from '@/components/map/Map';
+import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
+import { useEffect, useState } from 'react';
 
 export default function ChildIsShoppingPage() {
+	const [route, setRoute] = useState<
+		{ latitude: number; longitude: number }[] | undefined
+	>(undefined);
+
+	useEffect(() => {
+		parentWebSocketClient.connect();
+
+		parentWebSocketClient.subscribe(
+			`/user/sub/shopping/672f0b493251e83e3031604c`,
+			msg => {
+				console.log('Received message:', msg.body);
+
+				const missionRoute = JSON.parse(msg.body).route;
+				setRoute(missionRoute);
+			},
+		);
+	}, []);
+
 	return (
 		<div className="relative min-h-screen bg-light_yellow flex flex-col items-center justify-center">
 			<div
@@ -26,11 +46,11 @@ export default function ChildIsShoppingPage() {
 						showPreviousButton={true}
 						showRouteRecorder={false}
 						showChildNavBar={false}
+						route={route}
 					/>
 				</div>
 			</div>
 
-			{/* Bottom Navigation */}
 			<BottomNavbar />
 		</div>
 	);

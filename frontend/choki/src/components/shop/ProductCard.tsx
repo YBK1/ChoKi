@@ -7,19 +7,22 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 	role,
 	ParentsShoppingItem,
 	ChildrenShoppingItem,
+	onCameraClick, // onCameraClick 추가
 }) => {
-	const onClickCamera = () => {};
+	const onClickCamera = () => {
+		onCameraClick(); // onCameraClick 호출
+	};
 
 	return (
 		<div className="relative flex items-stretch px-8 py-4 border border-gray-200 rounded-2xl max-w-xl mx-auto shadow-md">
 			{/* Divider */}
 			<div className="absolute top-4 bottom-4 left-1/2 transform -translate-x-1/2 w-px bg-gray-200"></div>
 
-			{/* Left Section */}
+			{/* Left Section (부모 아이템) */}
 			<div className="flex flex-col items-center w-1/2 pr-6 h-full justify-center">
 				<div className="w-20 h-20 mb-0 flex items-center justify-center">
 					<Image
-						src="/icons/test_item.svg"
+						src={ParentsShoppingItem.image || '/icons/default_image.svg'}
 						alt="상품 이미지"
 						layout="fixed"
 						width={64}
@@ -35,7 +38,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				</p>
 			</div>
 
-			{/* Right Section */}
+			{/* Right Section (자녀 아이템) */}
 			<div className="flex flex-col items-center w-1/2 pl-6 h-full justify-center relative">
 				{/* WasteBasket 아이콘 (CHILD) 또는 MiniWarning 아이콘 (PARENTS) */}
 				{role === 'CHILD' && ChildrenShoppingItem && (
@@ -65,20 +68,20 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				{role === 'CHILD' && !ChildrenShoppingItem ? (
 					<div className="w-12 h-12 mb-2 flex items-center justify-center">
 						<Image
-							src="/icons/carmera_icon.svg"
+							src="/icons/camera_icon.svg"
 							alt="카메라 아이콘"
 							layout="fixed"
 							width={48}
 							height={48}
-							onClick={onClickCamera}
+							onClick={onClickCamera} // 카메라 아이콘 클릭 시 onCameraClick 호출
 						/>
 					</div>
 				) : (
-					// 상품 정보 표시
+					// 자녀 아이템 정보 표시
 					<>
 						<div className="w-20 h-20 mb-0 flex items-center justify-center">
 							<Image
-								src="/icons/test_item.svg"
+								src={ChildrenShoppingItem?.image || '/icons/default_image.svg'}
 								alt="상품 이미지"
 								layout="fixed"
 								width={64}
