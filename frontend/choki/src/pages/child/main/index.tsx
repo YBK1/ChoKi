@@ -52,7 +52,7 @@ export default function MainPage() {
 					nickname: data.nickname,
 					level: data.level,
 					exp: data.exp,
-					isLevelUp: data.isLevelUp ? 1 : 0, // Convert boolean to 0 or 1 for Unity
+					isLevelUp: data.isLevelUp, // Convert boolean to 0 or 1 for Unity
 					mainAnimalId: data.mainAnimalId,
 					animals: data.animals,
 				};
