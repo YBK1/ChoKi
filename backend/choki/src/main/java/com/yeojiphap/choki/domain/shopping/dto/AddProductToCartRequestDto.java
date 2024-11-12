@@ -5,10 +5,12 @@ import org.bson.types.ObjectId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@ToString
 public class AddProductToCartRequestDto {
 	private String shoppingId;
 	private String listBarcode;
