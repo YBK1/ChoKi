@@ -1,15 +1,19 @@
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CommonButton from '@/components/Common/Button';
 import CommonInput from '@/components/Common/Input';
 import Image from 'next/image';
 // import MainLogo from '@/../public/icons/choki_icon.svg';
 import { loginUser } from '@/lib/api/login';
+import { userAtom } from '@/atoms';
+import { useAtom } from 'jotai';
+import { getUserData } from '@/lib/api/user';
 
 export default function LoginPage() {
 	const router = useRouter();
 	const [id, setId] = useState('');
 	const [password, setPassword] = useState('');
+	const [user, setUser] = useAtom(userAtom);
 
 	const postLoginData = async (userId: string, userPassword: string) => {
 		try {
@@ -20,11 +24,26 @@ export default function LoginPage() {
 		}
 	};
 
+	const fetchUserData = async () => {
+		try {
+			const response = await getUserData();
+			const { userId, name } = response;
+			setUser({
+				userId,
+				username: name,
+			});
+		} catch (err) {
+			console.error('사용자 데이터 가져오기 실패:', err);
+		}
+	};
+
 	const handleLogin = async () => {
 		const response = await postLoginData(id, password);
 		if (response?.role === 'PARENT') {
+			await fetchUserData();
 			router.push('/parents');
 		} else if (response?.role === 'CHILD') {
+			await fetchUserData();
 			router.push('/child/main');
 		} else {
 			alert('로그인에 문제가 발생했습니다.');
