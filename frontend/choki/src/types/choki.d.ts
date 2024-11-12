@@ -15,6 +15,7 @@ type MapProps = {
 	showPreviousButton?: boolean;
 	showChildNavBar: boolean;
 	route?: LatLng[];
+	coordinates?: { latitude: number; longitude: number } | null;
 };
 
 // 카카오맵 실제 지도 props
@@ -46,9 +47,11 @@ type RouteRecorderProps = {
 };
 
 // 카카오맵 유저 표시 props
-type UserLocationMarkerProps = {
+interface UserLocationMarkerProps {
 	map: any;
-};
+	coordinates?: { latitude: number; longitude: number } | null;
+}
+
 type MissionType = 'SHOP' | 'RECYCLE' | 'EXTRA_MISSION';
 type KakaoMaps = {
 	load: () => void;
