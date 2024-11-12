@@ -10,7 +10,20 @@ declare global {
 	interface Window {
 		UnityReadyCallback?: () => void;
 		handleUnityShowPanel?: () => Promise<void>;
-        navigateToMap?: () => void;
+		navigateToMap?: () => void;
+		createUnityInstance?: (
+			canvas: HTMLCanvasElement,
+			config: {
+				dataUrl: string;
+				frameworkUrl: string;
+				codeUrl: string;
+				streamingAssetsUrl: string;
+				companyName: string;
+				productName: string;
+				productVersion: string;
+			},
+			onProgress: (progress: number) => void,
+		) => Promise<any>; // Replace 'any' with a specific Unity instance type if available
 	}
 }
 
@@ -29,14 +42,14 @@ export default function MainPage() {
 			console.log('Unity is fully loaded and ready.');
 			setIsUnityLoaded(true);
 		};
-        
-        window.navigateToMap = () => {
-            router.push('/child/map');
-        }
+
+		window.navigateToMap = () => {
+			router.push('/child/map');
+		};
 
 		return () => {
 			delete window.UnityReadyCallback;
-            delete window.navigateToMap;
+			delete window.navigateToMap;
 		};
 	}, []);
 
@@ -60,7 +73,7 @@ export default function MainPage() {
 		return () => {
 			delete window.handleUnityShowPanel;
 		};
-	}, []);
+	}, [user.userId]);
 
 	useEffect(() => {
 		console.log('와와와와와와ㅣ와ㅗ아와와', pendingData);
@@ -133,6 +146,7 @@ export default function MainPage() {
 						jsonData,
 					);
 					console.log('Data sent to Unity:', unityData);
+					setIsDataSent(true);
 				} catch (error) {
 					console.error('Error sending data to Unity:', error);
 				}
@@ -143,23 +157,24 @@ export default function MainPage() {
 		[isUnityLoaded],
 	);
 
-	const getKidInfo = async () => {
-		try {
-			const kidData = await getUserData();
-			return kidData;
-		} catch (error) {
-			// setErrorMessage("")
-		}
-		return null;
-	};
-
 	const handleUnityLoaded = useCallback(async () => {
 		console.log('Unity iframe loaded, preparing to send data...');
+		const getKidInfo = async () => {
+			try {
+				const kidData = await getUserData();
+				return kidData;
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			} catch (error) {
+				// setErrorMessage("")
+			}
+			return null;
+		};
+
 		const kidData = await getKidInfo();
 		if (kidData) {
 			sendDataToUnity(kidData);
 		}
-	}, [getKidInfo, sendDataToUnity]);
+	}, [sendDataToUnity]);
 
 	return (
 		<div className="relative">
