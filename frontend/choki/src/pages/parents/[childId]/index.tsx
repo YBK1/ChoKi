@@ -2,9 +2,9 @@ import MissionItem from '@/components/Common/MissionItem';
 import Image from 'next/image';
 import notification_icon from '@/assets/icons/notification.svg';
 import Link from 'next/link';
-import child_profile from '@/assets/icons/child_profile.svg';
-import level_icon from '@/assets/icons/level.svg';
-import mission_plus from '@/assets/icons/mission_plus.svg';
+// import child_profile from '@/assets/icons/child_profile.svg';
+// import level_icon from '@/assets/icons/level.svg';
+// import mission_plus from '@/assets/icons/mission_plus.svg';
 import CommonModal from '@/components/Common/Modal';
 import { useState, useEffect, useRef } from 'react';
 import { searchItem, createShopping } from '@/lib/api/shopping';
@@ -737,14 +737,19 @@ export default function Index() {
 						<div className="flex justify-center items-center gap-4">
 							<div className="flex flex-col">
 								<Image
-									src={child_profile}
+									src="@/assets/icons/child_profile.svg"
 									alt="child profile"
 									width={80}
 									height={80}
 									className="rounded-full mb-4"
 								/>
 								<div className="flex w-[70px] bg-white rounded-lg justify-center items-center gap-1">
-									<Image src={level_icon} alt="level" width={20} height={20} />
+									<Image
+										src="@/assets/icons/level.svg"
+										alt="level"
+										width={20}
+										height={20}
+									/>
 									<span className="text-sm font-bold">Lv.{kidInfo?.level}</span>
 								</div>
 							</div>
@@ -778,7 +783,7 @@ export default function Index() {
 						<h2 className="text-lg font-bold">심부름 목록</h2>
 						<button className="w-6 h-6 rounded-lg shadow-sm flex items-center justify-center">
 							<Image
-								src={mission_plus}
+								src="@/assets/icons/mission_plus.svg"
 								alt="mission_plus"
 								onClick={handleOpenModal}
 							/>

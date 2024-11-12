@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import startButton from '../../assets/icons/start_btn.svg';
-import stopButton from '../../assets/icons/finish_btn.svg';
+import startButton from '@/assets/icons/start_btn.svg';
+import stopButton from '@/assets/icons/finish_btn.svg';
 
 const RouteRecorder = ({
 	map,
