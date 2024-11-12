@@ -125,6 +125,8 @@ interface ShoppingItem {
 	image: string;
 	quantity: number;
 	cartItem?: {
+		barcode: string;
+		category: string;
 		productName: string;
 		quantity: number;
 		image: string;
