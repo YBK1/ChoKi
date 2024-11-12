@@ -2,25 +2,26 @@ import BottomNavbar from '@/components/Common/Navbar/BottomNavbar';
 import Map from '@/components/map/Map';
 import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 export default function ChildIsShoppingPage() {
 	const [route, setRoute] = useState<
 		{ latitude: number; longitude: number }[] | undefined
 	>(undefined);
 
+	const router = useRouter();
+	const { missionId } = router.query;
+
 	useEffect(() => {
 		parentWebSocketClient.connect();
 
-		parentWebSocketClient.subscribe(
-			`/user/sub/shopping/672f0b493251e83e3031604c`,
-			msg => {
-				console.log('Received message:', msg.body);
+		parentWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, msg => {
+			console.log('Received message:', msg.body);
 
-				const missionRoute = JSON.parse(msg.body).route;
-				setRoute(missionRoute);
-			},
-		);
-	}, []);
+			const missionRoute = JSON.parse(msg.body).route;
+			setRoute(missionRoute);
+		});
+	}, [missionId]);
 
 	return (
 		<div className="relative min-h-screen bg-light_yellow flex flex-col items-center justify-center">
