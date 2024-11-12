@@ -10,7 +10,9 @@ declare global {
 	interface Window {
 		UnityReadyCallback?: () => void;
 		handleUnityShowPanel?: () => Promise<void>;
-        navigateToMap?: () => void;
+		navigateToMap?: () => void;
+		navigateToShopping?: (missionId: string) => void;
+		navigateToRecycling?: (missionId: string) => void;
 	}
 }
 
@@ -29,14 +31,24 @@ export default function MainPage() {
 			console.log('Unity is fully loaded and ready.');
 			setIsUnityLoaded(true);
 		};
-        
-        window.navigateToMap = () => {
-            router.push('/child/map');
-        }
+
+		window.navigateToMap = () => {
+			router.push('/child/map');
+		};
+
+		window.navigateToShopping = (missionId: string) => {
+			router.push(`/child/shop/${missionId}/route`);
+		};
+
+		window.navigateToRecycling = (missionId: string) => {
+			router.push(`/child/mission/${missionId}/recycle`);
+		};
 
 		return () => {
 			delete window.UnityReadyCallback;
-            delete window.navigateToMap;
+			delete window.navigateToMap;
+			delete window.navigateToShopping;
+			delete window.navigateToRecycling;
 		};
 	}, []);
 
@@ -164,16 +176,6 @@ export default function MainPage() {
 	return (
 		<div className="relative">
 			<UnityViewer onUnityLoaded={handleUnityLoaded} />
-			{errorMessage && (
-				<div className="absolute top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded">
-					{errorMessage}
-				</div>
-			)}
-			{isDataSent && (
-				<div className="absolute top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">
-					Data successfully sent to Unity
-				</div>
-			)}
 		</div>
 	);
 }
