@@ -30,7 +30,6 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 		}
 	};
 
-	// Capture the image from the video feed
 	const captureImage = () => {
 		const canvas = canvasRef.current;
 		const video = videoRef.current;
@@ -46,7 +45,7 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 						const file = new File([blob], 'capture.png', { type: 'image/png' });
 						setCapturedImage(file);
 						setImageDimensions({ width: canvas.width, height: canvas.height });
-						setIsCaptured(true); // Image has been captured
+						setIsCaptured(true);
 					}
 				}, 'image/png');
 			} else {
@@ -55,15 +54,13 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 		}
 	};
 
-	// Confirm and upload the captured image
 	const confirmAndUploadImage = () => {
 		if (capturedImage) {
 			uploadMissionImage(missionId, capturedImage);
-			resetCapture(); // Reset after confirming
+			resetCapture();
 		}
 	};
 
-	// Reset to live camera view
 	const resetCapture = () => {
 		setIsCaptured(false);
 		setCapturedImage(null);
@@ -71,7 +68,6 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 		startCamera();
 	};
 
-	// Set image preview URL when capturedImage changes
 	useEffect(() => {
 		if (capturedImage) {
 			const objectUrl = URL.createObjectURL(capturedImage);
@@ -87,9 +83,7 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 
 	return (
 		<div className="flex flex-col items-center space-y-4 p-4 bg-white rounded-lg shadow-lg max-w-xs mx-auto">
-			{/* Animal Character with Speech Bubble */}
 			<div className="relative flex items-center">
-				{/* Speech Bubble */}
 				<div className="mr-4 p-2 bg-light_yellow text-sm rounded-lg shadow-md">
 					<p>
 						장보기를 마무리할래?
@@ -98,7 +92,6 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 					</p>
 				</div>
 
-				{/* Animal Image */}
 				<div className="w-20 h-20">
 					<Image
 						src="/icons/dog_character.svg"
@@ -109,10 +102,9 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 				</div>
 			</div>
 
-			{/* Camera or Captured Image */}
+			{/* 캡쳐 상태에 따라 카메라 화면 or 이미지 렌더링 */}
 			<div className="relative w-40 h-52 bg-gray-200 rounded-lg overflow-hidden">
 				{imagePreviewUrl ? (
-					// Display the captured image preview
 					<Image
 						src={imagePreviewUrl}
 						alt="Captured"
@@ -121,14 +113,12 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 						className="object-cover w-full h-full"
 					/>
 				) : (
-					// Display the live camera feed
 					<video
 						ref={videoRef}
 						autoPlay
 						className="object-cover w-full h-full"
 					/>
 				)}
-				{/* Display Capture, Confirm, and Retake buttons based on isCaptured state */}
 				{isCaptured ? (
 					<div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
 						<button
