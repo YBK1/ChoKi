@@ -9,7 +9,7 @@ const ParentProductCard: React.FC<ParentShoppingCardProps> = ({
 	ChildrenShoppingItem,
 }) => {
 	return (
-		<div className="relative flex items-stretch px-8 py-4 border border-gray-200 rounded-2xl max-w-xl mx-auto shadow-md">
+		<div className="relative flex items-stretch px-8 py-4 border bg-white border-gray-200 rounded-2xl max-w-xl mx-auto shadow-md">
 			{/* Divider */}
 			<div className="absolute top-4 bottom-4 left-1/2 transform -translate-x-1/2 w-px bg-gray-200"></div>
 
