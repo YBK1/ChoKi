@@ -16,7 +16,7 @@ def classify_image(image):
     # from tensorflow.python.keras.models import load_model
     # model = load_model('./trained_model.h5')
     import os
-    absolute_path = os.path.abspath('./apps/trained_model.keras')
+    absolute_path = os.path.abspath('./src/trained_model.keras')
 
     model = keras.models.load_model(absolute_path)
 

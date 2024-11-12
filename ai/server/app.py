@@ -1,5 +1,5 @@
 from flask import Flask, request
-from apps import classify
+from src import classify
 app = Flask(__name__)
 
 
