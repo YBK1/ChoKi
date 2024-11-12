@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { uploadMissionImage } from '@/lib/api/shopping';
 
 interface MissionFinishComponentProps {
@@ -12,10 +12,12 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [capturedImage, setCapturedImage] = useState<File | null>(null);
+	const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
 	const [imageDimensions, setImageDimensions] = useState<{
 		width: number;
 		height: number;
 	} | null>(null);
+	const [isCaptured, setIsCaptured] = useState(false);
 
 	const startCamera = async () => {
 		try {
@@ -35,7 +37,6 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 		if (canvas && video) {
 			const context = canvas.getContext('2d');
 			if (context) {
-				// Check if context is not null
 				canvas.width = video.videoWidth;
 				canvas.height = video.videoHeight;
 				context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -45,7 +46,7 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 						const file = new File([blob], 'capture.png', { type: 'image/png' });
 						setCapturedImage(file);
 						setImageDimensions({ width: canvas.width, height: canvas.height });
-						uploadMissionImage(missionId, file);
+						setIsCaptured(true); // Image has been captured
 					}
 				}, 'image/png');
 			} else {
@@ -54,8 +55,33 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 		}
 	};
 
-	// Start the camera when the component mounts
-	React.useEffect(() => {
+	// Confirm and upload the captured image
+	const confirmAndUploadImage = () => {
+		if (capturedImage) {
+			uploadMissionImage(missionId, capturedImage);
+			resetCapture(); // Reset after confirming
+		}
+	};
+
+	// Reset to live camera view
+	const resetCapture = () => {
+		setIsCaptured(false);
+		setCapturedImage(null);
+		setImagePreviewUrl(null);
+		startCamera();
+	};
+
+	// Set image preview URL when capturedImage changes
+	useEffect(() => {
+		if (capturedImage) {
+			const objectUrl = URL.createObjectURL(capturedImage);
+			setImagePreviewUrl(objectUrl);
+
+			return () => URL.revokeObjectURL(objectUrl);
+		}
+	}, [capturedImage]);
+
+	useEffect(() => {
 		startCamera();
 	}, []);
 
@@ -68,7 +94,7 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 					<p>
 						장보기를 마무리할래?
 						<br />
-						인증 사진을 찰칵~
+						인증 사진을 찰칵~!
 					</p>
 				</div>
 
@@ -85,10 +111,10 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 
 			{/* Camera or Captured Image */}
 			<div className="relative w-40 h-52 bg-gray-200 rounded-lg overflow-hidden">
-				{capturedImage ? (
-					// Display the captured image
+				{imagePreviewUrl ? (
+					// Display the captured image preview
 					<Image
-						src={URL.createObjectURL(capturedImage)}
+						src={imagePreviewUrl}
 						alt="Captured"
 						width={imageDimensions?.width || 100}
 						height={imageDimensions?.height || 100}
@@ -102,11 +128,28 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 						className="object-cover w-full h-full"
 					/>
 				)}
-				{/* Circular capture button at the bottom of the frame */}
-				<button
-					onClick={captureImage}
-					className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-white rounded-full border-2 border-gray-300"
-				></button>
+				{/* Display Capture, Confirm, and Retake buttons based on isCaptured state */}
+				{isCaptured ? (
+					<div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
+						<button
+							onClick={confirmAndUploadImage}
+							className="px-4 py-2 bg-green-500 text-white rounded-full"
+						>
+							미션 완료
+						</button>
+						<button
+							onClick={resetCapture}
+							className="px-4 py-2 bg-gray-500 text-white rounded-full"
+						>
+							다시 찍기
+						</button>
+					</div>
+				) : (
+					<button
+						onClick={captureImage}
+						className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-white rounded-full border-2 border-gray-300"
+					></button>
+				)}
 			</div>
 
 			{/* Hidden Canvas for capturing image */}
