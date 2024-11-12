@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import CommonButton from '@/components/Common/Button';
 import CommonInput from '@/components/Common/Input';
 import Image from 'next/image';
-import MainLogo from '@/../public/icons/choki_icon.svg';
+// import MainLogo from '@/../public/icons/choki_icon.svg';
 import { loginUser } from '@/lib/api/login';
 import { userAtom } from '@/atoms';
 import { useAtom } from 'jotai';
@@ -54,7 +54,12 @@ export default function LoginPage() {
 		<div className="bg-light_yellow_mid flex flex-col items-center h-screen pt-[20vh]">
 			{/* Logo Container */}
 			<div className="w-[120px] h-[120px] mb-16">
-				<Image src={MainLogo} alt="Choki Logo" width={120} height={120} />
+				<Image
+					src="/icons/choki_icon.svg"
+					alt="Choki Logo"
+					width={120}
+					height={120}
+				/>
 			</div>
 
 			{/* Form Container */}

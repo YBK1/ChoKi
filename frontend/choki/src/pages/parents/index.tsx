@@ -1,11 +1,11 @@
 import Image from 'next/image';
-import dog_character from '@/assets/icons/dog_character.svg';
-import code_information from '@/assets/icons/cod-information.svg';
-import child_profile from '@/assets/icons/child_profile.svg';
-import map_icon_blurry from '@/assets/icons/map_icon_blurry.svg';
+// import dog_character from '@/assets/icons/dog_character.svg';
+// import code_information from '@/assets/icons/cod-information.svg';
+// import child_profile from '@/assets/icons/child_profile.svg';
+// import map_icon_blurry from '@/assets/icons/map_icon_blurry.svg';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import DogCharacter from '@/assets/icons/dog_character.svg';
+// import DogCharacter from '@/assets/icons/dog_character.svg';
 import CommonModal from '@/components/Common/Modal';
 import CommonButton from '@/components/Common/Button';
 import { Toast } from '@/components/Toast/Toast';
@@ -74,13 +74,16 @@ export default function ParentPages() {
 					오늘도 아이들과 함께 파이팅!
 				</h1>
 				<Image
-					src={dog_character}
+					src="@/assets/icons/dog_character.svg"
 					alt="dog_character"
 					className="absolute right-4 top-14 px-1 translate-y-1/2"
 				/>
 				<div className="absolute top-14 right-2">
 					<button onClick={handleInviteCodeModal}>
-						<Image src={code_information} alt="code_information" />
+						<Image
+							src="@/assets/icons/cod-information.svg"
+							alt="code_information"
+						/>
 					</button>
 				</div>
 			</div>
@@ -88,13 +91,13 @@ export default function ParentPages() {
 			{/* 내용 */}
 			<div className="flex flex-col justify-center items-center gap-4 mt-12">
 				{/* 아이 선택 */}
-				<div className="w-[350px] h-[280px] bg-white rounded-3xl shadow-sm border-4 border-light_yellow_side mb-5">
+				<div className="w-[350px] h-[300px] bg-white rounded-3xl shadow-sm border-4 border-light_yellow_side mb-5">
 					<h2 className="text-lg font-bold mt-8 ml-7 mb-4">
 						오늘은 어떤 아이에게
 						<br />
 						미션을 부여하실건가요?
 					</h2>
-					<div className="overflow-x-auto px-4">
+					<div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-100 scrollbar-track-transparent">
 						<div className="flex flex-nowrap gap-8 min-w-min pb-4">
 							{children.map(child => (
 								<Link
@@ -102,9 +105,17 @@ export default function ParentPages() {
 									key={child.childId}
 									className="cursor-pointer hover:opacity-80 transition-opacity"
 								>
-									<div className="flex flex-col items-center flex-shrink-0">
-										<Image src={child_profile} alt="child_profile" />
-										<p className="text-sm mt-2">{child.nickname}</p>
+									<div className="flex flex-col items-center w-24 ml-2">
+										<div className="w-24 h-24 flex-shrink-0">
+											<Image
+												src="@/assets/icons/child_profile.svg"
+												alt="child_profile"
+												className="w-full h-full object-cover"
+											/>
+										</div>
+										<p className="text-sm mt-2 truncate w-full text-center">
+											{child.nickname}
+										</p>
 										<p className="text-sm font-bold mt-1">Lv.{child.level}</p>
 									</div>
 								</Link>
@@ -126,7 +137,7 @@ export default function ParentPages() {
 						</p>
 						<div className="absolute right-0 bottom-0">
 							<Image
-								src={map_icon_blurry}
+								src="@/assets/icons/map_icon_blurry.svg"
 								alt="map_icon_blurry"
 								className="opacity-50"
 							/>
