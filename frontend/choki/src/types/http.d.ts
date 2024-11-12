@@ -27,9 +27,9 @@ interface JoinFamilyResponse {
 }
 
 // export interface BaseResponse<T> {
-// 	status: number;
-// 	message: string;
-// 	data: T;
+//     status: number;
+//     message: string;
+//     data: T;
 // }
 
 interface NotificationResponse {
@@ -163,4 +163,15 @@ interface InProgressMissionResponse {
 	image: string;
 	type: MissionType;
 	shoppingId: string;
+}
+
+interface CompareItemsRequest {
+	originBarcode: string;
+	inputBarcode: string;
+}
+
+interface ShoppingListResponse {
+	status: number;
+	matchStatus: string;
+	message: string;
 }

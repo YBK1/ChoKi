@@ -1,7 +1,4 @@
 // child/shop으로 시작하는 페이지에 들어가는 Navbar
-import back_icon_kid_yellow from '@/assets/icons/back_icon_kid_yellow.svg';
-import map from '@/assets/icons/map.svg';
-import basket from '@/assets/icons/basket.svg';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -14,7 +11,7 @@ export default function UpperNavbar() {
 					{/* 나가기 버튼 */}
 					<Link href="/child">
 						<div className="flex mt-2">
-							<Image src={back_icon_kid_yellow} alt="back_icon" />
+							<Image src="/icons/back_icon_kid_yellow.svg" alt="back_icon" />
 						</div>
 					</Link>
 
@@ -22,7 +19,7 @@ export default function UpperNavbar() {
 					<div className="w-[190px] h-[60px] bg-light_yellow_nav rounded-full flex justify-center items-center shadow-lg">
 						<Link href="/child/shop/route">
 							<button className="p-2">
-								<Image src={map} alt="map_icon" />
+								<Image src="/icons/map.svg" alt="map_icon" />
 							</button>
 						</Link>
 
@@ -30,7 +27,7 @@ export default function UpperNavbar() {
 
 						<Link href="/child/shop/list">
 							<button className="p-2">
-								<Image src={basket} alt="basket_icon" />
+								<Image src="/icons/basket.svg" alt="basket_icon" />
 							</button>
 						</Link>
 					</div>
