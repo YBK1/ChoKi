@@ -112,6 +112,7 @@ public class ShoppingWebSocketService {
 				.getMatchStatus());
 
 		simpMessagingTemplate.convertAndSendToUser(getParentUserName(access),"/sub/shopping/" + addProductToCartRequestDto.getShoppingId(), addProductToCartResponseDto);
+		simpMessagingTemplate.convertAndSendToUser(jwtUtil.getUsername(access), "/sub/shopping/" + addProductToCartRequestDto.getShoppingId(), addProductToCartResponseDto);
 	}
 
 	// 장바구니에서 상품 수량 변경 전송

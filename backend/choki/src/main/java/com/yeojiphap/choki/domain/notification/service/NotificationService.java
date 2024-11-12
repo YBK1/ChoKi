@@ -78,7 +78,7 @@ public class NotificationService {
 		// 잘못 눌렀다거나 해서 이미 알림이 생성 되었는데 안간 경우
 		// 재시도할 때 시간이 갱신되어야 하니까 그냥 지우고 다시 삽입한다고 생각하자.
 		if(notification.getType() == NotificationType.SHOP){
-			notificationRepository.deleteByMissionId(shopping.getMissionId());
+			notificationRepository.deleteByMissionId(shopping.getId().toString());
 		}
 
 		notificationRepository.save(notification);
@@ -87,7 +87,7 @@ public class NotificationService {
 	// 장보기 시작 알림을 삭제하고 미션 완료 알림을 생성
 	@Transactional
 	public void addNotificationIfShoppingEnd(Shopping shopping) {
-		deleteNotificationByMissionId(shopping.getMissionId());
+		deleteNotificationByMissionId(shopping.getId().toString());
 
 		User child = userService.findById(shopping.getChildId());
 		User parent = userService.findById(shopping.getParentId());
