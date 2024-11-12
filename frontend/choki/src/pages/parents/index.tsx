@@ -171,7 +171,7 @@ export default function ParentPages() {
 						<h4 className="text-2xl font-bold">초대 코드를 공유해주세요!</h4>
 						<div className="w-32 h-32 relative mt-8">
 							<Image
-								src={DogCharacter}
+								src="@/assets/icons/dog_character.svg"
 								alt="강아지 캐릭터"
 								layout="fill"
 								objectFit="contain"
