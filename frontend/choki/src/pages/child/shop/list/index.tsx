@@ -1,7 +1,6 @@
 import Modal from '@/components/Common/Modal/nonCloseModalLarge';
 import Navbar from '@/components/Common/Navbar/UpperNavbar';
 import Image from 'next/image';
-import ShoppingCharacter from '@/assets/icons/shopping_character.svg';
 import SpeechBubble from '@/components/shop/SpeechBubble';
 import ProductCard from '@/components/shop/ProductCard';
 import Cam from '@/components/shop/BarcodeCam';
@@ -107,7 +106,7 @@ export default function ChildShoppingPage() {
 			</div>
 
 			<Image
-				src={ShoppingCharacter}
+				src="/icons/shopping_character.svg"
 				alt="장보기 캐릭터"
 				className="absolute bottom-16 right-4"
 				width={100}
