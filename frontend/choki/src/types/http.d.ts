@@ -113,6 +113,20 @@ interface ShoppingCardProps {
 	onCameraClick: () => void; // 카메라 클릭 핸들러 추가
 }
 
+interface ParentShoppingCardProps {
+	role: 'CHILD' | 'PARENTS';
+	ParentsShoppingItem: {
+		title: string;
+		count: number;
+		image: string;
+	};
+	ChildrenShoppingItem?: {
+		title: string;
+		count: number;
+		image: string;
+	};
+}
+
 interface ShoppingItem {
 	barcode: string;
 	category: string;
