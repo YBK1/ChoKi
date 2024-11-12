@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import React, { useRef, useState } from 'react';
-import dog_character from '@/assets/icons/dog_character.svg';
 
 interface MissionFinishComponentProps {
 	missionId: string; // Add shoppingId as a prop
@@ -74,7 +73,7 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 				{/* Animal Image */}
 				<div className="w-20 h-20">
 					<Image
-						src={dog_character}
+						src="/icons/dog_character.svg"
 						alt="Animal Character"
 						width={80}
 						height={80}

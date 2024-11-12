@@ -1,15 +1,16 @@
-import Unity, { UnityContext } from 'react-unity-webgl';
+import { Unity, useUnityContext } from 'react-unity-webgl';
 
-const unityContext = new UnityContext({
-	loaderUrl: 'Build/Build.loader.js',
-	dataUrl: 'Build/Build.data',
-	frameworkUrl: 'Build/Build.framework.js',
-	codeUrl: 'Build/Build.wasm',
-});
 export default function ChildMainPage() {
-    return{ 
-<div>
-        return <Unity unityContext={unityContext} />
-        </div>
-    }
+	const { unityProvider } = useUnityContext({
+		loaderUrl: 'Build/Build.loader.js',
+		dataUrl: 'Build/Build.data',
+		frameworkUrl: 'Build/Build.framework.js',
+		codeUrl: 'Build/Build.wasm',
+	});
+
+	return (
+		<div>
+			<Unity unityProvider={unityProvider} />
+		</div>
+	);
 }
