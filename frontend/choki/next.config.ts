@@ -8,32 +8,32 @@ const withPWA = require('next-pwa')({
 });
 
 const nextConfig: NextConfig = {
-    reactStrictMode: true,
-    // 이미지 도메인 설정 추가
-    images: {
-        domains: ['www.koreannet.or.kr'],
-    },
-    // WebAssembly 파일을 위한 headers 설정 추가
-    async headers() {
-        return [
-            {
-                source: '/unity-build/:all*(.wasm)', // 모든 .wasm 파일에 대해 설정
-                headers: [
-                    {
-                        key: 'Content-Type',
-                        value: 'application/wasm', // WebAssembly 파일에 MIME 타입 지정
-                    },
-                ],
-            },
-        ];
-    },
-    webpack(config) {
-        config.module.rules.push({
-            test: /\.svg$/,
-            use: ['@svgr/webpack'],
-        });
-        return config;
-    },
+	reactStrictMode: true,
+	// 이미지 도메인 설정 추가
+	images: {
+		domains: ['www.koreannet.or.kr', 'choki.co.kr'],
+	},
+	// WebAssembly 파일을 위한 headers 설정 추가
+	async headers() {
+		return [
+			{
+				source: '/unity-build/:all*(.wasm)', // 모든 .wasm 파일에 대해 설정
+				headers: [
+					{
+						key: 'Content-Type',
+						value: 'application/wasm', // WebAssembly 파일에 MIME 타입 지정
+					},
+				],
+			},
+		];
+	},
+	webpack(config) {
+		config.module.rules.push({
+			test: /\.svg$/,
+			use: ['@svgr/webpack'],
+		});
+		return config;
+	},
 };
 
 module.exports = withPWA(nextConfig);
