@@ -114,15 +114,14 @@ interface ShoppingCardProps {
 }
 
 interface ParentShoppingCardProps {
-	role: 'PARENTS' | 'CHILD';
 	ParentsShoppingItem: {
-		title: string;
-		count: number;
+		productName: string;
+		quantity: number;
 		image: string;
 	};
 	ChildrenShoppingItem?: {
-		title: string;
-		count: number;
+		productName: string;
+		quantity: number;
 		image: string;
 	};
 	status?: 'MATCH' | 'NOT_MATCH' | 'SIMILAR';
