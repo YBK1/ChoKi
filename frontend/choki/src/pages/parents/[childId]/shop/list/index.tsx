@@ -200,10 +200,10 @@ const ShoppingListPage = () => {
 						{showSuggestions && (
 							<div className="absolute top-16 left-3 w-[260px] bg-white rounded-xl shadow-sm z-10">
 								<button
-									onClick={() => handleSuggestionClick('수랑이 잘못됐어요.')}
+									onClick={() => handleSuggestionClick('수량이 잘못됐어요.')}
 									className="w-full text-left py-2 px-4 border-b border-gray-100 hover:text-orange_main transition-colors"
 								>
-									수랑이 잘못됐어요.
+									수량이 잘못됐어요.
 								</button>
 								<button
 									onClick={() => handleSuggestionClick('품목이 잘못됐어요.')}
