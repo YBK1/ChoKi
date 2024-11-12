@@ -1,11 +1,11 @@
 import Image from 'next/image';
-import dog_character from '@/assets/icons/dog_character.svg';
-import code_information from '@/assets/icons/cod-information.svg';
-import child_profile from '@/assets/icons/child_profile.svg';
-import map_icon_blurry from '@/assets/icons/map_icon_blurry.svg';
+// import dog_character from '@/assets/icons/dog_character.svg';
+// import code_information from '@/assets/icons/cod-information.svg';
+// import child_profile from '@/assets/icons/child_profile.svg';
+// import map_icon_blurry from '@/assets/icons/map_icon_blurry.svg';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import DogCharacter from '@/assets/icons/dog_character.svg';
+// import DogCharacter from '@/assets/icons/dog_character.svg';
 import CommonModal from '@/components/Common/Modal';
 import CommonButton from '@/components/Common/Button';
 import { Toast } from '@/components/Toast/Toast';
@@ -92,13 +92,16 @@ export default function ParentPages() {
 					오늘도 아이들과 함께 파이팅!
 				</h1>
 				<Image
-					src={dog_character}
+					src="@/assets/icons/dog_character.svg"
 					alt="dog_character"
 					className="absolute right-4 top-14 px-1 translate-y-1/2"
 				/>
 				<div className="absolute top-14 right-2">
 					<button onClick={handleInviteCodeModal}>
-						<Image src={code_information} alt="code_information" />
+						<Image
+							src="@/assets/icons/cod-information.svg"
+							alt="code_information"
+						/>
 					</button>
 				</div>
 			</div>
@@ -123,7 +126,7 @@ export default function ParentPages() {
 									<div className="flex flex-col items-center w-24 ml-2">
 										<div className="w-24 h-24 flex-shrink-0">
 											<Image
-												src={child_profile}
+												src="@/assets/icons/child_profile.svg"
 												alt="child_profile"
 												className="w-full h-full object-cover"
 											/>
@@ -152,7 +155,7 @@ export default function ParentPages() {
 						</p>
 						<div className="absolute right-0 bottom-0">
 							<Image
-								src={map_icon_blurry}
+								src="@/assets/icons/map_icon_blurry.svg"
 								alt="map_icon_blurry"
 								className="opacity-50"
 							/>
