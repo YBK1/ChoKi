@@ -29,6 +29,8 @@ interface AddToCartResponse extends BaseWSMessage {
 	type: 'ADD_PRODUCT_TO_CART';
 	listBarcode?: string;
 	barcode?: string;
+	productName?: string;
+	image?: string;
 	quantity?: number;
 	reason?: string;
 	status?: string;
