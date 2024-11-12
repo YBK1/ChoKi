@@ -1,6 +1,5 @@
 import React from 'react';
 import Image from 'next/image';
-import WasteBasket from '@/assets/icons/waste_basket.svg';
 import MiniWarning from '@/assets/icons/mini_warning.svg';
 
 const ParentProductCard: React.FC<ParentShoppingCardProps> = ({
@@ -36,17 +35,6 @@ const ParentProductCard: React.FC<ParentShoppingCardProps> = ({
 			{/* Right Section (자녀 아이템) */}
 			<div className="flex flex-col items-center w-1/2 pl-6 h-full justify-center relative">
 				{/* WasteBasket 아이콘 (CHILD) 또는 MiniWarning 아이콘 (PARENTS) */}
-				{role === 'CHILD' && ChildrenShoppingItem && (
-					<div className="absolute top-1 -right-4 cursor-pointer">
-						<Image
-							src={WasteBasket}
-							alt="삭제 아이콘"
-							width={20}
-							height={20}
-							onClick={() => console.log('삭제 아이콘 클릭')}
-						/>
-					</div>
-				)}
 				{role === 'PARENTS' && (
 					<div className="absolute top-1 -right-4 transform -translate-y-1/4 cursor-pointer">
 						<Image
