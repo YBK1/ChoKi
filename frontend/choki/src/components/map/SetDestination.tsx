@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import MapIcon from '../../assets/icons/map_icon_blurry.svg';
 import { saveRoute } from '@/lib/api/navigation';
 import SuccessModal from '../Common/Modal/RouteSaveSuccessModal';
 
@@ -154,7 +153,7 @@ const SetDestination = ({
 					}}
 				>
 					<Image
-						src={MapIcon}
+						src="/icons/map_icon_blurry.svg"
 						alt="Icon"
 						width={90}
 						height={90}

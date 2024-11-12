@@ -1,6 +1,5 @@
 import MissionItem from '@/components/Common/MissionItem';
 import Image from 'next/image';
-import notification_icon from '@/assets/icons/notification.svg';
 import Link from 'next/link';
 // import child_profile from '@/assets/icons/child_profile.svg';
 // import level_icon from '@/assets/icons/level.svg';
@@ -716,7 +715,7 @@ export default function Index() {
 					<Link href={`/parents/${selectedChildId}/notification`}>
 						<div className="bg-white rounded-xl shadow-sm flex items-center justify-center">
 							<Image
-								src={notification_icon}
+								src="/icons/notification.svg"
 								alt="notification"
 								width={50}
 								height={50}
@@ -737,7 +736,7 @@ export default function Index() {
 						<div className="flex justify-center items-center gap-4">
 							<div className="flex flex-col">
 								<Image
-									src="@/assets/icons/child_profile.svg"
+									src="/icons/child_profile.svg"
 									alt="child profile"
 									width={80}
 									height={80}
@@ -745,7 +744,7 @@ export default function Index() {
 								/>
 								<div className="flex w-[70px] bg-white rounded-lg justify-center items-center gap-1">
 									<Image
-										src="@/assets/icons/level.svg"
+										src="/icons/level.svg"
 										alt="level"
 										width={20}
 										height={20}
@@ -783,8 +782,10 @@ export default function Index() {
 						<h2 className="text-lg font-bold">심부름 목록</h2>
 						<button className="w-6 h-6 rounded-lg shadow-sm flex items-center justify-center">
 							<Image
-								src="@/assets/icons/mission_plus.svg"
+								src="/icons/mission_plus.svg"
 								alt="mission_plus"
+								width={24}
+								height={24}
 								onClick={handleOpenModal}
 							/>
 						</button>
