@@ -3,11 +3,18 @@ import AnimalSpeech from '@/components/Recycle/AnimalSpeech';
 import Cam from '@/components/Recycle/Cam';
 import Button from '@/components/Common/Button';
 import { useState } from 'react';
+import { useRouter } from 'next/router';
+import MissionCompleteModal from '@/components/Common/Modal/MissionCompleteModal';
 
 const RecyclePage = () => {
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 	const [isImageCaptured, setIsImageCaptured] = useState<boolean>(false);
+	const router = useRouter();
+
+	const { missionId } = router.query;
 
 	const handleComplete = () => {
+		setIsModalOpen(true);
 		console.log('엄마 분리수거 끝내써');
 	};
 
@@ -41,6 +48,10 @@ const RecyclePage = () => {
 					text="완료"
 				/>
 			</div>
+
+			{isModalOpen && missionId && (
+				<MissionCompleteModal missionId={missionId as string} />
+			)}
 
 			{/* Bottom Navbar */}
 			<div className="fixed bottom-0 w-full">
