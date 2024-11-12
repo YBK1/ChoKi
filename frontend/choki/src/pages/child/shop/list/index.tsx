@@ -61,7 +61,9 @@ export default function ChildShoppingPage() {
 			<div className="mt-8">
 				<Navbar />
 			</div>
-			<div className="flex flex-col items-center">
+			<div className="flex flex-col items-center justify-start mt-16">
+				{' '}
+				{/* justify-start와 mt-16 추가 */}
 				{isCameraOpen ? (
 					<Cam
 						onCaptureChange={closeCameraModal}
