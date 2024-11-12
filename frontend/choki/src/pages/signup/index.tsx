@@ -1,9 +1,7 @@
 import { useState, useCallback } from 'react';
 import CommonButton from '@/components/Common/Button';
 import CommonInput from '@/components/Common/Input';
-import SearchIcon from '@/../public/icons/search_icon.png';
 import { useRouter } from 'next/router';
-import BackIcon from '@/assets/icons/back_icon.svg';
 import Image from 'next/image';
 import AddressSearch from '@/components/AddressSearch/AddressSearch';
 import { registerUser } from '@/lib/api/login';
@@ -123,7 +121,7 @@ export default function SignupPage() {
 		<div className="bg-light_yellow_mid flex flex-col items-center h-screen px-4 py-6 gap-5">
 			<div className="flex items-center justify-center w-full relative mb-8">
 				<Image
-					src={BackIcon}
+					src="/icons/back_icon.svg"
 					alt="Back Icon"
 					className="w-6 h-6 cursor-pointer absolute left-0"
 					onClick={() => window.history.back()}
@@ -208,7 +206,11 @@ export default function SignupPage() {
 						className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
 						onClick={handleAddressSearch}
 					>
-						<Image src={SearchIcon} alt="Search Icon" className="w-6 h-6" />
+						<Image
+							src="/icons/search_icon.png"
+							alt="Search Icon"
+							className="w-6 h-6"
+						/>
 					</div>
 				</div>
 			</div>

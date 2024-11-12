@@ -177,3 +177,14 @@ interface InProgressMissionResponse {
 	type: MissionType;
 	shoppingId: string;
 }
+
+interface CompareItemsRequest {
+	originBarcode: string;
+	inputBarcode: string;
+}
+
+interface ShoppingListResponse {
+	status: number;
+	matchStatus: string;
+	message: string;
+}
