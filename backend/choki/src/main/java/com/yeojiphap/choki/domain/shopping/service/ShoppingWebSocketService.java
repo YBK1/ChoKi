@@ -73,10 +73,6 @@ public class ShoppingWebSocketService {
 			redisTemplate.opsForHash().put(shoppingId, "latitude", latitude.toString());
 			longitude = shopping.getStartPoint().getLongitude();
 			redisTemplate.opsForHash().put(shoppingId, "longitude", longitude.toString());
-
-			// 알림 추가
-			notificationService.addNotificationFromShopping(shopping);
-			// FCM 보내야겠지?
 		}
 		// 부모가 시작한 경우라면 아이의 현재 위치를 시작과 동시에 보내줘야 함
 		else{

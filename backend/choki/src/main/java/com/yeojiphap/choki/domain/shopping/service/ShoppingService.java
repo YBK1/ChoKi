@@ -103,6 +103,15 @@ public class ShoppingService {
 
 	}
 
+	// 장보기 시작하고 알림보내기
+	@Transactional
+	public void startShoppingAndNotify(ShoppingStartRequestDto startRequestDto) {
+		Shopping shopping = getShoppingById(new ObjectId(startRequestDto.getShoppingId()));
+		// 알림 추가
+		notificationService.addNotificationFromShopping(shopping);
+		// FCM 보내야겠지?
+	}
+
 	// 장바구니에 상품 담기
 	@Transactional
 	public void addProductToShopping(AddProductToCartRequestDto addProductToCartRequestDto) {
