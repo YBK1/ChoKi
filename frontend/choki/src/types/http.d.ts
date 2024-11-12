@@ -40,7 +40,7 @@ interface ItemSearchResponse {
 	productName: string;
 	image: string;
 }
-interface CartItem extends ItemSearchResponse {
+interface SearchCartItem extends ItemSearchResponse {
 	quantity: number;
 }
 
