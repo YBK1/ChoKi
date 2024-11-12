@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yeojiphap.choki.domain.shopping.dto.ProductCompareResponseDto;
 import com.yeojiphap.choki.domain.shopping.dto.ShoppingCreateRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.FinishShoppingRequestDto;
+import com.yeojiphap.choki.domain.shopping.dto.ShoppingStartRequestDto;
 import com.yeojiphap.choki.domain.shopping.service.ShoppingService;
 import com.yeojiphap.choki.global.ApiResponse;
 
@@ -57,6 +58,13 @@ public class ShoppingController implements SpringDocShoppingController{
 		// api 명세서를 어떻게 해야 하려나 이걸..
 		ProductCompareResponseDto dto =  shoppingService.compareBarcode(productCompareRequestDto);
 		return ApiResponse.success(HttpStatus.OK, dto, shoppingService.compareMessage(dto));
+	}
+
+	// 장보기 시작 알림 만들기
+	@PostMapping("/start")
+	public ApiResponse startShopping(@RequestBody ShoppingStartRequestDto shoppingStartRequestDto) {
+		shoppingService.startShoppingAndNotify(shoppingStartRequestDto);
+		return ApiResponse.success(HttpStatus.OK, "장보기 시작 알림을 보냈습니다.");
 	}
 
 	// 아이가 장보기 종료 하기
