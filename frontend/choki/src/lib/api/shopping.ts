@@ -43,8 +43,14 @@ export const createShopping = async (
 // 미션 완료 이미지 전송
 export const uploadMissionImage = async (missionId: string, image: File) => {
 	const formData = new FormData();
-	formData.append('missionId', missionId);
+
 	formData.append('image', image);
+
+	const dataObject = { missionId: missionId };
+	formData.append(
+		'data',
+		new Blob([JSON.stringify(dataObject)], { type: 'application/json' }),
+	);
 
 	try {
 		const response = await axiosInstance.post(`/api/mission/image`, formData, {
