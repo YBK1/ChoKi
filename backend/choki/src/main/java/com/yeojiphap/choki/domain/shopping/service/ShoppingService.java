@@ -115,6 +115,8 @@ public class ShoppingService {
 	// 장바구니에 상품 담기
 	@Transactional
 	public void addProductToShopping(AddProductToCartRequestDto addProductToCartRequestDto) {
+		log.info(addProductToCartRequestDto.toString());
+
 		ProductDto productDto = searchProductByBarcode(addProductToCartRequestDto.getBarcode());
 
 		if(addProductToCartRequestDto.getListBarcode().isEmpty()){
