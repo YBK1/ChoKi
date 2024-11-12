@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import CallIcon from '@/assets/icons/call_icon.svg';
+
 export default function Button({
 	size = 'medium',
 	color = 'orange',
@@ -37,7 +37,7 @@ export default function Button({
 		if (size === 'call_large') {
 			return (
 				<Image
-					src={CallIcon}
+					src="/icons/call_icon.svg"
 					alt="call_icon"
 					width={32}
 					height={32}

@@ -1,7 +1,5 @@
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import home_nav from '@/assets/icons/home_nav.svg';
-import gallery_nav from '@/assets/icons/gallery_nav.svg';
 
 export default function BottomNavbar() {
 	const router = useRouter();
@@ -25,7 +23,12 @@ export default function BottomNavbar() {
 					onClick={handleHomeClick}
 				>
 					<div className="w-16 h-16 flex items-center justify-center mt-1">
-						<Image src={home_nav} alt="home_nav" width={62} height={62} />
+						<Image
+							src="/icons/home_nav.svg"
+							alt="home_nav"
+							width={62}
+							height={62}
+						/>
 					</div>
 				</div>
 
@@ -34,7 +37,12 @@ export default function BottomNavbar() {
 					onClick={handleGalleryClick}
 				>
 					<div className="w-16 h-16 flex items-center justify-center">
-						<Image src={gallery_nav} alt="gallery_nav" width={62} height={62} />
+						<Image
+							src="/icons/gallery_nav.svg"
+							alt="gallery_nav"
+							width={62}
+							height={62}
+						/>
 					</div>
 				</div>
 			</div>
