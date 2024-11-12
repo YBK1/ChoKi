@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import previous_icon from '@/assets/icons/previous.svg';
+// import previous_icon from '@/assets/icons/previous.svg';
 import { MISSION_IMAGES } from '@/constants/mission';
 import right_arrow from '@/assets/icons/right_arrow.svg';
 import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
@@ -69,7 +69,7 @@ export default function NotificationPage() {
 	return (
 		<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow min-h-screen">
 			<Image
-				src={previous_icon}
+				src="@/assets/icons/previous.svg"
 				alt="previous_icon"
 				className="w-12 h-12 m-4 cursor-pointer"
 				onClick={handleGoBack}
