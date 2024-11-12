@@ -24,6 +24,8 @@ const Map = ({
 	const [isRecording, setIsRecording] = useState(false);
 	const router = useRouter();
 
+	// const { missionId } = router.query;
+
 	const handleRecordingFinished = () => {
 		setShowSetDestination(true);
 		setIsRecording(false);
