@@ -34,7 +34,7 @@ export default function DonePage() {
 		} catch (err) {
 			console.error('초대 코드 입력 실패:', err);
 		}
-		router.push('/child/mainPage');
+		router.push('/child/main');
 	};
 	const handleGoInviteCode = () => {
 		setDonStep(1);
