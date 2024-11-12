@@ -92,15 +92,19 @@ export default function ParentPages() {
 					오늘도 아이들과 함께 파이팅!
 				</h1>
 				<Image
-					src="@/assets/icons/dog_character.svg"
+					src="/icons/dog_character.svg"
 					alt="dog_character"
 					className="absolute right-4 top-14 px-1 translate-y-1/2"
+					width={100}
+					height={100}
 				/>
 				<div className="absolute top-14 right-2">
 					<button onClick={handleInviteCodeModal}>
 						<Image
-							src="@/assets/icons/cod-information.svg"
+							src="/icons/cod-information.svg"
 							alt="code_information"
+							width={70}
+							height={70}
 						/>
 					</button>
 				</div>
@@ -126,9 +130,11 @@ export default function ParentPages() {
 									<div className="flex flex-col items-center w-24 ml-2">
 										<div className="w-24 h-24 flex-shrink-0">
 											<Image
-												src="@/assets/icons/child_profile.svg"
+												src="/icons/child_profile.svg"
 												alt="child_profile"
 												className="w-full h-full object-cover"
+												width={100}
+												height={100}
 											/>
 										</div>
 										<p className="text-sm mt-2 truncate w-full text-center">
@@ -155,9 +161,11 @@ export default function ParentPages() {
 						</p>
 						<div className="absolute right-0 bottom-0">
 							<Image
-								src="@/assets/icons/map_icon_blurry.svg"
+								src="/icons/map_icon_blurry.svg"
 								alt="map_icon_blurry"
 								className="opacity-50"
+								width={130}
+								height={130}
 							/>
 						</div>
 					</div>
@@ -171,10 +179,12 @@ export default function ParentPages() {
 						<h4 className="text-2xl font-bold">초대 코드를 공유해주세요!</h4>
 						<div className="w-32 h-32 relative mt-8">
 							<Image
-								src="@/assets/icons/dog_character.svg"
+								src="/icons/dog_character.svg"
 								alt="강아지 캐릭터"
 								layout="fill"
 								objectFit="contain"
+								width={100}
+								height={100}
 							/>
 						</div>
 						<div className="relative mb-8">

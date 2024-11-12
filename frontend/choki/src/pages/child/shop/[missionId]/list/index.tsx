@@ -1,7 +1,6 @@
 import Modal from '@/components/Common/Modal/nonCloseModalLarge';
 import Navbar from '@/components/Common/Navbar/UpperNavbar';
 import Image from 'next/image';
-import ShoppingCharacter from '@/assets/icons/shopping_character.svg';
 import SpeechBubble from '@/components/shop/SpeechBubble';
 import ProductCard from '@/components/shop/ProductCard';
 import Cam from '@/components/shop/BarcodeCam';
@@ -10,11 +9,15 @@ import { shoppingListAtom } from '@/atoms/shoppingAtom';
 import { useEffect, useState } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import * as StompJs from '@stomp/stompjs';
+import { useRouter } from 'next/router';
 
 export default function ChildShoppingPage() {
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
 	const [isCameraOpen, setIsCameraOpen] = useState(false);
 	const [barcodeData, setBarcodeData] = useState<string | null>(null);
+	const router = useRouter();
+
+	const { missionId } = router.query;
 
 	useEffect(() => {
 		console.log('Shopping list:', shoppingList);
@@ -29,14 +32,14 @@ export default function ChildShoppingPage() {
 		};
 
 		childWebSocketClient.subscribe(
-			'/user/sub/shopping/672df1def4c5cb7ca5d36532',
+			`/user/sub/shopping/${missionId}`,
 			handleWebSocketMessage,
 		);
 
 		return () => {
 			childWebSocketClient.disconnect();
 		};
-	}, [setShoppingList]);
+	}, [missionId, setShoppingList]);
 
 	const handleCaptureImage = (imageDataUrl: string) => {
 		setBarcodeData(imageDataUrl);
@@ -59,7 +62,7 @@ export default function ChildShoppingPage() {
 			}}
 		>
 			<div className="mt-8">
-				<Navbar />
+				<Navbar missionId={missionId as string} />
 			</div>
 			<div className="flex flex-col items-center">
 				{isCameraOpen ? (
@@ -107,7 +110,7 @@ export default function ChildShoppingPage() {
 			</div>
 
 			<Image
-				src={ShoppingCharacter}
+				src="/icons/shopping_character.svg"
 				alt="장보기 캐릭터"
 				className="absolute bottom-16 right-4"
 				width={100}
