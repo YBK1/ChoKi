@@ -29,6 +29,7 @@ export default function MainPage() {
 			sendDataToUnity(pendingData);
 			setPendingData(null);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isUnityLoaded, pendingData]);
 
 	const sendDataToUnity = useCallback(

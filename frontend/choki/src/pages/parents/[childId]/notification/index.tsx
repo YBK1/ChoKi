@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 // import previous_icon from '@/assets/icons/previous.svg';
 import { MISSION_IMAGES } from '@/constants/mission';
-import right_arrow from '@/assets/icons/right_arrow.svg';
 import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
 import { useState, useEffect } from 'react';
 import { getNotification } from '@/lib/api/parent';
@@ -100,7 +99,7 @@ export default function NotificationPage() {
 						</div>
 						<div className="min-w-[24px] min-h-[24px]">
 							<Image
-								src={right_arrow}
+								src="/icons/right_arrow.svg"
 								alt="detail"
 								width={24}
 								height={24}
