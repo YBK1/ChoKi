@@ -118,10 +118,12 @@ export default function DonePage() {
 
 						<div className="w-32 h-32 relative">
 							<Image
-								src="@/assets/icons/dog_character.svg"
+								src="/icons/dog_character.svg"
 								alt="강아지 캐릭터"
 								layout="fill"
 								objectFit="contain"
+								width={48}
+								height={48}
 							/>
 						</div>
 						<p className="text-center text-lg mt-4">
@@ -164,10 +166,12 @@ export default function DonePage() {
 
 						<div className="w-32 h-32 relative">
 							<Image
-								src="@/assets/icons/dog_character.svg"
+								src="/icons/dog_character.svg"
 								alt="강아지 캐릭터"
 								layout="fill"
 								objectFit="contain"
+								width={48}
+								height={48}
 							/>
 						</div>
 
