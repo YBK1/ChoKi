@@ -14,6 +14,7 @@ import com.yeojiphap.choki.domain.notification.service.NotificationService;
 import com.yeojiphap.choki.domain.shopping.domain.Shopping;
 import com.yeojiphap.choki.domain.shopping.dto.AddProductToCartRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.ProductCompareRequestDto;
+import com.yeojiphap.choki.domain.shopping.dto.ProductDto;
 import com.yeojiphap.choki.domain.shopping.dto.websocketDto.AddProductToCartResponseDto;
 import com.yeojiphap.choki.domain.shopping.dto.ChangeQuantityRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.ChildPointDto;
@@ -98,7 +99,10 @@ public class ShoppingWebSocketService {
 	// 장바구니에 상품을 담았음을 전송
 	public void sendAddProductMessage(AddProductToCartRequestDto addProductToCartRequestDto, String access) {
 		// ResponseDto로 변환
-		AddProductToCartResponseDto addProductToCartResponseDto = new AddProductToCartResponseDto(addProductToCartRequestDto);
+		ProductDto productDto = shoppingService.searchProductByBarcode(addProductToCartRequestDto.getBarcode());
+
+		AddProductToCartResponseDto addProductToCartResponseDto = new AddProductToCartResponseDto(
+			addProductToCartRequestDto, productDto.getProductName(), productDto.getImage());
 		addProductToCartResponseDto.setStatus(
 			// 비어있으면 빈 문자열을 담아서 보내기
 			addProductToCartRequestDto.getListBarcode().isEmpty() ? "" :
