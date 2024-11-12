@@ -11,7 +11,12 @@ export default function UpperNavbar() {
 					{/* 나가기 버튼 */}
 					<Link href="/child/main">
 						<div className="flex mt-2">
-							<Image src="/icons/back_icon_kid_yellow.svg" alt="back_icon" />
+							<Image
+								src="/icons/back_icon_kid_yellow.svg"
+								alt="back_icon"
+								width={65}
+								height={65}
+							/>
 						</div>
 					</Link>
 
@@ -19,7 +24,12 @@ export default function UpperNavbar() {
 					<div className="w-[190px] h-[60px] bg-light_yellow_nav rounded-full flex justify-center items-center shadow-lg">
 						<Link href="/child/shop/route">
 							<button className="p-2">
-								<Image src="/icons/map.svg" alt="map_icon" />
+								<Image
+									src="/icons/map.svg"
+									alt="map_icon"
+									width={55}
+									height={55}
+								/>
 							</button>
 						</Link>
 
@@ -27,7 +37,12 @@ export default function UpperNavbar() {
 
 						<Link href="/child/shop/list">
 							<button className="p-2">
-								<Image src="/icons/basket.svg" alt="basket_icon" />
+								<Image
+									src="/icons/basket.svg"
+									alt="basket_icon"
+									width={55}
+									height={55}
+								/>
 							</button>
 						</Link>
 					</div>
