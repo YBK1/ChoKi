@@ -85,6 +85,23 @@ const ShoppingListPage = () => {
 		setShowSuggestions(false);
 	};
 
+	const handleSendMessage = () => {
+		if (!inputValue.trim()) return;
+
+		const requestBody = {
+			shoppingId: '6705102076ff19781935ca88', // 동적 Id로 변경 필요
+			message: inputValue,
+		};
+
+		try {
+			childWebSocketClient.sendMessage('/pub/shopping/message', requestBody);
+			setInputValue('');
+			setShowSuggestions(false);
+		} catch (error) {
+			console.error('Error sending message:', error);
+		}
+	};
+
 	const renderShoppingItem = (item: ShoppingItem) => {
 		// Case 4: 아이가 추가로 담은 상품
 		if (item.cartItem && !item.productName) {
@@ -165,10 +182,15 @@ const ShoppingListPage = () => {
 								value={inputValue}
 								onChange={e => setInputValue(e.target.value)}
 								onFocus={() => setShowSuggestions(true)}
+								onKeyPress={e => {
+									if (e.key === 'Enter') {
+										handleSendMessage();
+									}
+								}}
 								className="w-[260px] h-10 px-4 rounded-full bg-white shadow-ml ml-2 focus:outline-none focus:ring-2 focus:ring-light_yellow_dark"
 								placeholder="메시지를 입력하세요"
 							/>
-							<button className="">
+							<button onClick={handleSendMessage}>
 								<span className="text-2xl bg-orange_main rounded-[50%] px-2 py-1 text-white">
 									↑
 								</span>
