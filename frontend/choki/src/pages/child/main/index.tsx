@@ -4,11 +4,13 @@ import { useCallback, useEffect, useState } from 'react';
 import UnityViewer from '@/components/Unity/UnityViewer';
 import { userAtom } from '@/atoms';
 import { useAtom } from 'jotai';
+import router from 'next/router';
 
 declare global {
 	interface Window {
 		UnityReadyCallback?: () => void;
 		handleUnityShowPanel?: () => Promise<void>;
+        navigateToMap?: () => void;
 	}
 }
 
@@ -27,9 +29,14 @@ export default function MainPage() {
 			console.log('Unity is fully loaded and ready.');
 			setIsUnityLoaded(true);
 		};
+        
+        window.navigateToMap = () => {
+            router.push('/child/map');
+        }
 
 		return () => {
 			delete window.UnityReadyCallback;
+            delete window.navigateToMap;
 		};
 	}, []);
 
