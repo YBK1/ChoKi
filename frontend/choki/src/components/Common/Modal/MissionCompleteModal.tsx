@@ -1,8 +1,9 @@
 import Image from 'next/image';
 import React, { useRef, useState } from 'react';
+import { uploadMissionImage } from '@/lib/api/shopping';
 
 interface MissionFinishComponentProps {
-	missionId: string; // Add shoppingId as a prop
+	missionId: string;
 }
 
 const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
@@ -10,13 +11,12 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const [capturedImage, setCapturedImage] = useState<string | null>(null);
+	const [capturedImage, setCapturedImage] = useState<File | null>(null);
 	const [imageDimensions, setImageDimensions] = useState<{
 		width: number;
 		height: number;
 	} | null>(null);
 
-	// Start the camera
 	const startCamera = async () => {
 		try {
 			const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -40,12 +40,14 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 				canvas.height = video.videoHeight;
 				context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-				const imageUrl = canvas.toDataURL('image/png');
-				setCapturedImage(imageUrl); // Convert the image to a data URL
-				setImageDimensions({ width: canvas.width, height: canvas.height });
-
-				console.log('Captured Image URL:', imageUrl);
-				console.log('Shopping ID:', missionId);
+				canvas.toBlob(blob => {
+					if (blob) {
+						const file = new File([blob], 'capture.png', { type: 'image/png' });
+						setCapturedImage(file);
+						setImageDimensions({ width: canvas.width, height: canvas.height });
+						uploadMissionImage(missionId, file);
+					}
+				}, 'image/png');
 			} else {
 				console.error('Error: Unable to get 2D context from canvas');
 			}
@@ -86,7 +88,7 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 				{capturedImage ? (
 					// Display the captured image
 					<Image
-						src={capturedImage}
+						src={URL.createObjectURL(capturedImage)}
 						alt="Captured"
 						width={imageDimensions?.width || 100}
 						height={imageDimensions?.height || 100}
