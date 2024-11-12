@@ -1,5 +1,5 @@
 import { useState, CSSProperties } from 'react';
-import NonCloseModalLarge from '../Common/Modal/nonCloseModalLarge';
+import NonCloseModal from '../Common/Modal/nonCloseModal';
 import Image from 'next/image';
 import SuccessImage from '@/assets/icons/success_icon.svg';
 import WarningImage from '@/assets/icons/warning_icon.svg';
@@ -44,7 +44,7 @@ export default function AddModal({
 
 	return (
 		<div>
-			<NonCloseModalLarge>
+			<NonCloseModal>
 				<div>
 					{conpareResult === 'MATCH' && (
 						<div>
@@ -98,7 +98,7 @@ export default function AddModal({
 						</div>
 					)}
 				</div>
-			</NonCloseModalLarge>
+			</NonCloseModal>
 		</div>
 	);
 }

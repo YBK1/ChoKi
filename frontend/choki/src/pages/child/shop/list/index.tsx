@@ -14,7 +14,8 @@ import * as StompJs from '@stomp/stompjs';
 export default function ChildShoppingPage() {
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
 	const [isCameraOpen, setIsCameraOpen] = useState(false);
-	const [originBarcode, setOriginBarcode] = useState<string | null>(null); // originBarcode 상태 추가
+	const [originBarcode, setOriginBarcode] = useState<string | null>(null);
+	const [productName, setProductName] = useState<string | null>(null); // productName 상태 추가
 
 	useEffect(() => {
 		console.log('Shopping list:', shoppingList);
@@ -38,14 +39,16 @@ export default function ChildShoppingPage() {
 		};
 	}, [setShoppingList]);
 
-	const openCameraModal = (barcode: string) => {
+	const openCameraModal = (barcode: string, name: string) => {
 		setOriginBarcode(barcode); // 클릭된 barcode를 originBarcode로 설정
+		setProductName(name); // 클릭된 상품명을 productName으로 설정
 		setIsCameraOpen(true);
 	};
 
 	const closeCameraModal = () => {
 		setIsCameraOpen(false);
 		setOriginBarcode(null); // 카메라 모달 닫힐 때 originBarcode 초기화
+		setProductName(null); // 카메라 모달 닫힐 때 productName 초기화
 	};
 
 	return (
@@ -63,6 +66,7 @@ export default function ChildShoppingPage() {
 					<Cam
 						onCaptureChange={closeCameraModal}
 						originBarcode={originBarcode || ''}
+						productName={productName || ''}
 					/>
 				) : (
 					<Modal>
@@ -86,7 +90,9 @@ export default function ChildShoppingPage() {
 												}
 											: undefined
 									}
-									onCameraClick={() => openCameraModal(item.barcode)} // barcode를 매개변수로 전달
+									onCameraClick={() =>
+										openCameraModal(item.barcode, item.productName)
+									} // barcode와 productName을 매개변수로 전달
 								/>
 							))}
 						</div>

@@ -3,17 +3,31 @@ import Image from 'next/image';
 import Button from '../Common/Button';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { compareShopping } from '@/lib/api/shopping';
+import AddModal from './AddModal'; // AddModal import 추가
 
-const Cam: React.FC<CamProps> = ({ onCaptureChange, originBarcode }) => {
+const Cam: React.FC<CamProps> = ({
+	onCaptureChange,
+	originBarcode,
+	productName,
+}) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [capturedImage, setCapturedImage] = useState<string | null>(null);
+	const [compareResult, setCompareResult] = useState<string | null>(null); // 비교 결과 상태 추가
 
 	const goCompare = async (originBarcode: string, inputBarcode: string) => {
 		try {
-			console.log('장보기 비교 요청:', originBarcode, inputBarcode);
 			const response = await compareShopping({ originBarcode, inputBarcode });
 			console.log('장보기 비교 결과:', response);
-			//TODO - 비교 결과에 따른 아래 로직 추가
+
+			// 비교 결과에 따라 상태 설정
+			const matchStatus = response.matchStatus;
+			if (
+				matchStatus === 'MATCH' ||
+				matchStatus === 'NOT_MATCH' ||
+				matchStatus === 'SIMILAR'
+			) {
+				setCompareResult(matchStatus);
+			}
 		} catch (error) {
 			console.error('장보기 비교 실패:', error);
 		}
@@ -59,7 +73,7 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, originBarcode }) => {
 
 				const imageDataUrl = canvas.toDataURL('image/png');
 				setCapturedImage(imageDataUrl);
-				console.log('캡처된 이미지 데이터 URL:', imageDataUrl);
+				// console.log('캡처된 이미지 데이터 URL:', imageDataUrl);
 
 				const codeReader = new BrowserMultiFormatReader();
 
@@ -91,48 +105,54 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, originBarcode }) => {
 	const handleConfirm = () => {
 		onCaptureChange(true);
 	};
-
 	return (
 		<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg mx-auto w-[80%] max-w-lg">
-			<div className="mb-4 w-full flex justify-center">
-				<div className="bg-gray-200 rounded-md shadow-md overflow-hidden w-80 h-36 flex items-center justify-center">
-					{capturedImage ? (
-						<Image
-							src={capturedImage}
-							alt="Captured"
-							width={320}
-							height={150}
-							className="w-full h-full object-cover"
-						/>
-					) : (
-						<video
-							ref={videoRef}
-							autoPlay
-							className="w-full h-full object-cover"
-						/>
-					)}
-				</div>
-			</div>
-
-			{capturedImage ? (
-				<div className="flex gap-4 mt-4">
-					<Button
-						size="small"
-						color="blue"
-						onClick={handleConfirm}
-						text="알겠어!"
-					/>
-				</div>
+			{compareResult ? (
+				// AddModal을 표시
+				<AddModal conpareResult={compareResult} ProductName={productName} />
 			) : (
-				<div onClick={captureImage} className="cursor-pointer mt-2">
-					<Image
-						src="/icons/camera_icon.svg"
-						alt="Capture Image"
-						width={50}
-						height={50}
-						className="hover:scale-110 transition-transform"
-					/>
-				</div>
+				<>
+					<div className="mb-4 w-full flex justify-center">
+						<div className="bg-gray-200 rounded-md shadow-md overflow-hidden w-80 h-36 flex items-center justify-center">
+							{capturedImage ? (
+								<Image
+									src={capturedImage}
+									alt="Captured"
+									width={320}
+									height={150}
+									className="w-full h-full object-cover"
+								/>
+							) : (
+								<video
+									ref={videoRef}
+									autoPlay
+									className="w-full h-full object-cover"
+								/>
+							)}
+						</div>
+					</div>
+
+					{capturedImage ? (
+						<div className="flex gap-4 mt-4">
+							<Button
+								size="small"
+								color="blue"
+								onClick={handleConfirm}
+								text="알겠어!"
+							/>
+						</div>
+					) : (
+						<div onClick={captureImage} className="cursor-pointer mt-2">
+							<Image
+								src="/icons/camera_icon.svg"
+								alt="Capture Image"
+								width={50}
+								height={50}
+								className="hover:scale-110 transition-transform"
+							/>
+						</div>
+					)}
+				</>
 			)}
 		</div>
 	);

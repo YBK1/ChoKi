@@ -171,5 +171,5 @@ interface conmpareRequest {
 }
 
 interface matchStatusReponse {
-	matchStatusReponse: string;
+	matchStatus: string;
 }
