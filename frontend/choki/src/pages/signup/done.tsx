@@ -8,7 +8,7 @@ import {
 } from 'react';
 import InviteCodeModal from '@/components/Common/Modal/nonCloseModal';
 import CommonButton from '@/components/Common/Button';
-import DogCharacter from '@/assets/icons/dog_character.svg';
+// import DogCharacter from '@/assets/icons/dog_character.svg';
 import Image from 'next/image';
 import { createInviteCode, joinFamily } from '@/lib/api/inviteCode';
 import { Toast } from '@/components/Toast/Toast';
@@ -118,7 +118,7 @@ export default function DonePage() {
 
 						<div className="w-32 h-32 relative">
 							<Image
-								src={DogCharacter}
+								src="@/assets/icons/dog_character.svg"
 								alt="강아지 캐릭터"
 								layout="fill"
 								objectFit="contain"
@@ -164,7 +164,7 @@ export default function DonePage() {
 
 						<div className="w-32 h-32 relative">
 							<Image
-								src={DogCharacter}
+								src="@/assets/icons/dog_character.svg"
 								alt="강아지 캐릭터"
 								layout="fill"
 								objectFit="contain"
