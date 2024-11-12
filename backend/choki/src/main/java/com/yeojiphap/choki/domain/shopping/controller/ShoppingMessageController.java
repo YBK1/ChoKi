@@ -79,6 +79,7 @@ public class ShoppingMessageController {
 	public void sendCartDeleteMessage(DeleteProductFromCartRequestDto deleteProductFromCartRequestDto, @Header("access") String access) {
 		// log
 		log.info("상품 삭제 메세지 보냄!!");
+		log.info(deleteProductFromCartRequestDto.toString());
 
 		// 장바구니 DB 정보 업데이트 ( 삭제 )
 		shoppingService.deleteProductFromShopping(deleteProductFromCartRequestDto);
