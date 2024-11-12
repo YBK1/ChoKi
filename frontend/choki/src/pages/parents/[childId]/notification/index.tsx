@@ -68,10 +68,12 @@ export default function NotificationPage() {
 	return (
 		<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow min-h-screen">
 			<Image
-				src="@/assets/icons/previous.svg"
+				src="/icons/previous.svg"
 				alt="previous_icon"
 				className="w-12 h-12 m-4 cursor-pointer"
 				onClick={handleGoBack}
+				width={48}
+				height={48}
 			/>
 
 			{/* 알림목록 */}

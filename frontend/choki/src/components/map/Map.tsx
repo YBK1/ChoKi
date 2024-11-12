@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 
 const Map = ({
+	coordinates,
 	showRouteRecorder = true,
 	showPolyline = true,
 	showPreviousButton = true,
@@ -23,6 +24,8 @@ const Map = ({
 	const [showSetDestination, setShowSetDestination] = useState(false);
 	const [isRecording, setIsRecording] = useState(false);
 	const router = useRouter();
+
+	// const { missionId } = router.query;
 
 	const handleRecordingFinished = () => {
 		setShowSetDestination(true);
@@ -65,7 +68,9 @@ const Map = ({
 				</button>
 			)}
 			<MapContainer onMapLoad={setMapInstance} />
-			{mapInstance && <UserLocationMarker map={mapInstance} />}
+			{mapInstance && (
+				<UserLocationMarker map={mapInstance} coordinates={coordinates} />
+			)}
 			{mapInstance && showPolyline && (
 				<RoutePolyline
 					map={mapInstance}
