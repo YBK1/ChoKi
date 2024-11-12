@@ -8,6 +8,10 @@ export default function ChildIsShoppingPage() {
 	const [route, setRoute] = useState<
 		{ latitude: number; longitude: number }[] | undefined
 	>(undefined);
+	const [currentLocation, setCurrentLocation] = useState<{
+		latitude: number;
+		longitude: number;
+	} | null>(null);
 
 	const router = useRouter();
 	const { missionId } = router.query;
@@ -17,10 +21,21 @@ export default function ChildIsShoppingPage() {
 
 		parentWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, msg => {
 			console.log('Received message:', msg.body);
+			const data = JSON.parse(msg.body);
 
-			const missionRoute = JSON.parse(msg.body).route;
-			setRoute(missionRoute);
+			if (data.route) {
+				setRoute(data.route);
+			} else if (data.type === 'POINT' && data.latitude && data.longitude) {
+				setCurrentLocation({
+					latitude: data.latitude,
+					longitude: data.longitude,
+				});
+			}
 		});
+
+		return () => {
+			parentWebSocketClient.disconnect();
+		};
 	}, [missionId]);
 
 	return (
@@ -48,6 +63,7 @@ export default function ChildIsShoppingPage() {
 						showRouteRecorder={false}
 						showChildNavBar={false}
 						route={route}
+						coordinates={currentLocation}
 					/>
 				</div>
 			</div>
