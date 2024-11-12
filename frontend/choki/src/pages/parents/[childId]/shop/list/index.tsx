@@ -16,25 +16,46 @@ const ShoppingListPage = () => {
 		const handleWebSocketMessage = (message: StompJs.Message) => {
 			try {
 				const response = JSON.parse(message.body) as WSShoppingResponse;
-				console.log('다나와', message.body);
+				console.log('WebSocket message:', message.body);
 
-				// 메시지 타입이 'SHOPPING'인 경우에만 쇼핑 리스트 업데이트
-				if (response.type === 'SHOPPING' && response.shoppingList) {
-					setShoppingList(response.shoppingList);
-					console.log(response.shoppingList);
+				switch (response.type) {
+					case 'SHOPPING':
+						setShoppingList(response.shoppingList);
+						break;
+
+					case 'ADD_PRODUCT_TO_CART':
+						if (!response.listBarcode) return;
+						setShoppingList(prev => {
+							return prev.map(item => {
+								if (item.barcode === response.listBarcode) {
+									return {
+										...item,
+										cartItem: {
+											barcode: response.barcode || '',
+											category: item.category || '',
+											productName: response.productName || '',
+											image: response.image || '',
+											quantity: response.quantity || 0,
+											reason: response.reason || 'BLANK',
+											status: response.status || 'NOT_MATCH',
+										},
+									};
+								}
+								return item;
+							});
+						});
+						break;
 				}
 			} catch (error) {
 				console.error('Error processing WebSocket message:', error);
 			}
 		};
 
-		// WebSocket 구독 설정
 		childWebSocketClient.subscribe(
 			'/user/sub/shopping/672df1def4c5cb7ca5d36532',
 			handleWebSocketMessage,
 		);
 
-		// 컴포넌트 언마운트 시 연결 해제
 		return () => {
 			childWebSocketClient.disconnect();
 		};
@@ -57,13 +78,13 @@ const ShoppingListPage = () => {
 				<ParentProductCard
 					key={item.cartItem.barcode}
 					ParentsShoppingItem={{
-						title: '',
-						count: 0,
+						productName: '',
+						quantity: 0,
 						image: '',
 					}}
 					ChildrenShoppingItem={{
-						title: item.cartItem.productName,
-						count: item.cartItem.quantity,
+						productName: item.cartItem.productName,
+						quantity: item.cartItem.quantity,
 						image: item.cartItem.image,
 					}}
 					emptyMessage="아이가 추가로 담은 상품이에요"
@@ -77,8 +98,8 @@ const ShoppingListPage = () => {
 				<ParentProductCard
 					key={item.barcode}
 					ParentsShoppingItem={{
-						title: item.productName,
-						count: item.quantity,
+						productName: item.productName,
+						quantity: item.quantity,
 						image: item.image,
 					}}
 					emptyMessage="아이가 아직 상품을 담지 않았어요"
@@ -91,13 +112,13 @@ const ShoppingListPage = () => {
 			<ParentProductCard
 				key={item.barcode}
 				ParentsShoppingItem={{
-					title: item.productName,
-					count: item.quantity,
+					productName: item.productName,
+					quantity: item.quantity,
 					image: item.image,
 				}}
 				ChildrenShoppingItem={{
-					title: item.cartItem.productName,
-					count: item.cartItem.quantity,
+					productName: item.cartItem.productName,
+					quantity: item.cartItem.quantity,
 					image: item.cartItem.image,
 				}}
 				showWarning={item.cartItem.status === 'SIMILAR'}
