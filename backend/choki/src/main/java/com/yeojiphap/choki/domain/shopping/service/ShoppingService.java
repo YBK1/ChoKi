@@ -117,21 +117,46 @@ public class ShoppingService {
 	public void addProductToShopping(AddProductToCartRequestDto addProductToCartRequestDto) {
 		ProductDto productDto = searchProductByBarcode(addProductToCartRequestDto.getBarcode());
 
-		// CartItem 생성
-		CartItem cartItem = CartItem.builder()
-			.barcode(addProductToCartRequestDto.getBarcode())
-			.quantity(addProductToCartRequestDto.getQuantity())
-			.productName(productDto.getProductName())
-			.category(productDto.getCategory())
-			.image(productDto.getImage())
-			.reason(addProductToCartRequestDto.getReason())
-			.status(compareBarcode(new ProductCompareRequestDto(addProductToCartRequestDto.getListBarcode(), addProductToCartRequestDto.getBarcode()))
-				.getMatchStatus())
-			.build();
+		if(addProductToCartRequestDto.getListBarcode().isEmpty()){
+			// CartItem 생성
+			CartItem cartItem = CartItem.builder()
+				.barcode(addProductToCartRequestDto.getBarcode())
+				.quantity(addProductToCartRequestDto.getQuantity())
+				.productName(productDto.getProductName())
+				.category(productDto.getCategory())
+				.image(productDto.getImage())
+				.reason(addProductToCartRequestDto.getReason())
+				.status("MATCH")
+				.build();
 
-		// 삽입
-		shoppingRepository.insertCartItemById(new ObjectId(addProductToCartRequestDto.getShoppingId()),
-			addProductToCartRequestDto.getListBarcode(), cartItem).orElseThrow(ShoppingNotFoundException::new);
+			Product product = Product.builder()
+				.barcode("")
+				.quantity((long)0)
+				.productName("")
+				.image("")
+				.category("")
+				.cartItem(cartItem)
+				.build();
+
+			shoppingRepository.insertCartItemNotInList(new ObjectId(addProductToCartRequestDto.getShoppingId()), product);
+		}
+		else{
+			// CartItem 생성
+			CartItem cartItem = CartItem.builder()
+				.barcode(addProductToCartRequestDto.getBarcode())
+				.quantity(addProductToCartRequestDto.getQuantity())
+				.productName(productDto.getProductName())
+				.category(productDto.getCategory())
+				.image(productDto.getImage())
+				.reason(addProductToCartRequestDto.getReason())
+				.status(compareBarcode(new ProductCompareRequestDto(addProductToCartRequestDto.getListBarcode(), addProductToCartRequestDto.getBarcode()))
+					.getMatchStatus())
+				.build();
+			// 삽입
+			shoppingRepository.insertCartItemById(new ObjectId(addProductToCartRequestDto.getShoppingId()),
+				addProductToCartRequestDto.getListBarcode(), cartItem).orElseThrow(ShoppingNotFoundException::new);
+		}
+
 	}
 
 	// 상품 수량 변경

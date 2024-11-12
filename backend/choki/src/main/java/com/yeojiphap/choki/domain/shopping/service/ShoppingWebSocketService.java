@@ -100,6 +100,8 @@ public class ShoppingWebSocketService {
 		// ResponseDto로 변환
 		AddProductToCartResponseDto addProductToCartResponseDto = new AddProductToCartResponseDto(addProductToCartRequestDto);
 		addProductToCartResponseDto.setStatus(
+			// 비어있으면 빈 문자열을 담아서 보내기
+			addProductToCartRequestDto.getListBarcode().isEmpty() ? "" :
 			shoppingService.compareBarcode(
 				new ProductCompareRequestDto(addProductToCartRequestDto.getListBarcode(),
 					addProductToCartResponseDto.getBarcode()))
