@@ -11,8 +11,6 @@ import CommonButton from '@/components/Common/Button';
 import { Toast } from '@/components/Toast/Toast';
 import { getInviteCode } from '@/lib/api/inviteCode';
 import { getFamily, getUserData } from '@/lib/api/user';
-import { useAtom } from 'jotai';
-import { userAtom } from '@/atoms';
 
 export default function ParentPages() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,22 +18,7 @@ export default function ParentPages() {
 	const [showToast, setShowToast] = useState(false);
 	const [children, setChildren] = useState<Child[]>([]);
 
-	const [user, setUser] = useAtom(userAtom);
-
 	useEffect(() => {
-		const fetchUserData = async () => {
-			try {
-				const response = await getUserData();
-				const { userId, name } = response;
-				setUser({
-					userId,
-					username: name,
-				});
-			} catch (err) {
-				console.error('사용자 데이터 가져오기 실패:', err);
-			}
-		};
-
 		const fetchFamilyData = async () => {
 			try {
 				const response = await getFamily();
@@ -45,9 +28,8 @@ export default function ParentPages() {
 			}
 		};
 
-		fetchUserData();
 		fetchFamilyData();
-	}, [setUser]);
+	}, []);
 
 	// 초대 코드 가져오기
 	const fetchInviteCode = async () => {
