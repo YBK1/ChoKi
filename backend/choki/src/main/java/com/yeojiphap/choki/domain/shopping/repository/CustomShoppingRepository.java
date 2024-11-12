@@ -16,7 +16,7 @@ public interface CustomShoppingRepository {
 	// 업데이트가 있어야 할듯..
 	Optional<Shopping> changeQuantityOfCartItem(ObjectId shoppingId, String barcode, int quantity);
 
-	void deleteCartItemById(ObjectId shoppingId, String barcode);
+	void deleteCartItemById(ObjectId shoppingId, String listBarcode,String barcode);
 
 	Optional<Shopping> findById(ObjectId shoppingId);
 }

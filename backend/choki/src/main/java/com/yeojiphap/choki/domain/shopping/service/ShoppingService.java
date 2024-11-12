@@ -172,7 +172,8 @@ public class ShoppingService {
 	@Transactional
 	public void deleteProductFromShopping(DeleteProductFromCartRequestDto deleteProductFromCartRequestDto){
 		// 삭제 수행
-		shoppingRepository.deleteCartItemById(new ObjectId(deleteProductFromCartRequestDto.getShoppingId()), deleteProductFromCartRequestDto.getBarcode());
+		shoppingRepository.deleteCartItemById(new ObjectId(deleteProductFromCartRequestDto.getShoppingId()),
+			deleteProductFromCartRequestDto.getListBarcode(), deleteProductFromCartRequestDto.getBarcode());
 	}
 
 	// 이름 기반 상품 검색

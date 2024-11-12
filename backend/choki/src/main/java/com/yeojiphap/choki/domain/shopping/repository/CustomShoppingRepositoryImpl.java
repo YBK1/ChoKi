@@ -69,10 +69,10 @@ public class CustomShoppingRepositoryImpl implements CustomShoppingRepository {
 	}
 
 	@Override
-	public void deleteCartItemById(ObjectId shoppingId, String barcode) {
+	public void deleteCartItemById(ObjectId shoppingId, String listBarcode, String barcode) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("_id").is(shoppingId)
-			.and("shoppingList.barcode").is(barcode));
+			.and("shoppingList.barcode").is(listBarcode));
 
 		Update update = new Update();
 		update.unset("shoppingList.$.cartItem");
