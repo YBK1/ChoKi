@@ -118,6 +118,7 @@ interface ShoppingCardProps {
 	};
 	onCameraClick: () => void; // 카메라 클릭 핸들러 추가
 }
+
 interface ShoppingItem {
 	barcode: string;
 	category: string;
