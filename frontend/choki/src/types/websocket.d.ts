@@ -4,6 +4,7 @@ type WSShoppingType =
 	| 'DELETE_PRODUCT_FROM_CART'
 	| 'HINT_MESSAGE';
 
+type addReason = SOLD_OUT | NO_REASON | BLANK;
 interface WSShoppingResponse {
 	type: WSShoppingType;
 	id: string;
@@ -15,4 +16,12 @@ interface WSShoppingResponse {
 	shoppingList: ShoppingItem[];
 	missionId: string;
 	status: string;
+}
+
+interface addShoppingItem {
+	shoppingId: string;
+	listBarcode: string;
+	barcode: string;
+	quantity: number;
+	reason: addReason;
 }

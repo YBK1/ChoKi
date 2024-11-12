@@ -208,3 +208,10 @@ interface ProductCardProps {
 	conpareResult: string;
 	ProductName: string;
 }
+// AddModal 컴포넌트의 타입 정의
+interface AddModalProps {
+	conpareResult: string;
+	ProductName: string;
+	originBarcode: string; // originBarcode 속성 추가
+	inputBarcode: string; // inputBarcode 속성 추가
+}

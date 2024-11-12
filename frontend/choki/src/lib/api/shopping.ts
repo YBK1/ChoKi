@@ -41,6 +41,7 @@ export const createShopping = async (
 };
 
 // 장보기 비교
+// TODO - 테스트용 하드코딩 수정 예정
 export const compareShopping = async ({
 	originBarcode,
 	inputBarcode,
@@ -48,9 +49,10 @@ export const compareShopping = async ({
 	try {
 		console.log('장보기 비교 요청2:', originBarcode, inputBarcode);
 		const response = await axiosInstance.post(`/api/shopping/item/compare`, {
-			originBarcode,
-			inputBarcode,
+			originBarcode: '88002903',
+			inputBarcode: '8801069174839',
 		});
+		console.log('장보기 비교 응답:', response);
 		return response.data;
 	} catch (error) {
 		console.error('장보기 비교 실패:', error);

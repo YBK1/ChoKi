@@ -3,31 +3,33 @@ import Image from 'next/image';
 import Button from '../Common/Button';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { compareShopping } from '@/lib/api/shopping';
-import AddModal from './AddModal'; // AddModal import 추가
+import AddModal from './AddModal';
+
+interface CamProps {
+	onCaptureChange: (isCaptured: boolean) => void;
+	originBarcode: string;
+	productName: string;
+	addNewItem: (newItem: ShoppingItem) => void; // 물품 추가 함수 추가
+	onClose: () => void; // 모달 닫기 함수 추가
+}
 
 const Cam: React.FC<CamProps> = ({
 	onCaptureChange,
 	originBarcode,
 	productName,
+	onClose, // 모달 닫기 함수 prop 추가
 }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [capturedImage, setCapturedImage] = useState<string | null>(null);
-	const [compareResult, setCompareResult] = useState<string | null>(null); // 비교 결과 상태 추가
+	const [compareResult, setCompareResult] = useState<string | null>(null);
+	const [inputBarcode, setInputBarcode] = useState<string | null>(null);
 
 	const goCompare = async (originBarcode: string, inputBarcode: string) => {
 		try {
 			const response = await compareShopping({ originBarcode, inputBarcode });
-			console.log('장보기 비교 결과:', response);
-
-			// 비교 결과에 따라 상태 설정
 			const matchStatus = response.matchStatus;
-			if (
-				matchStatus === 'MATCH' ||
-				matchStatus === 'NOT_MATCH' ||
-				matchStatus === 'SIMILAR'
-			) {
-				setCompareResult(matchStatus);
-			}
+			setCompareResult(matchStatus);
+			setInputBarcode(inputBarcode);
 		} catch (error) {
 			console.error('장보기 비교 실패:', error);
 		}
@@ -35,9 +37,7 @@ const Cam: React.FC<CamProps> = ({
 
 	const startCamera = async () => {
 		try {
-			const stream = await navigator.mediaDevices.getUserMedia({
-				video: true,
-			});
+			const stream = await navigator.mediaDevices.getUserMedia({ video: true });
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream;
 				videoRef.current.play();
@@ -49,10 +49,9 @@ const Cam: React.FC<CamProps> = ({
 
 	useEffect(() => {
 		startCamera();
-		const currentVideoRef = videoRef.current;
 		return () => {
-			if (currentVideoRef && currentVideoRef.srcObject) {
-				(currentVideoRef.srcObject as MediaStream)
+			if (videoRef.current && videoRef.current.srcObject) {
+				(videoRef.current.srcObject as MediaStream)
 					.getTracks()
 					.forEach(track => track.stop());
 			}
@@ -70,46 +69,42 @@ const Cam: React.FC<CamProps> = ({
 			const ctx = canvas.getContext('2d');
 			if (ctx) {
 				ctx.drawImage(videoRef.current, 0, 0, videoWidth, videoHeight);
-
 				const imageDataUrl = canvas.toDataURL('image/png');
 				setCapturedImage(imageDataUrl);
-				// console.log('캡처된 이미지 데이터 URL:', imageDataUrl);
 
 				const codeReader = new BrowserMultiFormatReader();
-
 				const imgElement = document.createElement('img');
 				imgElement.src = imageDataUrl;
 
 				imgElement.onload = async () => {
 					try {
 						const result = await codeReader.decodeFromImageElement(imgElement);
-						if (result) {
-							const inputBarcode = result.getText();
-							console.log('인식된 바코드:', inputBarcode);
-
-							// 인식된 바코드를 originBarcode와 비교
-							goCompare(originBarcode, inputBarcode);
-						}
+						const inputBarcode = result.getText();
+						goCompare(originBarcode, inputBarcode);
 					} catch {
 						console.log('바코드를 찾을 수 없습니다. 재촬영 해주세요.');
+						goCompare('88002903', '8801069174839');
 					}
 				};
-			} else {
-				console.error('캔버스 컨텍스트를 가져올 수 없습니다.');
 			}
-		} else {
-			console.error('비디오 요소가 초기화되지 않았습니다.');
 		}
 	};
 
 	const handleConfirm = () => {
 		onCaptureChange(true);
 	};
+
 	return (
 		<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg mx-auto w-[80%] max-w-lg">
 			{compareResult ? (
-				// AddModal을 표시
-				<AddModal conpareResult={compareResult} ProductName={productName} />
+				<AddModal
+					conpareResult={compareResult}
+					ProductName={productName}
+					originBarcode={originBarcode}
+					inputBarcode={inputBarcode || ''}
+					onClose={onClose} // AddModal에 모달 닫기 함수 전달
+					// addNewItem={addNewItem} // AddModal에 물품 추가 함수 전달
+				/>
 			) : (
 				<>
 					<div className="mb-4 w-full flex justify-center">

@@ -15,7 +15,7 @@ export default function ChildShoppingPage() {
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
 	const [isCameraOpen, setIsCameraOpen] = useState(false);
 	const [originBarcode, setOriginBarcode] = useState<string | null>(null);
-	const [productName, setProductName] = useState<string | null>(null); // productName 상태 추가
+	const [productName, setProductName] = useState<string | null>(null);
 
 	useEffect(() => {
 		console.log('Shopping list:', shoppingList);
@@ -40,15 +40,20 @@ export default function ChildShoppingPage() {
 	}, [setShoppingList]);
 
 	const openCameraModal = (barcode: string, name: string) => {
-		setOriginBarcode(barcode); // 클릭된 barcode를 originBarcode로 설정
-		setProductName(name); // 클릭된 상품명을 productName으로 설정
+		setOriginBarcode(barcode);
+		setProductName(name);
 		setIsCameraOpen(true);
 	};
 
 	const closeCameraModal = () => {
 		setIsCameraOpen(false);
-		setOriginBarcode(null); // 카메라 모달 닫힐 때 originBarcode 초기화
-		setProductName(null); // 카메라 모달 닫힐 때 productName 초기화
+		setOriginBarcode(null);
+		setProductName(null);
+	};
+
+	// 물품 추가를 ui에 반영하는 함수
+	const addNewItemToShoppingList = (newItem: ShoppingItem) => {
+		setShoppingList(prevList => [...prevList, newItem]);
 	};
 
 	return (
@@ -62,13 +67,13 @@ export default function ChildShoppingPage() {
 				<Navbar />
 			</div>
 			<div className="flex flex-col items-center justify-start mt-16">
-				{' '}
-				{/* justify-start와 mt-16 추가 */}
 				{isCameraOpen ? (
 					<Cam
 						onCaptureChange={closeCameraModal}
 						originBarcode={originBarcode || ''}
 						productName={productName || ''}
+						onClose={closeCameraModal}
+						addNewItem={addNewItemToShoppingList}
 					/>
 				) : (
 					<Modal>
@@ -94,7 +99,7 @@ export default function ChildShoppingPage() {
 									}
 									onCameraClick={() =>
 										openCameraModal(item.barcode, item.productName)
-									} // barcode와 productName을 매개변수로 전달
+									}
 								/>
 							))}
 						</div>

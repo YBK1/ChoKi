@@ -5,56 +5,83 @@ import SuccessImage from '@/assets/icons/success_icon.svg';
 import WarningImage from '@/assets/icons/warning_icon.svg';
 import FailImage from '@/assets/icons/fail_icon.svg';
 import Button from '@/components/Common/Button';
+import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
+
+interface AddModalProps {
+	conpareResult: string;
+	ProductName: string;
+	originBarcode: string;
+	inputBarcode: string;
+	onClose: () => void; // 모달 닫기 함수 추가
+}
 
 export default function AddModal({
 	conpareResult,
 	ProductName,
-}: ProductCardProps) {
-	// 버튼 스타일
+	originBarcode,
+	// inputBarcode,
+	onClose, // 모달 닫기 prop
+}: AddModalProps) {
 	const buttonStyle = {
 		backgroundColor: '#f0f0f0',
 		border: 'none',
-		borderRadius: '5px',
-		width: '30px',
-		height: '30px',
-		fontSize: '16px',
+		borderRadius: '50%',
+		width: '40px',
+		height: '40px',
+		fontSize: '20px',
 		cursor: 'pointer',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
 	};
 
-	// 수량 표시 스타일
 	const quantityStyle: CSSProperties = {
 		padding: '5px 10px',
 		borderRadius: '10px',
 		backgroundColor: '#fff',
-		fontSize: '16px',
+		fontSize: '20px',
 		fontWeight: 'bold',
 		textAlign: 'center',
-	};
-	const [quantity, setQuantity] = useState(1); // 수량 상태 관리
-
-	// 수량 증가 함수
-	const increaseQuantity = () => {
-		setQuantity(prevQuantity => prevQuantity + 1);
+		minWidth: '40px',
 	};
 
-	// 수량 감소 함수 (0 이하로 내려가지 않도록 제한)
-	const decreaseQuantity = () => {
+	const [quantity, setQuantity] = useState(1);
+
+	const increaseQuantity = () => setQuantity(prevQuantity => prevQuantity + 1);
+	const decreaseQuantity = () =>
 		setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
+
+	const sendWebSocketData = (reason: string) => {
+		const requestBody = {
+			shoppingId: '672df1def4c5cb7ca5d36532',
+			listBarcode: originBarcode,
+			// barcode: inputBarcode,
+			barcode: '88002903',
+			quantity: quantity,
+			reason: reason,
+		};
+		console.log('아이 장바구니 물품 추가하기:', requestBody);
+		childWebSocketClient.sendMessage('/pub/shopping/product/add', requestBody);
+		onClose(); // WebSocket 데이터 전송 후 모달 닫기
 	};
+
+	const handleMatchButton = () => sendWebSocketData('MATCH');
+	const handleSoldOutButton = () => sendWebSocketData('SOLD_OUT');
+	const handleNoReasonButton = () => sendWebSocketData('NO_REASON');
+	const handleNotMatchButton = () => onClose();
 
 	return (
 		<div>
 			<NonCloseModal>
-				<div>
+				<div className="flex flex-col items-center p-6">
 					{conpareResult === 'MATCH' && (
-						<div>
-							<Image src={SuccessImage} alt="Success" />
-							<p>
-								<strong>{ProductName}</strong>을(를) 몇 개 담으실건가요?
+						<div className="flex flex-col items-center">
+							<Image src={SuccessImage} alt="Success" width={80} height={80} />
+							<p className="mt-4 text-lg font-semibold text-center">
+								<strong>{ProductName}</strong>을/를
+								<br />몇 개 담을 건가요?
 							</p>
-							<div
-								style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-							>
+							<div className="flex items-center gap-4 mt-4">
 								<button onClick={decreaseQuantity} style={buttonStyle}>
 									-
 								</button>
@@ -63,28 +90,42 @@ export default function AddModal({
 									+
 								</button>
 							</div>
-							<Button size="small" color="orange" text="담기"></Button>
+							<div className="mt-6">
+								<Button
+									size="small"
+									color="orange"
+									text="담기"
+									onClick={handleMatchButton}
+								/>
+							</div>
 						</div>
 					)}
 					{conpareResult === 'NOT_MATCH' && (
-						<div>
-							<Image src={FailImage} alt="Fail" />
-							<p>
-								<strong>{ProductName}</strong>이(가) 맞나요? 다른 상품을
-								담아보세요.
+						<div className="flex flex-col items-center">
+							<Image src={FailImage} alt="Fail" width={80} height={80} />
+							<p className="mt-4 text-lg font-semibold text-center">
+								<strong>{ProductName}</strong>이(가) 맞나요?
+								<br />
+								다른 상품을 담아보세요.
 							</p>
-							<Button size="small" color="orange" text="확인"></Button>
+							<div className="mt-6">
+								<Button
+									size="small"
+									color="orange"
+									text="돌아가기"
+									onClick={handleNotMatchButton}
+								/>
+							</div>
 						</div>
 					)}
 					{conpareResult === 'SIMILAR' && (
-						<div>
-							<Image src={WarningImage} alt="Warning" />
-							<p>
-								<strong>{ProductName}</strong>을(를) 몇 개 담으실건가요?
+						<div className="flex flex-col items-center">
+							<Image src={WarningImage} alt="Warning" width={80} height={80} />
+							<p className="mt-4 text-lg font-semibold text-center">
+								<strong>{ProductName}</strong>을/를
+								<br />몇 개 담으실 건가요?
 							</p>
-							<div
-								style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-							>
+							<div className="flex items-center gap-4 mt-4">
 								<button onClick={decreaseQuantity} style={buttonStyle}>
 									-
 								</button>
@@ -93,8 +134,24 @@ export default function AddModal({
 									+
 								</button>
 							</div>
-							<Button size="small_mid" color="gray" text="품절"></Button>
-							<Button size="small_mid" color="gray" text="이유없음"></Button>
+							<div className="flex gap-4 mt-6 w-full">
+								<div className="mt-6 w-1/2">
+									<Button
+										size="small_mid"
+										color="gray"
+										text="품절"
+										onClick={handleSoldOutButton}
+									/>
+								</div>
+								<div className="mt-6 w-1/2">
+									<Button
+										size="small_mid"
+										color="gray"
+										text="이유없음"
+										onClick={handleNoReasonButton}
+									/>
+								</div>
+							</div>
 						</div>
 					)}
 				</div>
