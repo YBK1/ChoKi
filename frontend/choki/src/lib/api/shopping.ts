@@ -39,3 +39,22 @@ export const createShopping = async (
 		throw error;
 	}
 };
+
+// 미션 완료 이미지 전송
+export const uploadMissionImage = async (missionId: string, image: File) => {
+	const formData = new FormData();
+	formData.append('missionId', missionId);
+	formData.append('image', image);
+
+	try {
+		const response = await axiosInstance.post(`/api/mission/image`, formData, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		});
+		return response.data;
+	} catch (error) {
+		console.error('이미지 업로드 실패:', error);
+		throw error;
+	}
+};
