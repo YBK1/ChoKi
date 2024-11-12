@@ -30,8 +30,6 @@ declare global {
 }
 
 export default function MainPage() {
-	const [isDataSent, setIsDataSent] = useState(false);
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const [isUnityLoaded, setIsUnityLoaded] = useState(false);
 	const [pendingData, setPendingData] = useState<any>(null);
 	const [user] = useAtom(userAtom);
@@ -76,7 +74,6 @@ export default function MainPage() {
 					sendMissionDataToUnity(missionData); // Unity로 미션 데이터를 전송
 				} catch (error) {
 					console.error('미션 데이터 가져오기 실패:', error);
-					setErrorMessage(`Error fetching mission data: ${error}`);
 				}
 			} else {
 				console.warn('userId가 설정되지 않았습니다.');
@@ -158,7 +155,6 @@ export default function MainPage() {
 						jsonData,
 					);
 					console.log('Data sent to Unity:', unityData);
-					setIsDataSent(true);
 				} catch (error) {
 					console.error('Error sending data to Unity:', error);
 				}
