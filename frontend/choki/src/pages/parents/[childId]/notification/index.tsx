@@ -54,15 +54,12 @@ export default function NotificationPage() {
 		router.back();
 	};
 
-	const subscribeWebSocket = () => {
+	const subscribeWebSocket = (missionId: string) => {
 		parentWebSocketClient.connect();
 
-		parentWebSocketClient.subscribe(
-			`/user/sub/shopping/672f0b493251e83e3031604c`,
-			msg => {
-				console.log('받은 문자:', msg.body);
-			},
-		);
+		parentWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, msg => {
+			console.log('받은 문자:', msg.body);
+		});
 	};
 
 	return (
@@ -105,7 +102,7 @@ export default function NotificationPage() {
 								alt="detail"
 								width={24}
 								height={24}
-								onClick={subscribeWebSocket}
+								onClick={() => subscribeWebSocket(notification.missionId)}
 							/>
 						</div>
 					</div>
