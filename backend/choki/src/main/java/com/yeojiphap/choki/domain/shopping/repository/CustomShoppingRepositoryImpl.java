@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import com.yeojiphap.choki.domain.shopping.domain.CartItem;
+import com.yeojiphap.choki.domain.shopping.domain.Product;
 import com.yeojiphap.choki.domain.shopping.domain.Shopping;
 
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomShoppingRepositoryImpl implements CustomShoppingRepository {
 	private final MongoTemplate mongoTemplate;
+
+	@Override
+	public void insertCartItemNotInList(ObjectId shoppingId, Product product) {
+		Query query = new Query(Criteria.where("_id").is(shoppingId));
+		Update update = new Update().push("shoppingList", product);
+
+		mongoTemplate.findAndModify(
+			query,
+			update,
+			Shopping.class
+		);
+	}
 
 	@Override
 	public Optional<Shopping> insertCartItemById(ObjectId shoppingId, String barcode ,CartItem cartItem) {
