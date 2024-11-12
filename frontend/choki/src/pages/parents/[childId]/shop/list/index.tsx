@@ -45,6 +45,20 @@ const ShoppingListPage = () => {
 							});
 						});
 						break;
+					case 'DELETE_PRODUCT_FROM_CART':
+						if (!response.listBarcode) return;
+						setShoppingList(prev => {
+							return prev.map(item => {
+								if (item.barcode === response.listBarcode) {
+									return {
+										...item,
+										cartItem: undefined,
+									};
+								}
+								return item;
+							});
+						});
+						break;
 				}
 			} catch (error) {
 				console.error('Error processing WebSocket message:', error);
