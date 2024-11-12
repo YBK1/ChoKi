@@ -1,8 +1,20 @@
 import React, { useEffect, useRef } from 'react';
 
-const UnityWebGL = ({ loaderUrl, dataUrl, frameworkUrl, codeUrl }) => {
+interface UnityWebGLProps {
+	loaderUrl: string;
+	dataUrl: string;
+	frameworkUrl: string;
+	codeUrl: string;
+}
+
+const UnityWebGL: React.FC<UnityWebGLProps> = ({
+	loaderUrl,
+	dataUrl,
+	frameworkUrl,
+	codeUrl,
+}) => {
 	const canvasRef = useRef(null);
-	const loadingRef = useRef(null);
+	const loadingRef = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
 		const loadUnityGame = async () => {
@@ -12,7 +24,7 @@ const UnityWebGL = ({ loaderUrl, dataUrl, frameworkUrl, codeUrl }) => {
 				script.async = true;
 
 				script.onload = () => {
-					if (window.createUnityInstance) {
+					if (window.createUnityInstance && canvasRef.current) {
 						window
 							.createUnityInstance(
 								canvasRef.current,
@@ -31,11 +43,11 @@ const UnityWebGL = ({ loaderUrl, dataUrl, frameworkUrl, codeUrl }) => {
 									}
 								},
 							)
-							.then(unityInstance => {
-								if (loadingRef.current) {
-									loadingRef.current.innerHTML = '';
-								}
-							})
+							// .then((unityInstance: any) => {
+							// 	if (loadingRef.current) {
+							// 		loadingRef.current.innerHTML = '';
+							// 	}
+							// })
 							.catch(error => {
 								console.error('Unity WebGL error:', error);
 							});

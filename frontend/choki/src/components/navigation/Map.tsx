@@ -28,6 +28,8 @@ const MapComponent = () => {
 		useState(false);
 	const router = useRouter();
 
+	const { missionId } = router.query;
+
 	const goBack = () => {
 		router.push('/child/main');
 	};
@@ -100,19 +102,22 @@ const MapComponent = () => {
 	}, [isGlobeView]);
 
 	useEffect(() => {
+		if (!missionId) return;
+
 		childWebSocketClient.connect();
 
-		childWebSocketClient.subscribe(
-			`/user/sub/shopping/672f0b493251e83e3031604c`,
-			msg => {
-				console.log('받은 문자:', msg.body);
+		childWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, msg => {
+			console.log('받은 문자:', msg.body);
 
-				const missonRoute = JSON.parse(msg.body).route;
-				setRoute(missonRoute);
-			},
-		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+			const missonRoute = JSON.parse(msg.body).route;
+			setRoute(missonRoute);
+		});
+
+		// Cleanup on unmount or when missionId changes
+		return () => {
+			childWebSocketClient.disconnect();
+		};
+	}, [missionId]);
 
 	useEffect(() => {
 		if (route) {
@@ -124,13 +129,12 @@ const MapComponent = () => {
 		<div className="relative w-full h-screen">
 			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>
 			<div ref={mapContainerRef} className="w-full h-full" />
-			<ChildLocationSender shoppingId="672f0b493251e83e3031604c" />
+			{missionId && <ChildLocationSender shoppingId={missionId as string} />}
 
-			{/* MissionFinishComponent Modal */}
 			{isMissionFinishModalOpen && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 					<div className="relative">
-						<MissionCompleteModal missionId="672f0b493251e83e3031604c" />
+						<MissionCompleteModal missionId={missionId as string} />
 						<button
 							onClick={closeMissionFinishModal}
 							className="absolute top-2 right-2 bg-white text-black px-2 py-1 rounded-full"
@@ -166,7 +170,7 @@ const MapComponent = () => {
 						>
 							완료
 						</button>
-						<UpperNavbar />
+						<UpperNavbar missionId={missionId as string} />
 						<CurrentLocationButton map={map} />
 						<TimeDistanceTracker
 							route={route ?? []}

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import CommonButton from '@/components/Common/Button';
 import CommonInput from '@/components/Common/Input';
 import Image from 'next/image';
@@ -13,6 +13,7 @@ export default function LoginPage() {
 	const router = useRouter();
 	const [id, setId] = useState('');
 	const [password, setPassword] = useState('');
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [user, setUser] = useAtom(userAtom);
 
 	const postLoginData = async (userId: string, userPassword: string) => {
