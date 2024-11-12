@@ -171,14 +171,18 @@ public class ShoppingService {
 
 	// 바코드 기반 단일 상품 검색
 	public ProductDto searchProductByBarcode(String barcode) {
-		ProductDocument productOptional = productRepository.findById(barcode).orElseThrow(
-			ProductNotFoundException::new);
-		return ProductDto.builder()
-			.barcode(productOptional.getNumber().toString())
-			.productName(productOptional.getName())
-			.category(productOptional.getCategory())
-			.image(productOptional.getImage())
-			.build();
+		Optional<ProductDocument> productOptional = productRepository.findById(barcode);
+		if(productOptional.isPresent()){
+			return ProductDto.builder()
+				.barcode(productOptional.get().getNumber().toString())
+				.productName(productOptional.get().getName())
+				.category(productOptional.get().getCategory())
+				.image(productOptional.get().getImage())
+				.build();
+		}
+		else{
+			return null;
+		}
 	}
 
 	public ProductCompareResponseDto compareBarcode(ProductCompareRequestDto productCompareRequestDto) {
@@ -191,7 +195,10 @@ public class ShoppingService {
 		ProductDto inputProduct = searchProductByBarcode(productCompareRequestDto.getInputBarcode());
 
 		ProductCompareResponseDto productCompareResponseDto = new ProductCompareResponseDto();
-		if(originProduct.getBarcode().equals(inputProduct.getBarcode())) {
+		if(originProduct == null || inputProduct == null){
+			productCompareResponseDto.setMatchStatus("NOT_MATCH");
+		}
+		else if(originProduct.getBarcode().equals(inputProduct.getBarcode())) {
 			productCompareResponseDto.setMatchStatus("MATCH");
 		}
 		else{
