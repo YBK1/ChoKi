@@ -22,6 +22,10 @@ const RecyclePage = () => {
 		setIsImageCaptured(captured);
 	};
 
+	const closeMissionFinishModal = () => {
+		setIsModalOpen(false);
+	};
+
 	return (
 		<div
 			className="min-h-screen bg-cover bg-center flex flex-col items-center pt-5 pb-20 px-4 sm:px-8"
@@ -29,31 +33,39 @@ const RecyclePage = () => {
 				backgroundImage: "url('/icons/recycle_background.svg')",
 			}}
 		>
-			{/* Animal Speech Bubble */}
-			<div className="-mt-6 md:mt-0">
-				<AnimalSpeech isImageCaptured={isImageCaptured} />
-			</div>
+			{isModalOpen && missionId ? (
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+					<div className="relative">
+						<MissionCompleteModal missionId={missionId as string} />
+						<button
+							onClick={closeMissionFinishModal}
+							className="absolute top-2 right-2 bg-white text-black px-2 py-1 rounded-full"
+						>
+							X
+						</button>
+					</div>
+				</div>
+			) : (
+				<>
+					<div className="-mt-6 md:mt-0">
+						<AnimalSpeech isImageCaptured={isImageCaptured} />
+					</div>
 
-			{/* Camera Capture Component */}
-			<div className="mt-3 mb-8 w-full max-w-md">
-				<Cam onCaptureChange={handleCaptureChange} />
-			</div>
+					<div className="mt-3 mb-8 w-full max-w-md">
+						<Cam onCaptureChange={handleCaptureChange} />
+					</div>
 
-			{/* Complete Button */}
-			<div className="flex justify-center">
-				<Button
-					size="small"
-					color="orange"
-					onClick={handleComplete}
-					text="완료"
-				/>
-			</div>
-
-			{isModalOpen && missionId && (
-				<MissionCompleteModal missionId={missionId as string} />
+					<div className="flex justify-center">
+						<Button
+							size="small"
+							color="orange"
+							onClick={handleComplete}
+							text="완료"
+						/>
+					</div>
+				</>
 			)}
 
-			{/* Bottom Navbar */}
 			<div className="fixed bottom-0 w-full">
 				<ChildNavbar />
 			</div>
