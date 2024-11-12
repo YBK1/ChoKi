@@ -1,4 +1,3 @@
-// components/shopping/ShoppingListPage.tsx
 import BottomNavbar from '@/components/Common/Navbar/BottomNavbar';
 import React, { useRef, useState, useEffect } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
@@ -49,6 +48,61 @@ const ShoppingListPage = () => {
 			setInputValue(message);
 		}
 		setShowSuggestions(false);
+	};
+
+	const renderShoppingItem = (item: ShoppingItem) => {
+		// Case 4: 아이가 추가로 담은 상품
+		if (item.cartItem && !item.productName) {
+			return (
+				<ParentProductCard
+					key={item.cartItem.barcode}
+					ParentsShoppingItem={{
+						title: '',
+						count: 0,
+						image: '',
+					}}
+					ChildrenShoppingItem={{
+						title: item.cartItem.productName,
+						count: item.cartItem.quantity,
+						image: item.cartItem.image,
+					}}
+					emptyMessage="아이가 추가로 담은 상품이에요"
+				/>
+			);
+		}
+
+		// Case 3: 부모 상품만 있는 경우
+		if (!item.cartItem) {
+			return (
+				<ParentProductCard
+					key={item.barcode}
+					ParentsShoppingItem={{
+						title: item.productName,
+						count: item.quantity,
+						image: item.image,
+					}}
+					emptyMessage="아이가 아직 상품을 담지 않았어요"
+				/>
+			);
+		}
+
+		// Case 1 & 2: 매칭/유사 상품
+		return (
+			<ParentProductCard
+				key={item.barcode}
+				ParentsShoppingItem={{
+					title: item.productName,
+					count: item.quantity,
+					image: item.image,
+				}}
+				ChildrenShoppingItem={{
+					title: item.cartItem.productName,
+					count: item.cartItem.quantity,
+					image: item.cartItem.image,
+				}}
+				showWarning={item.cartItem.status === 'SIMILAR'}
+			/>
+		);
 	};
 
 	return (
@@ -112,26 +166,9 @@ const ShoppingListPage = () => {
 
 					{/* 장바구니 컴포넌트 */}
 					<h2 className="text-lg font-semibold mb-4 ml-4">아이의 장바구니</h2>
-					{shoppingList.map(item => (
-						<ParentProductCard
-							key={item.barcode}
-							role="PARENTS"
-							ParentsShoppingItem={{
-								title: item.productName,
-								count: item.quantity,
-								image: item.image,
-							}}
-							ChildrenShoppingItem={
-								item.cartItem
-									? {
-											title: item.cartItem.productName,
-											count: item.cartItem.quantity,
-											image: item.cartItem.image,
-										}
-									: undefined
-							}
-						/>
-					))}
+					<div className="space-y-4">
+						{shoppingList.map(item => renderShoppingItem(item))}
+					</div>
 				</div>
 			</div>
 			<BottomNavbar />
