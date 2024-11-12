@@ -1,11 +1,45 @@
 // components/shopping/ShoppingListPage.tsx
 import BottomNavbar from '@/components/Common/Navbar/BottomNavbar';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
+import * as StompJs from '@stomp/stompjs';
+import { useAtom } from 'jotai';
+import { shoppingListAtom } from '@/atoms/shoppingAtom';
+import ParentProductCard from '@/components/shop/ParentProductCard';
 
 const ShoppingListPage = () => {
 	const [inputValue, setInputValue] = useState('');
 	const [showSuggestions, setShowSuggestions] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
+
+	useEffect(() => {
+		const handleWebSocketMessage = (message: StompJs.Message) => {
+			try {
+				const response = JSON.parse(message.body) as WSShoppingResponse;
+				console.log('다나와', message.body);
+
+				// 메시지 타입이 'SHOPPING'인 경우에만 쇼핑 리스트 업데이트
+				if (response.type === 'SHOPPING' && response.shoppingList) {
+					setShoppingList(response.shoppingList);
+					console.log(response.shoppingList);
+				}
+			} catch (error) {
+				console.error('Error processing WebSocket message:', error);
+			}
+		};
+
+		// WebSocket 구독 설정
+		childWebSocketClient.subscribe(
+			'/user/sub/shopping/672df1def4c5cb7ca5d36532',
+			handleWebSocketMessage,
+		);
+
+		// 컴포넌트 언마운트 시 연결 해제
+		return () => {
+			childWebSocketClient.disconnect();
+		};
+	}, [setShoppingList]);
 
 	const handleSuggestionClick = (message: string) => {
 		if (message === '직접 입력') {
@@ -78,6 +112,26 @@ const ShoppingListPage = () => {
 
 					{/* 장바구니 컴포넌트 */}
 					<h2 className="text-lg font-semibold mb-4 ml-4">아이의 장바구니</h2>
+					{shoppingList.map(item => (
+						<ParentProductCard
+							key={item.barcode}
+							role="PARENTS"
+							ParentsShoppingItem={{
+								title: item.productName,
+								count: item.quantity,
+								image: item.image,
+							}}
+							ChildrenShoppingItem={
+								item.cartItem
+									? {
+											title: item.cartItem.productName,
+											count: item.cartItem.quantity,
+											image: item.cartItem.image,
+										}
+									: undefined
+							}
+						/>
+					))}
 				</div>
 			</div>
 			<BottomNavbar />
