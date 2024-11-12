@@ -2,15 +2,49 @@ import React from 'react';
 import Image from 'next/image';
 import WasteBasket from '@/assets/icons/waste_basket.svg';
 import MiniWarning from '@/assets/icons/mini_warning.svg';
+import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
+
+interface ShoppingCardProps {
+	role: string;
+	ParentsShoppingItem: {
+		title: string;
+		count: number;
+		image: string;
+		barcode: string;
+	};
+	ChildrenShoppingItem?: {
+		title: string;
+		count: number;
+		image: string;
+		barcode: string;
+	};
+	onCameraClick: () => void;
+	onDelete: (barcode: string) => void; // 삭제 콜백 추가
+}
 
 const ProductCard: React.FC<ShoppingCardProps> = ({
 	role,
 	ParentsShoppingItem,
 	ChildrenShoppingItem,
-	onCameraClick, // onCameraClick 추가
+	onCameraClick,
+	onDelete, // 삭제 콜백 추가
 }) => {
-	const onClickCamera = () => {
-		onCameraClick(); // onCameraClick 호출
+	// 상품 삭제 기능
+	const handleDelete = () => {
+		if (ChildrenShoppingItem) {
+			const requestBody = {
+				shoppingId: '672df1def4c5cb7ca5d36532', // 실제 shoppingId로 수정 필요
+				listBarcode: ParentsShoppingItem.barcode,
+				barcode: ChildrenShoppingItem.barcode,
+			};
+			childWebSocketClient.sendMessage(
+				'/pub/shopping/product/delete',
+				requestBody,
+			);
+
+			// 로컬 상태에서 삭제
+			onDelete(ChildrenShoppingItem.barcode);
+		}
 	};
 
 	return (
@@ -48,7 +82,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 							alt="삭제 아이콘"
 							width={20}
 							height={20}
-							onClick={() => console.log('삭제 아이콘 클릭')}
+							onClick={handleDelete}
 						/>
 					</div>
 				)}
@@ -73,7 +107,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 							layout="fixed"
 							width={48}
 							height={48}
-							onClick={onClickCamera} // 카메라 아이콘 클릭 시 onCameraClick 호출
+							onClick={onCameraClick}
 						/>
 					</div>
 				) : (

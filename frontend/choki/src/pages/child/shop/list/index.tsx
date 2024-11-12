@@ -51,9 +51,16 @@ export default function ChildShoppingPage() {
 		setProductName(null);
 	};
 
-	// 물품 추가를 ui에 반영하는 함수
 	const addNewItemToShoppingList = (newItem: ShoppingItem) => {
 		setShoppingList(prevList => [...prevList, newItem]);
+	};
+
+	// 삭제 기능 구현
+	const deleteItemFromShoppingList = (barcode: string) => {
+		console.log('Delete item:', barcode);
+		setShoppingList(prevList =>
+			prevList.filter(item => item.barcode !== barcode),
+		);
 	};
 
 	return (
@@ -87,6 +94,7 @@ export default function ChildShoppingPage() {
 										title: item.productName,
 										count: item.quantity,
 										image: item.image,
+										barcode: item.barcode,
 									}}
 									ChildrenShoppingItem={
 										item.cartItem
@@ -94,12 +102,14 @@ export default function ChildShoppingPage() {
 													title: item.cartItem.productName,
 													count: item.cartItem.quantity,
 													image: item.cartItem.image,
+													barcode: item.cartItem?.barcode || '', // 옵셔널 체이닝으로 barcode 접근
 												}
 											: undefined
 									}
 									onCameraClick={() =>
 										openCameraModal(item.barcode, item.productName)
 									}
+									onDelete={deleteItemFromShoppingList} // 삭제 콜백 전달
 								/>
 							))}
 						</div>
