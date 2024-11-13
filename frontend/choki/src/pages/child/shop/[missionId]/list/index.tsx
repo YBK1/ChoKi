@@ -16,13 +16,13 @@ import { useEffect, useState } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import { handleWebSocketMessage } from '@/lib/utils/websocketChild/ChildShoppingSoket';
 import AddItemPrompt from '@/components/shop/AddItemPrompt';
+
 export default function ChildShoppingPage() {
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
 	const [shoppingMessage, setShoppingMessage] = useAtom(shoppingMessageAtom);
 	const [isCameraOpen, setIsCameraOpen] = useState(false);
 	const [originBarcode, setOriginBarcode] = useState<string | null>(null);
 	const [productName, setProductName] = useState<string | null>(null);
-	// const [barcodeData, setBarcodeData] = useState<string | null>(null);
 	const router = useRouter();
 	const [, setMissionId] = useAtom(missionIdAtom);
 	const { missionId } = router.query;
@@ -30,24 +30,19 @@ export default function ChildShoppingPage() {
 	// WebSocket 구독 및 메시지 처리
 	useEffect(() => {
 		if (typeof missionId === 'string') {
-			setMissionId(missionId); // missionId atom 업데이트
+			setMissionId(missionId);
 			childWebSocketClient.subscribe(
 				`/user/sub/shopping/${missionId}`,
 				message =>
 					handleWebSocketMessage(message, setShoppingList, setShoppingMessage),
 			);
 		}
-		// childWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, message =>
-		// 	handleWebSocketMessage(message, setShoppingList, setShoppingMessage),
-		// );
-
-		// 컴포넌트가 언마운트될 때 WebSocket 연결 해제
 		return () => {
 			childWebSocketClient.disconnect();
 		};
 	}, [missionId, setShoppingList]);
 
-	const openCameraModal = (barcode: string, name: string) => {
+	const openCameraModal = (barcode: string = '', name: string = '') => {
 		setOriginBarcode(barcode);
 		setProductName(name);
 		setIsCameraOpen(true);
@@ -64,7 +59,6 @@ export default function ChildShoppingPage() {
 	};
 
 	const deleteItemFromShoppingList = (barcode: string) => {
-		console.log('deleteItemFromShoppingList', barcode);
 		deleteCartItemInShoppingList(setShoppingList, barcode);
 	};
 
@@ -119,13 +113,12 @@ export default function ChildShoppingPage() {
 								/>
 							))}
 							{/* 항상 표시되는 추가 UI 요소 */}
-							<AddItemPrompt />
+							<AddItemPrompt onClick={() => openCameraModal()} />
 						</div>
 					</Modal>
 				)}
 			</div>
 
-			{/* 쇼핑 메시지가 있을 때만 SpeechBubble 표시 */}
 			{shoppingMessage && (
 				<div className="absolute bottom-24 right-32">
 					<SpeechBubble speech={shoppingMessage} />
