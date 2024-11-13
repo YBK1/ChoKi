@@ -234,7 +234,7 @@ const ShoppingListPage = () => {
 
 					{/* 장바구니 컴포넌트 */}
 					<h2 className="text-lg font-semibold mb-4 ml-4">아이의 장바구니</h2>
-					<div className="space-y-4 max-h-[500px] p-2 rounded-3xl overflow-y-auto bg-gray-100">
+					<div className="space-y-4 max-h-[500px] p-2 rounded-3xl overflow-y-auto bg-gray-100 gap-y-2">
 						{shoppingList.map(item => renderShoppingItem(item))}
 					</div>
 				</div>
