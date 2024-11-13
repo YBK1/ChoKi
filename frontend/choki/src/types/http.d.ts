@@ -38,7 +38,9 @@ interface ItemSearchResponse {
 	barcode: string;
 	category: string;
 	productName: string;
+	title: string;
 	image: string;
+	count: number;
 }
 interface SearchCartItem extends ItemSearchResponse {
 	quantity: number;
@@ -135,15 +137,7 @@ interface ShoppingItem {
 	productName: string;
 	image: string;
 	quantity: number;
-	cartItem?: {
-		barcode: string;
-		category: string;
-		productName: string;
-		quantity: number;
-		image: string;
-		reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
-		status?: string;
-	};
+	cartItem?: CartItem;
 }
 
 interface UnityMainResponse {
@@ -178,11 +172,14 @@ interface InProgressMissionResponse {
 	shoppingId: string;
 }
 
-interface CompareItemsRequest {
+interface conmpareRequest {
 	originBarcode: string;
 	inputBarcode: string;
 }
 
+interface matchStatusReponse {
+	matchStatus: string;
+}
 interface ShoppingListResponse {
 	status: number;
 	matchStatus: string;
