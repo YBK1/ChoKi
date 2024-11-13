@@ -47,7 +47,7 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 	};
 
 	useEffect(() => {
-		// Fetch initial position with getCurrentPosition
+		// 현재위치 가져오기
 		navigator.geolocation.getCurrentPosition(
 			position => {
 				const { latitude, longitude } = position.coords;
@@ -61,7 +61,7 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 			},
 		);
 
-		// Set up continuous location tracking with watchPosition
+		// 위치변경 감지
 		const watchId = navigator.geolocation.watchPosition(
 			position => {
 				const { latitude, longitude } = position.coords;
@@ -75,7 +75,6 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 			},
 		);
 
-		// Clear watch on component unmount
 		return () => navigator.geolocation.clearWatch(watchId);
 	}, []);
 
@@ -84,10 +83,9 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 			return;
 		}
 
-		// Define destination as the last point in the route
 		const destination = route[route.length - 1];
 
-		// Calculate the direct distance from the current location to the destination
+		// 현재위치 ~ 목적지까지의 거리 계산해 표시
 		const remainingDistance = calculateDistance(
 			userLocation[1],
 			userLocation[0],
@@ -95,15 +93,13 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 			destination.longitude,
 		);
 
-		// Check if user is off-route based on a threshold
+		// 아이가 경로 이탈했는지 확인
 		setIsOffRoute(remainingDistance > OFF_ROUTE_THRESHOLD);
 
-		// Estimate time and steps
 		const timeInSeconds = remainingDistance / AVERAGE_WALKING_SPEED;
 		const steps = remainingDistance / AVERAGE_STEP_LENGTH;
 
-		// Update remaining time and steps
-		setRemainingTime(Math.ceil(timeInSeconds / 60)); // Convert to minutes
+		setRemainingTime(Math.ceil(timeInSeconds / 60));
 		setRemainingSteps(Math.ceil(steps));
 	}, [route, userLocation]);
 
