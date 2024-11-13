@@ -1,9 +1,7 @@
 import { useState, CSSProperties } from 'react';
 import NonCloseModal from '../Common/Modal/nonCloseModal';
 import Image from 'next/image';
-import SuccessImage from '@/assets/icons/success_icon.svg';
-import WarningImage from '@/assets/icons/warning_icon.svg';
-import FailImage from '@/assets/icons/fail_icon.svg';
+
 import Button from '@/components/Common/Button';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import { useAtom } from 'jotai';
@@ -78,7 +76,12 @@ export default function AddModal({
 				<div className="flex flex-col items-center p-6">
 					{conpareResult === 'MATCH' && (
 						<div className="flex flex-col items-center">
-							<Image src={SuccessImage} alt="Success" width={80} height={80} />
+							<Image
+								src="/public/icons/success_icon.svg"
+								alt="Success"
+								width={80}
+								height={80}
+							/>
 							<p className="mt-4 text-lg font-semibold text-center">
 								<strong>{ProductName}</strong>을/를
 								<br />몇 개 담을 건가요?
@@ -104,7 +107,12 @@ export default function AddModal({
 					)}
 					{conpareResult === 'NOT_MATCH' && (
 						<div className="flex flex-col items-center">
-							<Image src={FailImage} alt="Fail" width={80} height={80} />
+							<Image
+								src="/public/icons/fail_icon.svg"
+								alt="Fail"
+								width={80}
+								height={80}
+							/>
 							<p className="mt-4 text-lg font-semibold text-center">
 								<strong>{ProductName}</strong>이(가) 맞나요?
 								<br />
@@ -122,7 +130,12 @@ export default function AddModal({
 					)}
 					{conpareResult === 'SIMILAR' && (
 						<div className="flex flex-col items-center">
-							<Image src={WarningImage} alt="Warning" width={80} height={80} />
+							<Image
+								src="/public/icons/warning_icon.svg"
+								alt="Warning"
+								width={80}
+								height={80}
+							/>
 							<p className="mt-4 text-lg font-semibold text-center">
 								<strong>{ProductName}</strong>을/를
 								<br />몇 개 담으실 건가요?
