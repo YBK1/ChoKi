@@ -49,7 +49,11 @@ const Cam: React.FC<CamProps> = ({
 	const startCamera = async () => {
 		try {
 			const stream = await navigator.mediaDevices.getUserMedia({
-				video: { facingMode: 'environment' }, // 카메라 후면 우선
+				video: {
+					facingMode: { ideal: 'environment' }, // 후면 카메라 사용
+					width: { ideal: 1280 }, // 해상도를 적절히 설정
+					height: { ideal: 720 },
+				},
 			});
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream;
