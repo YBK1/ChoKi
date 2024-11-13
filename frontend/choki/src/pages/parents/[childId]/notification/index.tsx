@@ -56,6 +56,16 @@ export default function NotificationPage() {
 		router.back();
 	};
 
+	const handleNotificationClick = (notification: NotificationResponse) => {
+		if (notification.shoppingId && !notification.missionId) {
+			// shoppingId 있고 missionId null일 때
+			router.push(`/parents/${childId}/shop/${notification.shoppingId}/route`);
+		} else if (notification.missionId && !notification.shoppingId) {
+			// missionId 있고 shoppingId null일 때
+			router.push(`/parents/${childId}/${notification.missionId}/accept`);
+		}
+	};
+
 	// const subscribeWebSocket = (missionId: string) => {
 	// 	parentWebSocketClient.connect();
 
@@ -105,11 +115,7 @@ export default function NotificationPage() {
 								alt="detail"
 								width={24}
 								height={24}
-								onClick={() =>
-									router.push(
-										`/parents/${childId}/shop/${notification.missionId}/route`,
-									)
-								}
+								onClick={() => handleNotificationClick(notification)}
 							/>
 						</div>
 					</div>
