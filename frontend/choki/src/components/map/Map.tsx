@@ -18,6 +18,8 @@ const Map = ({
 }: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
+	const [startMarker, setStartMarker] = useState<any>(null);
+	const [endMarker, setEndMarker] = useState<any>(null);
 	const [finalRoute, setFinalRoute] = useState<
 		{ latitude: number; longitude: number }[]
 	>([]);
@@ -77,6 +79,10 @@ const Map = ({
 					route={route.length ? route : finalRoute}
 					polyline={polyline}
 					setPolyline={setPolyline}
+					startMarker={startMarker}
+					endMarker={endMarker}
+					setStartMarker={setStartMarker}
+					setEndMarker={setEndMarker}
 				/>
 			)}
 			{showRouteRecorder && (
