@@ -10,11 +10,11 @@ import re
 train_image_path = "../../data/train"
 test_image_path = "../../data/test"
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-# os.environ['CUDA_HOME']='/home/j-k11c102/.conda/envs/chokiAi'
-# os.environ['LD_LIBRARY_PATH']='/home/j-k11c102/.conda/envs/chokiAi/'
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ['CUDA_HOME']='/home/j-k11c102/.conda/envs/chokiAi'
+os.environ['LD_LIBRARY_PATH']='/home/j-k11c102/.conda/envs/chokiAi/'
 
-# train_image_path = "../../aihub/datasets/train"
+# train_image_path = "../../aihub/datasets/test"
 # test_image_path = "../../aihub/datasets/test"
 
 def load_custom_dataset(image_path, target_size=(224, 224)):
@@ -27,7 +27,7 @@ def load_custom_dataset(image_path, target_size=(224, 224)):
     for folder in folders:
         parsed = re.match(r'(\d+)\.', folder)
         if parsed:
-            class_num = int(parsed.group(1))
+            class_num = np.int32(parsed.group(1))
             # 정상적으로 매칭된 경우, 폴더 경로를 사용해 작업을 진행
             folder_path = os.path.join(image_path, folder)
             # 나머지 로직 이어서 작성
@@ -59,15 +59,30 @@ def load_custom_dataset(image_path, target_size=(224, 224)):
     x_train = x_train.astype('float32') / 255.0
 
     print("\n데이터셋 정보:")
+    print("이미지 데이터 dtype: ", x_train.dtype)
+    print("레이블데이터 dtype: ", y_train.dtype)
     print(f"이미지 데이터 형태: {x_train.shape}")
     print(f"레이블 데이터 형태: {y_train.shape}")
     print(f"클래스 개수: {len(np.unique(y_train))}")
 
     return x_train, y_train
 
-# GPU 사용을 명시
-physical_devices = tf.config.list_physical_devices('GPU')
-tf.config.set_visible_devices(physical_devices[0], 'GPU')
+# # GPU 사용을 명시
+# physical_devices = tf.config.list_physical_devices('GPU')
+# tf.config.set_visible_devices(physical_devices[0], 'GPU')
+
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+    try:
+        # GPU 메모리 증가를 동적으로 설정
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+        print("GPU 메모리 설정 완료")
+    except RuntimeError as e:
+        print(f"GPU 설정 오류: {e}")
+
+# 2. 세션 초기화
+tf.keras.backend.clear_session()
 
 # 모델 정의
 model = Sequential([

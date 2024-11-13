@@ -1,7 +1,22 @@
 from flask import Flask, request
 from src import classify
+from flask_cors import CORS
 app = Flask(__name__)
 
+CORS(app, resources={
+    r"/*": {
+        "origins": ["http://localhost:3000", "https://choki.co.kr"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": [
+            "Content-Type",
+            "Authorization",
+            "Content-Length",
+            "Content-Disposition",
+            "Accept",
+            "X-Requested-With"
+        ]
+    }
+})
 
 @app.route('/')
 def hello_world():  # put application's code here
