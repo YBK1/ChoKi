@@ -62,10 +62,12 @@ export default function MainPage() {
 		};
 
 		window.navigateToShopping = (missionId: string) => {
+			console.log('장보기 missionId : ', missionId);
 			router.push(`/child/shop/${missionId}/route`);
 		};
 
 		window.navigateToRecycling = (missionId: string) => {
+			console.log('재활용 missionId : ', missionId);
 			router.push(`/child/mission/${missionId}/recycle`);
 		};
 
