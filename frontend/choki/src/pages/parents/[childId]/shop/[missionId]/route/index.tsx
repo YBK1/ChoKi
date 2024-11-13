@@ -1,8 +1,8 @@
-import BottomNavbar from '@/components/Common/Navbar/BottomNavbar';
 import Map from '@/components/map/Map';
 import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import ParentsShoppingNavbar from '@/components/Common/Navbar/ParentsShoppingNavbar';
 
 export default function ChildIsShoppingPage() {
 	const [route, setRoute] = useState<
@@ -14,7 +14,7 @@ export default function ChildIsShoppingPage() {
 	} | null>(null);
 
 	const router = useRouter();
-	const { missionId } = router.query;
+	const { childId, missionId } = router.query;
 
 	useEffect(() => {
 		parentWebSocketClient.connect();
@@ -39,7 +39,11 @@ export default function ChildIsShoppingPage() {
 	}, [missionId]);
 
 	return (
-		<div className="relative min-h-screen bg-light_yellow flex flex-col items-center justify-center">
+		<div className="relative min-h-screen bg-light_yellow flex flex-col items-center justify-center pb-24">
+			<ParentsShoppingNavbar
+				childId={childId as string}
+				missionId={missionId as string}
+			/>
 			<div
 				className="w-full max-w-3xl overflow-hidden shadow-lg rounded-lg p-2"
 				style={{
@@ -67,8 +71,6 @@ export default function ChildIsShoppingPage() {
 					/>
 				</div>
 			</div>
-
-			<BottomNavbar />
 		</div>
 	);
 }
