@@ -83,6 +83,23 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 			return;
 		}
 
+		let minDistanceToRoute = Infinity;
+
+		route.forEach(point => {
+			const distance = calculateDistance(
+				userLocation[1],
+				userLocation[0],
+				point.latitude,
+				point.longitude,
+			);
+			if (distance < minDistanceToRoute) {
+				minDistanceToRoute = distance;
+			}
+		});
+
+		// 아이가 경로 이탈했는지 확인
+		setIsOffRoute(minDistanceToRoute > OFF_ROUTE_THRESHOLD);
+
 		const destination = route[route.length - 1];
 
 		// 현재위치 ~ 목적지까지의 거리 계산해 표시
@@ -92,9 +109,6 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 			destination.latitude,
 			destination.longitude,
 		);
-
-		// 아이가 경로 이탈했는지 확인
-		setIsOffRoute(remainingDistance > OFF_ROUTE_THRESHOLD);
 
 		const timeInSeconds = remainingDistance / AVERAGE_WALKING_SPEED;
 		const steps = remainingDistance / AVERAGE_STEP_LENGTH;
