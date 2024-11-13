@@ -2,13 +2,14 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 // import previous_icon from '@/assets/icons/previous.svg';
 import { MISSION_IMAGES } from '@/constants/mission';
-import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
+// import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
 import { useState, useEffect } from 'react';
 import { getNotification } from '@/lib/api/parent';
 
 export default function NotificationPage() {
 	const [notificationList, setNotificationList] =
 		useState<NotificationResponse[]>();
+	const [childId, setChildId] = useState<number | null>(null);
 
 	const router = useRouter();
 
@@ -46,6 +47,7 @@ export default function NotificationPage() {
 
 		// 뒤에서 두 번째 숫자 가져오기
 		const id = parseInt(pathSegments[pathSegments.length - 2] || '0');
+		setChildId(id);
 		console.log(id);
 		getNotifications(id);
 	}, []);
@@ -54,13 +56,14 @@ export default function NotificationPage() {
 		router.back();
 	};
 
-	const subscribeWebSocket = (missionId: string) => {
-		parentWebSocketClient.connect();
+	// const subscribeWebSocket = (missionId: string) => {
+	// 	parentWebSocketClient.connect();
 
-		parentWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, msg => {
-			console.log('받은 문자:', msg.body);
-		});
-	};
+	// 	parentWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, msg => {
+	// 		console.log('받은 문자:', msg.body);
+	// 		router.push(`/parents/shop/${missionId}/route`);
+	// 	});
+	// };
 
 	return (
 		<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow min-h-screen">
@@ -102,7 +105,11 @@ export default function NotificationPage() {
 								alt="detail"
 								width={24}
 								height={24}
-								onClick={() => subscribeWebSocket(notification.missionId)}
+								onClick={() =>
+									router.push(
+										`/parents/${childId}/shop/${notification.missionId}/route`,
+									)
+								}
 							/>
 						</div>
 					</div>
