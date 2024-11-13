@@ -4,6 +4,7 @@ import Button from '../Common/Button';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import { compareShopping } from '@/lib/api/shopping';
 import AddModal from './AddModal';
+import { Toast } from '@/components/Toast/Toast';
 
 interface CamProps {
 	onCaptureChange: (isCaptured: boolean) => void;
@@ -23,6 +24,7 @@ const Cam: React.FC<CamProps> = ({
 	const [capturedImage, setCapturedImage] = useState<string | null>(null);
 	const [compareResult, setCompareResult] = useState<string | null>(null);
 	const [inputBarcode, setInputBarcode] = useState<string | null>(null);
+	const [showToast, setShowToast] = useState<boolean>(false); // 토스트 메시지 상태 추가
 
 	const goCompare = async (originBarcode: string, inputBarcode: string) => {
 		try {
@@ -83,7 +85,7 @@ const Cam: React.FC<CamProps> = ({
 						goCompare(originBarcode, inputBarcode);
 					} catch {
 						console.log('바코드를 찾을 수 없습니다. 재촬영 해주세요.');
-						goCompare('88002903', '8801069174839');
+						setShowToast(true); // 바코드 찾지 못했을 때 토스트 표시
 					}
 				};
 			}
@@ -92,6 +94,15 @@ const Cam: React.FC<CamProps> = ({
 
 	const handleConfirm = () => {
 		onCaptureChange(true);
+	};
+
+	const handleRetake = () => {
+		// 상태를 초기화하여 다시 촬영할 수 있게 설정
+		setCapturedImage(null);
+		setCompareResult(null);
+		setInputBarcode(null);
+		setShowToast(false); // 토스트 메시지도 초기화
+		startCamera(); // 카메라를 다시 시작하여 비디오를 표시
 	};
 
 	return (
@@ -133,7 +144,13 @@ const Cam: React.FC<CamProps> = ({
 								size="small"
 								color="blue"
 								onClick={handleConfirm}
-								text="알겠어!"
+								text="돌아가기"
+							/>
+							<Button
+								size="small"
+								color="blue"
+								onClick={handleRetake}
+								text="다시 찍기"
 							/>
 						</div>
 					) : (
@@ -148,6 +165,14 @@ const Cam: React.FC<CamProps> = ({
 						</div>
 					)}
 				</>
+			)}
+
+			{/* 토스트 메시지 */}
+			{showToast && (
+				<Toast
+					message="바코드를 찾을 수 없습니다. 재촬영 해주세요."
+					onClose={() => setShowToast(false)}
+				/>
 			)}
 		</div>
 	);

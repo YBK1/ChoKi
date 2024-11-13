@@ -127,10 +127,12 @@ export default function ChildShoppingPage() {
 				)}
 			</div>
 
-			<div className="absolute bottom-24 right-32">
-				<SpeechBubble speech={shoppingMessage} />
-			</div>
-
+			{/* 쇼핑 메시지가 있을 때만 SpeechBubble 표시 */}
+			{shoppingMessage && (
+				<div className="absolute bottom-24 right-32">
+					<SpeechBubble speech={shoppingMessage} />
+				</div>
+			)}
 			<Image
 				src={ShoppingCharacter}
 				alt="장보기 캐릭터"

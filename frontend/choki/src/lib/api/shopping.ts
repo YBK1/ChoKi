@@ -49,8 +49,8 @@ export const compareShopping = async ({
 	try {
 		console.log('장보기 비교 요청2:', originBarcode, inputBarcode);
 		const response = await axiosInstance.post(`/api/shopping/item/compare`, {
-			originBarcode: '88002903',
-			inputBarcode: '8801069174839',
+			originBarcode,
+			inputBarcode,
 		});
 		console.log('장보기 비교 응답:', response);
 		return response.data;

@@ -19,7 +19,7 @@ export default function AddModal({
 	conpareResult,
 	ProductName,
 	originBarcode,
-	// inputBarcode,
+	inputBarcode,
 	onClose, // 모달 닫기 prop
 }: AddModalProps) {
 	const buttonStyle = {
@@ -55,8 +55,8 @@ export default function AddModal({
 		const requestBody = {
 			shoppingId: '672df1def4c5cb7ca5d36532',
 			listBarcode: originBarcode,
-			// barcode: inputBarcode,
-			barcode: '88002903',
+			barcode: inputBarcode,
+			// barcode: '88002903',
 			quantity: quantity,
 			reason: reason,
 		};
