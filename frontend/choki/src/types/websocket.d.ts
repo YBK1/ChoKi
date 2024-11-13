@@ -56,3 +56,11 @@ type WSShoppingResponse =
 	| AddToCartResponse
 	| DeleteFromCartResponse
 	| HintMessageResponse;
+
+interface addShoppingItem {
+	shoppingId: string;
+	listBarcode: string;
+	barcode: string;
+	quantity: number;
+	reason: addReason;
+}

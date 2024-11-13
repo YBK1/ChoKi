@@ -1,6 +1,6 @@
 import axiosInstance from '@/lib/api/axiosInstance';
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
-// const baseURL = 'https://choki.co.kr';
+// const baseURL = process.env.NEXT_PUBLIC_API_URL;
+const baseURL = 'https://choki.co.kr';
 
 // 상품 검색 API
 export const searchItem = async (
@@ -40,6 +40,24 @@ export const createShopping = async (
 	}
 };
 
+// 장보기 비교
+export const compareShopping = async ({
+	originBarcode,
+	inputBarcode,
+}: conmpareRequest): Promise<matchStatusReponse> => {
+	try {
+		console.log('장보기 비교 요청2:', originBarcode, inputBarcode);
+		const response = await axiosInstance.post(`/api/shopping/item/compare`, {
+			originBarcode,
+			inputBarcode,
+		});
+		console.log('장보기 비교 응답:', response);
+		return response.data;
+	} catch (error) {
+		console.error('장보기 비교 실패:', error);
+		throw error;
+	}
+};
 // 미션 완료 이미지 전송
 export const uploadMissionImage = async (missionId: string, image: File) => {
 	const formData = new FormData();
