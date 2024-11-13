@@ -5,6 +5,7 @@ import ShoppingCharacter from '@/assets/icons/shopping_character.svg';
 import SpeechBubble from '@/components/shop/SpeechBubble';
 import ProductCard from '@/components/shop/ProductCard';
 import Cam from '@/components/shop/BarcodeCam';
+
 import { useAtom } from 'jotai';
 import {
 	shoppingListAtom,
@@ -14,6 +15,18 @@ import {
 import { useEffect, useState } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import { handleWebSocketMessage } from '@/lib/utils/websocketChild/ChildShoppingSoket';
+
+const AddItemPrompt = () => (
+	<div className="flex items-center justify-center p-4 rounded-lg shadow-lg bg-light_yellow_kid mt-4 w-full max-w-md mx-auto">
+		<span className="text-lg font-semibold mr-2">물건을 추가로 담을래요!</span>
+		<Image
+			src="/icons/carmera_icon.svg"
+			alt="Camera Icon"
+			width={24}
+			height={24}
+		/>
+	</div>
+);
 
 export default function ChildShoppingPage() {
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
@@ -35,9 +48,6 @@ export default function ChildShoppingPage() {
 			childWebSocketClient.disconnect();
 		};
 	}, [setShoppingList]);
-	useEffect(() => {
-		console.log('shoppingList', shoppingList);
-	}, [shoppingList]);
 
 	const openCameraModal = (barcode: string, name: string) => {
 		setOriginBarcode(barcode);
@@ -59,16 +69,6 @@ export default function ChildShoppingPage() {
 		console.log('deleteItemFromShoppingList', barcode);
 		deleteCartItemInShoppingList(setShoppingList, barcode);
 	};
-	// 부모 리스트에 없는 아이템 추가 일단 주석처리
-	// const updateCartItem = (barcode: string, updatedCartItem: CartItem) => {
-	// 	setShoppingList(prevList =>
-	// 		prevList.map(item =>
-	// 			item.barcode === barcode
-	// 				? { ...item, cartItem: updatedCartItem }
-	// 				: item,
-	// 		),
-	// 	);
-	// };
 
 	return (
 		<div
@@ -120,6 +120,8 @@ export default function ChildShoppingPage() {
 									onDelete={deleteItemFromShoppingList}
 								/>
 							))}
+							{/* 항상 표시되는 추가 UI 요소 */}
+							<AddItemPrompt />
 						</div>
 					</Modal>
 				)}
