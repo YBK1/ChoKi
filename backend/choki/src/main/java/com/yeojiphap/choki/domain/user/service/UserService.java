@@ -67,7 +67,6 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserLevelDto getLevel() {
         User user = findCurrentUser();
-        boolean isLevelEqual = user.getLevel() == user.getPastLevel();
         user.updatePastLevel(user.getLevel());
         return new UserLevelDto(user.getLevel(), user.getExp(), user.getLevel() == user.getPastLevel());
     }
