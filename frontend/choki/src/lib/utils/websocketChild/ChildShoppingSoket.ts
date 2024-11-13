@@ -2,6 +2,7 @@ import * as Stomp from '@stomp/stompjs';
 import {
 	updateCartItemInShoppingList,
 	updateShoppingMessage,
+	addShoppingItem,
 } from '@/atoms/shoppingAtom';
 
 // WebSocket 메시지를 처리하는 함수
@@ -19,19 +20,25 @@ export const handleWebSocketMessage = (
 		case 'ADD_PRODUCT_TO_CART':
 			const updatedCartItem: CartItem = {
 				barcode: data.barcode,
-				category: '', // 필요한 경우 기존 category 유지
+				category: data.category,
 				productName: data.productName,
 				image: data.image,
 				quantity: data.quantity,
 				reason: data.reason,
 				status: data.status,
 			};
-			// 웹 소켓으로 데이터 갱신을 받을 경우 바로 jotai를 통해 업데이트하도록
-			updateCartItemInShoppingList(
-				setShoppingList,
-				data.listBarcode,
-				updatedCartItem,
-			);
+			// 기존에 없던 상품이면 추가하기
+			if (data.listBarcode === '') {
+				addShoppingItem(setShoppingList, updatedCartItem);
+			} else {
+				// 웹 소켓으로 데이터 갱신을 받을 경우 바로 jotai를 통해 업데이트하도록
+				updateCartItemInShoppingList(
+					setShoppingList,
+					data.listBarcode,
+					updatedCartItem,
+				);
+			}
+
 			break;
 
 		case 'HINT_MESSAGE':

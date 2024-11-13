@@ -83,7 +83,8 @@ export default function AddModal({
 								height={80}
 							/>
 							<p className="mt-4 text-lg font-semibold text-center">
-								<strong>{ProductName}</strong>을/를
+								<strong>{ProductName ? ProductName : '새로 담은 상품'}</strong>
+								을/를
 								<br />몇 개 담을 건가요?
 							</p>
 							<div className="flex items-center gap-4 mt-4">
