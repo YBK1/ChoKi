@@ -4,16 +4,16 @@ import Image from 'next/image';
 import SpeechBubble from '@/components/shop/SpeechBubble';
 import ProductCard from '@/components/shop/ProductCard';
 import Cam from '@/components/shop/BarcodeCam';
-
+import { useRouter } from 'next/router';
 import { useAtom } from 'jotai';
 import {
 	shoppingListAtom,
 	deleteCartItemInShoppingList,
 	shoppingMessageAtom,
+	missionIdAtom,
 } from '@/atoms/shoppingAtom';
 import { useEffect, useState } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
-<<<<<<< HEAD:frontend/choki/src/pages/child/shop/list/index.tsx
 import { handleWebSocketMessage } from '@/lib/utils/websocketChild/ChildShoppingSoket';
 
 const AddItemPrompt = () => (
@@ -27,37 +27,31 @@ const AddItemPrompt = () => (
 		/>
 	</div>
 );
-=======
-import * as StompJs from '@stomp/stompjs';
-import { useRouter } from 'next/router';
->>>>>>> ad91bb95f383d35c40bb75ca7d79e8f4528ea7c8:frontend/choki/src/pages/child/shop/[missionId]/list/index.tsx
 
 export default function ChildShoppingPage() {
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
 	const [shoppingMessage, setShoppingMessage] = useAtom(shoppingMessageAtom);
 	const [isCameraOpen, setIsCameraOpen] = useState(false);
-<<<<<<< HEAD:frontend/choki/src/pages/child/shop/list/index.tsx
 	const [originBarcode, setOriginBarcode] = useState<string | null>(null);
 	const [productName, setProductName] = useState<string | null>(null);
-=======
-	const [barcodeData, setBarcodeData] = useState<string | null>(null);
+	// const [barcodeData, setBarcodeData] = useState<string | null>(null);
 	const router = useRouter();
-
+	const [, setMissionId] = useAtom(missionIdAtom);
 	const { missionId } = router.query;
->>>>>>> ad91bb95f383d35c40bb75ca7d79e8f4528ea7c8:frontend/choki/src/pages/child/shop/[missionId]/list/index.tsx
 
 	// WebSocket 구독 및 메시지 처리
 	useEffect(() => {
-		childWebSocketClient.subscribe(
-<<<<<<< HEAD:frontend/choki/src/pages/child/shop/list/index.tsx
-			'/user/sub/shopping/672df1def4c5cb7ca5d36532',
-			message =>
-				handleWebSocketMessage(message, setShoppingList, setShoppingMessage),
-=======
-			`/user/sub/shopping/${missionId}`,
-			handleWebSocketMessage,
->>>>>>> ad91bb95f383d35c40bb75ca7d79e8f4528ea7c8:frontend/choki/src/pages/child/shop/[missionId]/list/index.tsx
-		);
+		if (typeof missionId === 'string') {
+			setMissionId(missionId); // missionId atom 업데이트
+			childWebSocketClient.subscribe(
+				`/user/sub/shopping/${missionId}`,
+				message =>
+					handleWebSocketMessage(message, setShoppingList, setShoppingMessage),
+			);
+		}
+		// childWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, message =>
+		// 	handleWebSocketMessage(message, setShoppingList, setShoppingMessage),
+		// );
 
 		// 컴포넌트가 언마운트될 때 WebSocket 연결 해제
 		return () => {

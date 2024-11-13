@@ -3,6 +3,7 @@ import { atom } from 'jotai';
 // shoppingList Atom 정의
 export const shoppingListAtom = atom<ShoppingItem[]>([]);
 export const shoppingMessageAtom = atom<string>('');
+export const missionIdAtom = atom<string | null>(null);
 // shoppingList에 새로운 아이템을 추가하는 함수
 export const addShoppingItem = (
 	set: (update: (prev: ShoppingItem[]) => ShoppingItem[]) => void,
