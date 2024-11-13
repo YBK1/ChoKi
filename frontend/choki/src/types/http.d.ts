@@ -125,10 +125,10 @@ interface ParentShoppingCardProps {
 		image: string;
 	};
 	status?: 'MATCH' | 'NOT_MATCH' | 'SIMILAR';
+	reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
 	showWarning?: boolean;
 	emptyMessage?: string;
 }
-
 interface ShoppingItem {
 	barcode: string;
 	category: string;
