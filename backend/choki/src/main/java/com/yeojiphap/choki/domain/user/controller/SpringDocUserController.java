@@ -174,29 +174,29 @@ public interface SpringDocUserController {
     })
     ApiResponse getNearbyUsers();
 
-    @Operation(
-            summary = "내 주변에 있는 유저 검색",
-            description = "내 주변에 있는 유저를 조회해서 위치와 동물을 반환합니다."
-    )
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                    responseCode = "200",
-                    description = "회원 레벨 조회 성공",
-                    content = @Content(
-                            mediaType = "application/json",
-                            examples = @ExampleObject(value = """
-                                    {
-                                            "status": 200,
-                                            "message": "회원 레벨 조회 성공",
-                                            "data": {
-                                                    "level" : 1,
-                                                    "exp" : 50,
-                                                    "isLevelEqual": true
-                                            }
-                                    }"""
-                            )
-                    )
-            ),
-    })
-    ApiResponse getUserLevel();
+//    @Operation(
+//            summary = "내 주변에 있는 유저 검색",
+//            description = "내 주변에 있는 유저를 조회해서 위치와 동물을 반환합니다."
+//    )
+//    @ApiResponses(value = {
+//            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+//                    responseCode = "200",
+//                    description = "회원 레벨 조회 성공",
+//                    content = @Content(
+//                            mediaType = "application/json",
+//                            examples = @ExampleObject(value = """
+//                                    {
+//                                            "status": 200,
+//                                            "message": "회원 레벨 조회 성공",
+//                                            "data": {
+//                                                    "level" : 1,
+//                                                    "exp" : 50,
+//                                                    "isLevelEqual": true
+//                                            }
+//                                    }"""
+//                            )
+//                    )
+//            ),
+//    })
+//    ApiResponse getUserLevel();
 }
