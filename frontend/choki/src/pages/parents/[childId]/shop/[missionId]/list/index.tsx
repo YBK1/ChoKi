@@ -5,12 +5,16 @@ import * as StompJs from '@stomp/stompjs';
 import { useAtom } from 'jotai';
 import { shoppingListAtom } from '@/atoms/shoppingAtom';
 import ParentProductCard from '@/components/shop/ParentProductCard';
+import { useRouter } from 'next/router';
 
 const ShoppingListPage = () => {
 	const [inputValue, setInputValue] = useState('');
 	const [showSuggestions, setShowSuggestions] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
+
+	const router = useRouter();
+	const { shoppingId } = router.query;
 
 	useEffect(() => {
 		const handleWebSocketMessage = (message: StompJs.Message) => {
@@ -36,7 +40,10 @@ const ShoppingListPage = () => {
 											productName: response.productName || '',
 											image: response.image || '',
 											quantity: response.quantity || 0,
-											reason: response.reason || 'BLANK',
+											reason: (response.reason || 'BLANK') as
+												| 'SOLD_OUT'
+												| 'NO_REASON'
+												| 'BLANK',
 											status: response.status || 'NOT_MATCH',
 										},
 									};
@@ -89,7 +96,7 @@ const ShoppingListPage = () => {
 		if (!inputValue.trim()) return;
 
 		const requestBody = {
-			shoppingId: '6705102076ff19781935ca88', // 동적 Id로 변경 필요
+			shoppingId: shoppingId,
 			message: inputValue,
 		};
 
