@@ -6,6 +6,8 @@ import WarningImage from '@/assets/icons/warning_icon.svg';
 import FailImage from '@/assets/icons/fail_icon.svg';
 import Button from '@/components/Common/Button';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
+import { useAtom } from 'jotai';
+import { missionIdAtom } from '@/atoms/shoppingAtom';
 
 interface AddModalProps {
 	conpareResult: string;
@@ -50,10 +52,10 @@ export default function AddModal({
 	const increaseQuantity = () => setQuantity(prevQuantity => prevQuantity + 1);
 	const decreaseQuantity = () =>
 		setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
-
+	const [missionId] = useAtom(missionIdAtom);
 	const sendWebSocketData = (reason: string) => {
 		const requestBody = {
-			shoppingId: '672df1def4c5cb7ca5d36532',
+			shoppingId: missionId,
 			listBarcode: originBarcode,
 			barcode: inputBarcode,
 			// barcode: '88002903',
