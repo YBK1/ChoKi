@@ -12,14 +12,9 @@ interface ShoppingCardProps {
 		image: string;
 		barcode: string;
 	};
-	ChildrenShoppingItem?: {
-		title: string;
-		count: number;
-		image: string;
-		barcode: string;
-	};
+	ChildrenShoppingItem?: CartItem;
 	onCameraClick: () => void;
-	onDelete: (barcode: string) => void; // 삭제 콜백 추가
+	onDelete: (barcode: string) => void;
 }
 
 const ProductCard: React.FC<ShoppingCardProps> = ({
@@ -27,13 +22,12 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 	ParentsShoppingItem,
 	ChildrenShoppingItem,
 	onCameraClick,
-	onDelete, // 삭제 콜백 추가
+	onDelete,
 }) => {
-	// 상품 삭제 기능
 	const handleDelete = () => {
 		if (ChildrenShoppingItem) {
 			const requestBody = {
-				shoppingId: '672df1def4c5cb7ca5d36532', // 실제 shoppingId로 수정 필요
+				shoppingId: '672df1def4c5cb7ca5d36532',
 				listBarcode: ParentsShoppingItem.barcode,
 				barcode: ChildrenShoppingItem.barcode,
 			};
@@ -42,17 +36,14 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				requestBody,
 			);
 
-			// 로컬 상태에서 삭제
-			onDelete(ChildrenShoppingItem.barcode);
+			onDelete(ParentsShoppingItem.barcode);
 		}
 	};
 
 	return (
 		<div className="relative flex items-stretch px-8 py-4 border border-gray-200 rounded-2xl max-w-xl mx-auto shadow-md">
-			{/* Divider */}
 			<div className="absolute top-4 bottom-4 left-1/2 transform -translate-x-1/2 w-px bg-gray-200"></div>
 
-			{/* Left Section (부모 아이템) */}
 			<div className="flex flex-col items-center w-1/2 pr-6 h-full justify-center">
 				<div className="w-20 h-20 mb-0 flex items-center justify-center">
 					<Image
@@ -72,9 +63,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				</p>
 			</div>
 
-			{/* Right Section (자녀 아이템) */}
 			<div className="flex flex-col items-center w-1/2 pl-6 h-full justify-center relative">
-				{/* WasteBasket 아이콘 (CHILD) 또는 MiniWarning 아이콘 (PARENTS) */}
 				{role === 'CHILD' && ChildrenShoppingItem && (
 					<div className="absolute top-1 -right-4 cursor-pointer">
 						<Image
@@ -98,7 +87,6 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 					</div>
 				)}
 
-				{/* CHILD일 때 상품이 없을 경우 카메라 아이콘 표시 */}
 				{role === 'CHILD' && !ChildrenShoppingItem ? (
 					<div className="w-12 h-12 mb-2 flex items-center justify-center">
 						<Image
@@ -111,7 +99,6 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 						/>
 					</div>
 				) : (
-					// 자녀 아이템 정보 표시
 					<>
 						<div className="w-20 h-20 mb-0 flex items-center justify-center">
 							<Image
@@ -123,12 +110,12 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 							/>
 						</div>
 						<p className="text-gray-900 font-medium text-lg">
-							{ChildrenShoppingItem?.title}
+							{ChildrenShoppingItem?.productName}
 						</p>
 						<p className="text-gray-500 text-sm">
 							수량:{' '}
 							<span className="font-semibold">
-								{ChildrenShoppingItem?.count}개
+								{ChildrenShoppingItem?.quantity}개
 							</span>
 						</p>
 					</>

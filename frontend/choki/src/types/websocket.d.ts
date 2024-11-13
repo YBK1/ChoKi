@@ -4,9 +4,14 @@ type WSShoppingType =
 	| 'DELETE_PRODUCT_FROM_CART'
 	| 'HINT_MESSAGE';
 
-type addReason = SOLD_OUT | NO_REASON | BLANK;
-interface WSShoppingResponse {
+// 기본 메시지 타입 (공통 필드)
+interface BaseWSMessage {
 	type: WSShoppingType;
+}
+
+// 쇼핑 리스트
+interface ShoppingListResponse extends BaseWSMessage {
+	type: 'SHOPPING';
 	id: string;
 	parentId: number;
 	childId: number;
@@ -18,10 +23,54 @@ interface WSShoppingResponse {
 	status: string;
 }
 
+// 장바구니 추가
+interface AddToCartResponse extends BaseWSMessage {
+	type: 'ADD_PRODUCT_TO_CART';
+	listBarcode?: string;
+	barcode?: string;
+	productName?: string;
+	image?: string;
+	quantity?: number;
+	reason?: string;
+	status?: string;
+}
+
+// 장바구니 삭제
+interface DeleteFromCartResponse extends BaseWSMessage {
+	type: 'DELETE_PRODUCT_FROM_CART';
+	listBarcode: string;
+	barcode: string;
+}
+
+// 힌트 메시지
+interface HintMessageResponse extends BaseWSMessage {
+	type: 'HINT_MESSAGE';
+	message: string;
+}
+
+// 통합 응답 타입
+type WSShoppingResponse =
+	| ShoppingListResponse
+	| AddToCartResponse
+	| DeleteFromCartResponse
+	| HintMessageResponse;
+
 interface addShoppingItem {
 	shoppingId: string;
 	listBarcode: string;
 	barcode: string;
 	quantity: number;
 	reason: addReason;
+}
+
+// 상품 추가 메시지 타입
+interface AddProductToCartMessage {
+	type: 'ADD_PRODUCT_TO_CART';
+	listBarcode: string;
+	productName: string;
+	image: string;
+	barcode: string;
+	quantity: number;
+	reason: 'SOLD_OUT' | 'MATCH' | 'NO_REASON' | string; // reason에 정의된 값 이외의 문자열 가능성 고려
+	status: 'SIMILAR' | 'EXACT' | string; // status에 정의된 값 이외의 문자열 가능성 고려
 }

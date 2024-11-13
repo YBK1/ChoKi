@@ -6,10 +6,13 @@ import SpeechBubble from '@/components/shop/SpeechBubble';
 import ProductCard from '@/components/shop/ProductCard';
 import Cam from '@/components/shop/BarcodeCam';
 import { useAtom } from 'jotai';
-import { shoppingListAtom } from '@/atoms/shoppingAtom';
+import {
+	shoppingListAtom,
+	deleteCartItemInShoppingList,
+} from '@/atoms/shoppingAtom';
 import { useEffect, useState } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
-import * as StompJs from '@stomp/stompjs';
+import { handleWebSocketMessage } from '@/lib/utils/websocketChild/ChildShoppingSoket';
 
 export default function ChildShoppingPage() {
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
@@ -17,27 +20,21 @@ export default function ChildShoppingPage() {
 	const [originBarcode, setOriginBarcode] = useState<string | null>(null);
 	const [productName, setProductName] = useState<string | null>(null);
 
+	// WebSocket 구독 및 메시지 처리
 	useEffect(() => {
-		console.log('Shopping list:', shoppingList);
-	}, [shoppingList]);
-
-	useEffect(() => {
-		const handleWebSocketMessage = (message: StompJs.Message) => {
-			const data = JSON.parse(message.body);
-			if (data && data.shoppingList) {
-				setShoppingList(data.shoppingList);
-			}
-		};
-
 		childWebSocketClient.subscribe(
 			'/user/sub/shopping/672df1def4c5cb7ca5d36532',
-			handleWebSocketMessage,
+			message => handleWebSocketMessage(message, setShoppingList),
 		);
 
+		// 컴포넌트가 언마운트될 때 WebSocket 연결 해제
 		return () => {
 			childWebSocketClient.disconnect();
 		};
 	}, [setShoppingList]);
+	useEffect(() => {
+		console.log('shoppingList', shoppingList);
+	}, [shoppingList]);
 
 	const openCameraModal = (barcode: string, name: string) => {
 		setOriginBarcode(barcode);
@@ -51,17 +48,24 @@ export default function ChildShoppingPage() {
 		setProductName(null);
 	};
 
-	const addNewItemToShoppingList = (newItem: ShoppingItem) => {
+	const addNewItemToShoppingList = (newItem: CartItem) => {
 		setShoppingList(prevList => [...prevList, newItem]);
 	};
 
-	// 삭제 기능 구현
 	const deleteItemFromShoppingList = (barcode: string) => {
-		console.log('Delete item:', barcode);
-		setShoppingList(prevList =>
-			prevList.filter(item => item.barcode !== barcode),
-		);
+		console.log('deleteItemFromShoppingList', barcode);
+		deleteCartItemInShoppingList(setShoppingList, barcode);
 	};
+	// 부모 리스트에 없는 아이템 추가 일단 주석처리
+	// const updateCartItem = (barcode: string, updatedCartItem: CartItem) => {
+	// 	setShoppingList(prevList =>
+	// 		prevList.map(item =>
+	// 			item.barcode === barcode
+	// 				? { ...item, cartItem: updatedCartItem }
+	// 				: item,
+	// 		),
+	// 	);
+	// };
 
 	return (
 		<div
@@ -99,17 +103,18 @@ export default function ChildShoppingPage() {
 									ChildrenShoppingItem={
 										item.cartItem
 											? {
-													title: item.cartItem.productName,
-													count: item.cartItem.quantity,
+													productName: item.cartItem.productName,
+													quantity: item.cartItem.quantity,
 													image: item.cartItem.image,
-													barcode: item.cartItem?.barcode || '', // 옵셔널 체이닝으로 barcode 접근
+													barcode: item.cartItem?.barcode || '',
+													category: item.cartItem.category,
 												}
 											: undefined
 									}
 									onCameraClick={() =>
 										openCameraModal(item.barcode, item.productName)
 									}
-									onDelete={deleteItemFromShoppingList} // 삭제 콜백 전달
+									onDelete={deleteItemFromShoppingList}
 								/>
 							))}
 						</div>
