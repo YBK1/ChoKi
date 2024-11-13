@@ -94,7 +94,7 @@ interface CartItem {
 	productName: string;
 	image: string;
 	quantity: number;
-	reason?: string;
+	reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
 	status?: string;
 }
 // ProductCard에서 사용하는 Props
