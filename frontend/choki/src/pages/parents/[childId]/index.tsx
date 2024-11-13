@@ -27,7 +27,7 @@ export default function Index() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedErrand, setSelectedErrand] = useState('');
 	const [selectedRouteDetails, setSelectedRouteDetails] = useState<any>(null);
-	const [selectedItems, setSelectedItems] = useState<CartItem[]>([]);
+	const [selectedItems, setSelectedItems] = useState<SearchCartItem[]>([]);
 
 	const handleOpenModal = () => setIsModalOpen(true);
 	const handleCloseModal = () => {
