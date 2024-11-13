@@ -1,6 +1,5 @@
 import React from 'react';
 import Image from 'next/image';
-import dog_character from '@/assets/icons/dog_character.svg';
 
 const AnimalSpeech: React.FC<AnimalSpeechProps> = ({ isImageCaptured }) => {
 	return (
@@ -27,7 +26,12 @@ const AnimalSpeech: React.FC<AnimalSpeechProps> = ({ isImageCaptured }) => {
 
 			{/* 동물 */}
 			<div>
-				<Image src={dog_character} alt="강아지 캐릭터" />
+				<Image
+					src="/icons/dog_character.svg"
+					alt="강아지 캐릭터"
+					width={100}
+					height={100}
+				/>
 			</div>
 		</div>
 	);

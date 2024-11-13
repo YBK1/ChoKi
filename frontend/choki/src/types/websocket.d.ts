@@ -1,3 +1,4 @@
+// 웹 소켓 응답 type 분리
 type WSShoppingType =
 	| 'SHOPPING'
 	| 'ADD_PRODUCT_TO_CART'
