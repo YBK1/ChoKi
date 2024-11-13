@@ -141,7 +141,7 @@ interface ShoppingItem {
 		productName: string;
 		quantity: number;
 		image: string;
-		reason?: string;
+		reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
 		status?: string;
 	};
 }
