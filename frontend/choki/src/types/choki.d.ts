@@ -35,6 +35,12 @@ interface RoutePolylineProps {
 	route: LatLng[];
 	polyline: kakao.maps.Polyline | null;
 	setPolyline: React.Dispatch<React.SetStateAction<kakao.maps.Polyline | null>>;
+	startMarker: kakao.maps.Marker | null;
+	endMarker: kakao.maps.Marker | null;
+	setStartMarker: React.Dispatch<
+		React.SetStateAction<kakao.maps.Marker | null>
+	>;
+	setEndMarker: React.Dispatch<React.SetStateAction<kakao.maps.Marker | null>>;
 }
 
 // 카카오맵 경로 기록하는 props
