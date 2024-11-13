@@ -28,11 +28,12 @@ interface ShoppingListResponse extends BaseWSMessage {
 interface AddToCartResponse extends BaseWSMessage {
 	type: 'ADD_PRODUCT_TO_CART';
 	listBarcode?: string;
+	category: string;
 	barcode?: string;
 	productName?: string;
 	image?: string;
 	quantity?: number;
-	reason?: string;
+	reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
 	status?: string;
 }
 
