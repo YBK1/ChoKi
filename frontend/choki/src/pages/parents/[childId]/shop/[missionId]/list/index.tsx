@@ -1,4 +1,3 @@
-import BottomNavbar from '@/components/Common/Navbar/BottomNavbar';
 import React, { useRef, useState, useEffect } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import * as StompJs from '@stomp/stompjs';
@@ -6,6 +5,7 @@ import { useAtom } from 'jotai';
 import { shoppingListAtom } from '@/atoms/shoppingAtom';
 import ParentProductCard from '@/components/shop/ParentProductCard';
 import { useRouter } from 'next/router';
+import ParentsShoppingNavbar from '@/components/Common/Navbar/ParentsShoppingNavbar';
 
 const ShoppingListPage = () => {
 	const [inputValue, setInputValue] = useState('');
@@ -14,7 +14,7 @@ const ShoppingListPage = () => {
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
 
 	const router = useRouter();
-	const { missionId } = router.query;
+	const { childId, missionId } = router.query;
 
 	useEffect(() => {
 		const handleWebSocketMessage = (message: StompJs.Message) => {
@@ -167,14 +167,18 @@ const ShoppingListPage = () => {
 	return (
 		<div className="min-h-screen bg-light_yellow px-4 pt-4 pb-24">
 			{/* 제목 */}
-			<div className="flex items-center gap-2 mb-8 ml-4 mt-8">
+			<ParentsShoppingNavbar
+				childId={childId as string}
+				missionId={missionId as string}
+			/>
+			{/* <div className="flex items-center gap-2 mb-8 ml-4 mt-8">
 				<button className="w-8 h-8 flex items-center justify-center bg-white rounded-lg shadow-md ">
 					<span className="text-lg">&lt;</span>
 				</button>
 				<h1 className="text-xl font-bold ml-20">장보기 현황</h1>
-			</div>
+			</div> */}
 
-			<div className="mt-12">
+			<div className="mt-12 py-16">
 				<div>
 					<h2 className="text-lg font-semibold mb-4 ml-4">
 						도움의 손길 보내기
@@ -182,7 +186,7 @@ const ShoppingListPage = () => {
 
 					{/* 부모 메시지 전송 */}
 					<div className="relative">
-						<div className="flex w-[350px] rounded-3xl mb-4 p-3 gap-2 p-2 bg-light_yellow_btn">
+						<div className="flex w-[350px] rounded-3xl mb-6 p-3 gap-2 p-2 bg-light_yellow_btn">
 							<input
 								ref={inputRef}
 								type="text"
@@ -230,12 +234,11 @@ const ShoppingListPage = () => {
 
 					{/* 장바구니 컴포넌트 */}
 					<h2 className="text-lg font-semibold mb-4 ml-4">아이의 장바구니</h2>
-					<div className="space-y-4">
+					<div className="space-y-4 max-h-[500px] p-2 rounded-3xl overflow-y-auto bg-gray-100">
 						{shoppingList.map(item => renderShoppingItem(item))}
 					</div>
 				</div>
 			</div>
-			<BottomNavbar />
 		</div>
 	);
 };
