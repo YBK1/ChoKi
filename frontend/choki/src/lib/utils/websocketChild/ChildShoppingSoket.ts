@@ -29,7 +29,15 @@ export const handleWebSocketMessage = (
 			};
 			// 기존에 없던 상품이면 추가하기
 			if (data.listBarcode === '') {
-				addShoppingItem(setShoppingList, updatedCartItem);
+				const addParentItem: ShoppingItem = {
+					barcode: '',
+					category: '',
+					productName: '',
+					image: '',
+					quantity: 0,
+					cartItem: updatedCartItem,
+				};
+				addShoppingItem(setShoppingList, addParentItem);
 			} else {
 				// 웹 소켓으로 데이터 갱신을 받을 경우 바로 jotai를 통해 업데이트하도록
 				updateCartItemInShoppingList(
