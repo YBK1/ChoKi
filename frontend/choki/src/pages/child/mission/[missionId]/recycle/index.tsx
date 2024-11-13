@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 const RecyclePage = () => {
 	const [isImageCaptured, setIsImageCaptured] = useState<boolean>(false);
+	const [classifyResult, setClassifyResult] = useState<RecycleResponse>();
 
 	const handleComplete = () => {
 		console.log('엄마 분리수거 끝내써');
@@ -14,7 +15,6 @@ const RecyclePage = () => {
 	const handleCaptureChange = (captured: boolean) => {
 		setIsImageCaptured(captured);
 	};
-
 	return (
 		<div
 			className="min-h-screen bg-cover bg-center flex flex-col items-center pt-5 pb-20 px-4 sm:px-8"
@@ -24,12 +24,12 @@ const RecyclePage = () => {
 		>
 			{/* Animal Speech Bubble */}
 			<div className="-mt-6 md:mt-0">
-				<AnimalSpeech isImageCaptured={isImageCaptured} />
+				<AnimalSpeech isImageCaptured={classifyResult} />
 			</div>
 
 			{/* Camera Capture Component */}
 			<div className="mt-3 mb-8 w-full max-w-md">
-				<Cam onCaptureChange={handleCaptureChange} />
+				<Cam onCaptureChange={setClassifyResult} />
 			</div>
 
 			{/* Complete Button */}

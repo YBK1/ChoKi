@@ -113,3 +113,8 @@ interface InProgressMissionResponse {
 	type: MissionType;
 	shoppingId: string;
 }
+
+interface RecycleResponse {
+	class: number;
+	name: string;
+}

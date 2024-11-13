@@ -172,12 +172,12 @@ interface Speech {
 }
 // 카메라 인터페이스
 interface CamProps {
-	onCaptureChange: (captured: boolean) => void;
+	onCaptureChange: (captured: RecycleResponse) => void;
 }
 
 // 재활용 동물 대화 인터페이스
 interface AnimalSpeechProps {
-	isImageCaptured: boolean;
+	isImageCaptured?: RecycleResponse;
 }
 
 // 장보기 미션 부여를 위한 위치 정보

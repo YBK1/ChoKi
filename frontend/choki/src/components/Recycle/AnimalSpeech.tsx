@@ -21,7 +21,7 @@ const AnimalSpeech: React.FC<AnimalSpeechProps> = ({ isImageCaptured }) => {
 			>
 				{/* 텍스트 */}
 				{isImageCaptured
-					? '이것도 몰라? 잘 생각해봐!'
+					? `${isImageCaptured.name}`
 					: '헷갈리는 쓰레기는 사진을 찍어봐!'}
 			</div>
 

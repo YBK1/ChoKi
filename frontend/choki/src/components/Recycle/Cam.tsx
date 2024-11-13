@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Button from '../Common/Button';
+import { classifyRecycle } from '@/lib/api/kid';
 
 const Cam: React.FC<CamProps> = ({ onCaptureChange }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
@@ -16,6 +17,18 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange }) => {
 			}
 		} catch (error) {
 			console.error('카메라 권한 요청 실패:', error);
+		}
+	};
+
+	const classify = async (image: File) => {
+		try {
+			const formData = new FormData();
+			formData.append('file', image);
+
+			const result = await classifyRecycle(formData);
+			onCaptureChange(result);
+		} catch (error) {
+			console.error('분류 실패', error);
 		}
 	};
 
@@ -41,9 +54,22 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange }) => {
 			const ctx = canvas.getContext('2d');
 			if (ctx) {
 				ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-				const imageDataUrl = canvas.toDataURL('image/png');
-				setCapturedImage(imageDataUrl);
-				onCaptureChange(true);
+
+				canvas.toBlob(
+					blob => {
+						if (blob) {
+							const file = new File([blob], 'captured-image.png', {
+								type: 'image/png',
+								lastModified: new Date().getTime(),
+							});
+							const imageDataUrl = canvas.toDataURL('image/png');
+							setCapturedImage(imageDataUrl);
+							classify(file);
+						}
+					},
+					'image/png',
+					0.9,
+				); // 0.9는 품질 설정 (0~1)
 			}
 		}
 	};
@@ -51,7 +77,6 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange }) => {
 	const handleRetake = () => {
 		setCapturedImage(null);
 		startCamera();
-		onCaptureChange(false);
 	};
 
 	return (
