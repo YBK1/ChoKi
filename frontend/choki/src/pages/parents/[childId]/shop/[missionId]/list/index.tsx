@@ -14,7 +14,7 @@ const ShoppingListPage = () => {
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
 
 	const router = useRouter();
-	const { shoppingId } = router.query;
+	const { missionId } = router.query;
 
 	useEffect(() => {
 		const handleWebSocketMessage = (message: StompJs.Message) => {
@@ -96,7 +96,7 @@ const ShoppingListPage = () => {
 		if (!inputValue.trim()) return;
 
 		const requestBody = {
-			shoppingId: shoppingId,
+			shoppingId: missionId,
 			message: inputValue,
 		};
 
