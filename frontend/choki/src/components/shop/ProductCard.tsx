@@ -1,7 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import WasteBasket from '@/assets/icons/waste_basket.svg';
-import MiniWarning from '@/assets/icons/mini_warning.svg';
+
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 
 interface ShoppingCardProps {
@@ -67,7 +66,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				{role === 'CHILD' && ChildrenShoppingItem && (
 					<div className="absolute top-1 -right-4 cursor-pointer">
 						<Image
-							src={WasteBasket}
+							src="/public/icons/waste_basket.svg"
 							alt="삭제 아이콘"
 							width={20}
 							height={20}
@@ -78,7 +77,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				{role === 'PARENTS' && (
 					<div className="absolute top-1 -right-4 transform -translate-y-1/4 cursor-pointer">
 						<Image
-							src={MiniWarning}
+							src="/public/icons/mini_warning.svg"
 							alt="경고 아이콘"
 							width={30}
 							height={30}
