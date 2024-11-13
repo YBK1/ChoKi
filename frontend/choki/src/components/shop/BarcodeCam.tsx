@@ -5,7 +5,8 @@ import { BrowserMultiFormatReader } from '@zxing/browser';
 import { compareShopping } from '@/lib/api/shopping';
 import AddModal from './AddModal';
 import { Toast } from '@/components/Toast/Toast';
-
+// import { shoppingListAtom, addShoppingItem } from '@/atoms/shoppingAtom';
+// import { useAtom } from 'jotai';
 interface CamProps {
 	onCaptureChange: (isCaptured: boolean) => void;
 	originBarcode: string;
@@ -20,6 +21,7 @@ const Cam: React.FC<CamProps> = ({
 	productName,
 	onClose, // 모달 닫기 함수 prop 추가
 }) => {
+	// const [, setShoppingList] = useAtom(shoppingListAtom);
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [capturedImage, setCapturedImage] = useState<string | null>(null);
 	const [compareResult, setCompareResult] = useState<string | null>(null);
@@ -28,10 +30,17 @@ const Cam: React.FC<CamProps> = ({
 
 	const goCompare = async (originBarcode: string, inputBarcode: string) => {
 		try {
-			const response = await compareShopping({ originBarcode, inputBarcode });
-			const matchStatus = response.matchStatus;
-			setCompareResult(matchStatus);
-			setInputBarcode(inputBarcode);
+			// TODO - 아이가 추가한 물품일 경우
+			if (originBarcode === '') {
+				// addShoppingItem(setShoppingList, {)
+				setCompareResult('MATCH'); // 아이가 추가로 담은 물품은 일치로 판별
+				setInputBarcode(inputBarcode);
+			} else {
+				const response = await compareShopping({ originBarcode, inputBarcode });
+				const matchStatus = response.matchStatus;
+				setCompareResult(matchStatus);
+				setInputBarcode(inputBarcode);
+			}
 		} catch (error) {
 			console.error('장보기 비교 실패:', error);
 		}
