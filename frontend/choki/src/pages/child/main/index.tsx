@@ -9,6 +9,7 @@ import router from 'next/router';
 declare global {
 	interface Window {
 		UnityReadyCallback?: () => void;
+		RequestUserData?: () => Promise<void>;
 		handleUnityShowPanel?: () => Promise<void>;
 		navigateToMap?: () => void;
 		navigateToShopping?: (missionId: string) => void;
@@ -43,6 +44,19 @@ export default function MainPage() {
 			setIsUnityLoaded(true);
 		};
 
+		window.RequestUserData = async () => {
+			console.log('Unity에서 데이터 갱신 요청됨');
+			try {
+				const kidData = await getUserData();
+				if (kidData) {
+					sendDataToUnity(kidData);
+					console.log('Unity로 새로운 데이터 전송 완료');
+				}
+			} catch (error) {
+				console.error('데이터 갱신 중 오류 발생:', error);
+			}
+		};
+
 		window.navigateToMap = () => {
 			router.push('/child/map');
 		};
@@ -57,6 +71,7 @@ export default function MainPage() {
 
 		return () => {
 			delete window.UnityReadyCallback;
+			delete window.RequestUserData;
 			delete window.navigateToMap;
 			delete window.navigateToShopping;
 			delete window.navigateToRecycling;
