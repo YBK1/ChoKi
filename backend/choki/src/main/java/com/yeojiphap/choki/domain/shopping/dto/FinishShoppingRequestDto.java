@@ -7,5 +7,4 @@ import lombok.Setter;
 @Setter
 public class FinishShoppingRequestDto {
 	private String shoppingId;
-	private String comment;
 }

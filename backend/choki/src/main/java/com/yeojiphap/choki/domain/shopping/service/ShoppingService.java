@@ -275,7 +275,7 @@ public class ShoppingService {
 	@Transactional
 	public void finishShopping(FinishShoppingRequestDto finishShoppingRequestDto, MultipartFile image){
 		Shopping shopping = shoppingRepository.findById(finishShoppingRequestDto.getShoppingId()).orElseThrow(ShoppingNotFoundException::new);
-		// 미션의 상태를 변경
+
 		ObjectId missionId = new ObjectId(shopping.getMissionId());
 		// s3에 이미지를 등록하기
 		String imagePath = "";
