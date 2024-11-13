@@ -64,7 +64,7 @@ public class UserService {
         return UserResponseDto.from(currentUser, collected, dto.isLevelEqual());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public UserLevelDto getLevel(User user) {
         boolean isLevelSame = user.getLevel() == user.getPastLevel();
         user.updatePastLevel(user.getLevel());
