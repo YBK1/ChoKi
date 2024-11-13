@@ -58,7 +58,8 @@ export const compareShopping = async ({
 		throw error;
 	}
 };
-// 미션 완료 이미지 전송
+
+// 미션 완료 이미지 전송(장보기 제외)
 export const uploadMissionImage = async (missionId: string, image: File) => {
 	const formData = new FormData();
 
@@ -72,6 +73,31 @@ export const uploadMissionImage = async (missionId: string, image: File) => {
 
 	try {
 		const response = await axiosInstance.post(`/api/mission/image`, formData, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		});
+		return response.data;
+	} catch (error) {
+		console.error('이미지 업로드 실패:', error);
+		throw error;
+	}
+};
+
+// 장보기 완료 이미지 전송
+export const uploadShoppingImage = async (shoppingId: string, image: File) => {
+	const formData = new FormData();
+
+	formData.append('image', image);
+
+	const dataObject = { shoppingId: shoppingId };
+	formData.append(
+		'data',
+		new Blob([JSON.stringify(dataObject)], { type: 'application/json' }),
+	);
+
+	try {
+		const response = await axiosInstance.post(`/api/shopping/image`, formData, {
 			headers: {
 				'Content-Type': 'multipart/form-data',
 			},
