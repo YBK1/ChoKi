@@ -36,7 +36,7 @@ const ShoppingListPage = () => {
 										...item,
 										cartItem: {
 											barcode: response.barcode || '',
-											category: item.category || '',
+											category: response.category || '',
 											productName: response.productName || '',
 											image: response.image || '',
 											quantity: response.quantity || 0,
