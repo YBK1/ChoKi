@@ -26,12 +26,6 @@ interface JoinFamilyResponse {
 	invite_code: string;
 }
 
-// export interface BaseResponse<T> {
-//     status: number;
-//     message: string;
-//     data: T;
-// }
-
 interface NotificationResponse {
 	childId: number;
 	content: string;
@@ -46,7 +40,7 @@ interface ItemSearchResponse {
 	productName: string;
 	image: string;
 }
-interface CartItem extends ItemSearchResponse {
+interface SearchCartItem extends ItemSearchResponse {
 	quantity: number;
 }
 
@@ -118,6 +112,23 @@ interface ShoppingCardProps {
 	};
 	onCameraClick: () => void; // 카메라 클릭 핸들러 추가
 }
+
+interface ParentShoppingCardProps {
+	ParentsShoppingItem: {
+		productName: string;
+		quantity: number;
+		image: string;
+	};
+	ChildrenShoppingItem?: {
+		productName: string;
+		quantity: number;
+		image: string;
+	};
+	status?: 'MATCH' | 'NOT_MATCH' | 'SIMILAR';
+	reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
+	showWarning?: boolean;
+	emptyMessage?: string;
+}
 interface ShoppingItem {
 	barcode: string;
 	category: string;
@@ -125,10 +136,12 @@ interface ShoppingItem {
 	image: string;
 	quantity: number;
 	cartItem?: {
+		barcode: string;
+		category: string;
 		productName: string;
 		quantity: number;
 		image: string;
-		reason?: string;
+		reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
 		status?: string;
 	};
 }
