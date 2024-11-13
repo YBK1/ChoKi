@@ -199,7 +199,9 @@ export default function ParentPages() {
 					</div>
 				</CommonModal>
 			)}
-			{showToast && <Toast message="복사되었습니다!" />}
+			{showToast && (
+				<Toast message="복사되었습니다!" onClose={() => setShowToast(false)} />
+			)}
 		</div>
 	);
 }
