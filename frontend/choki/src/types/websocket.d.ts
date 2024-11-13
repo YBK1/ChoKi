@@ -64,15 +64,3 @@ interface addShoppingItem {
 	quantity: number;
 	reason: addReason;
 }
-
-// 상품 추가 메시지 타입
-interface AddProductToCartMessage {
-	type: 'ADD_PRODUCT_TO_CART';
-	listBarcode: string;
-	productName: string;
-	image: string;
-	barcode: string;
-	quantity: number;
-	reason: 'SOLD_OUT' | 'MATCH' | 'NO_REASON' | string; // reason에 정의된 값 이외의 문자열 가능성 고려
-	status: 'SIMILAR' | 'EXACT' | string; // status에 정의된 값 이외의 문자열 가능성 고려
-}
