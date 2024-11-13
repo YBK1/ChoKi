@@ -84,39 +84,26 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 			return;
 		}
 
-		let remainingDistance = 0;
-		let closestPointIndex = 0;
-		let minDistanceToRoute = Infinity;
+		// Define destination as the last point in the route
+		const destination = route[route.length - 1];
 
-		for (let i = 0; i < route.length; i++) {
-			const distance = calculateDistance(
-				userLocation[1],
-				userLocation[0],
-				route[i].latitude,
-				route[i].longitude,
-			);
+		// Calculate the direct distance from the current location to the destination
+		const remainingDistance = calculateDistance(
+			userLocation[1],
+			userLocation[0],
+			destination.latitude,
+			destination.longitude,
+		);
 
-			if (distance < minDistanceToRoute) {
-				minDistanceToRoute = distance;
-				closestPointIndex = i;
-			}
-		}
+		// Check if user is off-route based on a threshold
+		setIsOffRoute(remainingDistance > OFF_ROUTE_THRESHOLD);
 
-		setIsOffRoute(minDistanceToRoute > OFF_ROUTE_THRESHOLD);
-
-		for (let i = closestPointIndex; i < route.length - 1; i++) {
-			remainingDistance += calculateDistance(
-				route[i].latitude,
-				route[i].longitude,
-				route[i + 1].latitude,
-				route[i + 1].longitude,
-			);
-		}
-
+		// Estimate time and steps
 		const timeInSeconds = remainingDistance / AVERAGE_WALKING_SPEED;
 		const steps = remainingDistance / AVERAGE_STEP_LENGTH;
 
-		setRemainingTime(Math.ceil(timeInSeconds / 60));
+		// Update remaining time and steps
+		setRemainingTime(Math.ceil(timeInSeconds / 60)); // Convert to minutes
 		setRemainingSteps(Math.ceil(steps));
 	}, [route, userLocation]);
 
