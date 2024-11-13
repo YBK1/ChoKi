@@ -68,9 +68,9 @@ export default function NotificationPage() {
 	return (
 		<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow min-h-screen">
 			<Image
-				src="/icons/previous.svg"
+				src="/icons/previous_nav.svg"
 				alt="previous_icon"
-				className="w-12 h-12 m-4 cursor-pointer"
+				className="w-12 h-12 m-5 cursor-pointer rounded-2xl shadow-md"
 				onClick={handleGoBack}
 				width={48}
 				height={48}
