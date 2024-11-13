@@ -1,10 +1,14 @@
 import * as Stomp from '@stomp/stompjs';
-import { updateCartItemInShoppingList } from '@/atoms/shoppingAtom';
+import {
+	updateCartItemInShoppingList,
+	updateShoppingMessage,
+} from '@/atoms/shoppingAtom';
 
 // WebSocket 메시지를 처리하는 함수
 export const handleWebSocketMessage = (
 	message: Stomp.Message,
 	setShoppingList: (update: (prev: CartItem[]) => CartItem[]) => void,
+	setShoppingMessage: (update: (prev: string) => string) => void,
 ) => {
 	const data = JSON.parse(message.body);
 	console.log('WebSocket message received:', data);
@@ -30,6 +34,11 @@ export const handleWebSocketMessage = (
 			);
 			break;
 
-		case 'DELETE_PRODUCT_FROM_CART':
+		case 'HINT_MESSAGE':
+			// HINT_MESSAGE 타입의 메시지일 경우 shoppingMessageAtom에 메시지 설정
+			if (data.message) {
+				updateShoppingMessage(setShoppingMessage, data.message);
+			}
+			break;
 	}
 };

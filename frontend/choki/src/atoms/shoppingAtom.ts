@@ -2,7 +2,7 @@ import { atom } from 'jotai';
 
 // shoppingList Atom 정의
 export const shoppingListAtom = atom<ShoppingItem[]>([]);
-
+export const shoppingMessageAtom = atom<string>('');
 // shoppingList에 새로운 아이템을 추가하는 함수
 export const addShoppingItem = (
 	set: (update: (prev: ShoppingItem[]) => ShoppingItem[]) => void,
@@ -34,4 +34,11 @@ export const deleteCartItemInShoppingList = (
 			item.barcode === barcode ? { ...item, cartItem: undefined } : item,
 		),
 	);
+};
+// shoppingMessageAtom의 메시지를 업데이트하는 함수
+export const updateShoppingMessage = (
+	setMessage: (update: (prev: string) => string) => void,
+	newMessage: string,
+) => {
+	setMessage(() => newMessage);
 };

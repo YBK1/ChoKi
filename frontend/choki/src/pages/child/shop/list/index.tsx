@@ -9,6 +9,7 @@ import { useAtom } from 'jotai';
 import {
 	shoppingListAtom,
 	deleteCartItemInShoppingList,
+	shoppingMessageAtom,
 } from '@/atoms/shoppingAtom';
 import { useEffect, useState } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
@@ -16,6 +17,7 @@ import { handleWebSocketMessage } from '@/lib/utils/websocketChild/ChildShopping
 
 export default function ChildShoppingPage() {
 	const [shoppingList, setShoppingList] = useAtom(shoppingListAtom);
+	const [shoppingMessage, setShoppingMessage] = useAtom(shoppingMessageAtom);
 	const [isCameraOpen, setIsCameraOpen] = useState(false);
 	const [originBarcode, setOriginBarcode] = useState<string | null>(null);
 	const [productName, setProductName] = useState<string | null>(null);
@@ -24,7 +26,8 @@ export default function ChildShoppingPage() {
 	useEffect(() => {
 		childWebSocketClient.subscribe(
 			'/user/sub/shopping/672df1def4c5cb7ca5d36532',
-			message => handleWebSocketMessage(message, setShoppingList),
+			message =>
+				handleWebSocketMessage(message, setShoppingList, setShoppingMessage),
 		);
 
 		// 컴포넌트가 언마운트될 때 WebSocket 연결 해제
@@ -123,7 +126,7 @@ export default function ChildShoppingPage() {
 			</div>
 
 			<div className="absolute bottom-24 right-32">
-				<SpeechBubble speech="바코드가 보이게 찍어줘!" />
+				<SpeechBubble speech={shoppingMessage} />
 			</div>
 
 			<Image
