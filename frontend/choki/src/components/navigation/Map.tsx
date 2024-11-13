@@ -8,7 +8,7 @@ import TimeDistanceTracker from './TimeDistanceTracker';
 import UpperNavbar from '../Common/Navbar/UpperNavbar';
 import ChildLocationSender from '@/lib/ws/ChildLocationSender';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
-import MissionCompleteModal from '../Common/Modal/MissionCompleteModal';
+import ShoppingCompleteModal from '../Common/Modal/ShoppingCompleteModal';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
@@ -113,7 +113,6 @@ const MapComponent = () => {
 			setRoute(missonRoute);
 		});
 
-		// Cleanup on unmount or when missionId changes
 		return () => {
 			childWebSocketClient.disconnect();
 		};
@@ -134,7 +133,7 @@ const MapComponent = () => {
 			{isMissionFinishModalOpen && (
 				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
 					<div className="relative">
-						<MissionCompleteModal missionId={missionId as string} />
+						<ShoppingCompleteModal missionId={missionId as string} />
 						<button
 							onClick={closeMissionFinishModal}
 							className="absolute top-2 right-2 bg-white text-black px-2 py-1 rounded-full"
