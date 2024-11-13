@@ -8,7 +8,7 @@ import java.util.List;
 
 public record UserResponseDto (Long userId, String nickname, String address, String name, String tel, Role role, String inviteCode, Long familyId, int level, int exp, boolean isLevelUp, Long mainAnimalId, List<Long> animals) {
 
-    public static UserResponseDto from(User user, List<Collected> animalList) {
+    public static UserResponseDto from(User user, List<Collected> animalList, boolean isLevelUp) {
         return new UserResponseDto(
                 user.getId(),
                 user.getNickname(),
@@ -20,15 +20,11 @@ public record UserResponseDto (Long userId, String nickname, String address, Str
                 user.getFamily().getId(),
                 user.getLevel(),
                 user.getExp(),
-                levelUpValidation(user.getLevel(), user.getPastLevel()),
+                isLevelUp,
                 user.getMainAnimal(),
                 animalList.stream()
                         .map(collected -> collected.getAnimal().getId())
                         .toList()
         );
-    }
-
-    private static boolean levelUpValidation (int level, int pastLevel) {
-        return level > pastLevel;
     }
 }

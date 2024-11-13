@@ -7,9 +7,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yeojiphap.choki.domain.mission.domain.Status;
 import com.yeojiphap.choki.domain.mission.dto.MissionCommentRequestDto;
+import com.yeojiphap.choki.domain.mission.dto.MissionImageRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.ProductCompareRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.ShoppingCreateRequestDto;
 import com.yeojiphap.choki.global.ApiResponse;
@@ -170,6 +173,38 @@ public interface SpringDocMissionController {
 		),
 	})
 	public ApiResponse getCompletedMissions(@RequestParam("userId") Long userId);
+
+	@Operation(
+		summary = "미션에 이미지 등록",
+		parameters = {
+			@Parameter(
+				name = "access",
+				description = "JWT 토큰",
+				in = ParameterIn.HEADER,
+				required = true,
+				example = "eyJhbGciOiJ..."
+			)
+		},
+		description = "미션 이미지 등록하기"
+	)
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "200",
+			description = "미션 조회 성공",
+			content = @Content(
+				mediaType = "application/json",
+				examples = @ExampleObject(value = """
+					{
+					    "status": 200,
+					    "message": "미션 사진 등록 성공",
+					}"""
+				)
+			)
+		),
+	})
+	public ApiResponse addImage(
+		@RequestPart("data") MissionImageRequestDto missionImageRequestDto,
+		@RequestPart("image") MultipartFile image);
 }
 
 

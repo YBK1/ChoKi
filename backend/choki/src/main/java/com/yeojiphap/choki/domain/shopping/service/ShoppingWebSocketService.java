@@ -102,7 +102,7 @@ public class ShoppingWebSocketService {
 		ProductDto productDto = shoppingService.searchProductByBarcode(addProductToCartRequestDto.getBarcode());
 
 		AddProductToCartResponseDto addProductToCartResponseDto = new AddProductToCartResponseDto(
-			addProductToCartRequestDto, productDto.getProductName(), productDto.getImage());
+			addProductToCartRequestDto, productDto.getProductName(), productDto.getImage(), productDto.getCategory());
 		addProductToCartResponseDto.setStatus(
 			// 비어있으면 빈 문자열을 담아서 보내기
 			addProductToCartRequestDto.getListBarcode().isEmpty() ? "" :
@@ -112,6 +112,7 @@ public class ShoppingWebSocketService {
 				.getMatchStatus());
 
 		simpMessagingTemplate.convertAndSendToUser(getParentUserName(access),"/sub/shopping/" + addProductToCartRequestDto.getShoppingId(), addProductToCartResponseDto);
+		simpMessagingTemplate.convertAndSendToUser(jwtUtil.getUsername(access), "/sub/shopping/" + addProductToCartRequestDto.getShoppingId(), addProductToCartResponseDto);
 	}
 
 	// 장바구니에서 상품 수량 변경 전송
