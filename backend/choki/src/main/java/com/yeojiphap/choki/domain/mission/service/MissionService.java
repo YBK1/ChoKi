@@ -1,19 +1,24 @@
 package com.yeojiphap.choki.domain.mission.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.domain.MissionType;
 import com.yeojiphap.choki.domain.mission.domain.Status;
 import com.yeojiphap.choki.domain.mission.dto.MissionCommentRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionDetailResponseDto;
+import com.yeojiphap.choki.domain.mission.dto.MissionImageRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionResponseDto;
 import com.yeojiphap.choki.domain.mission.exception.MissionNotFoundException;
 import com.yeojiphap.choki.domain.mission.repository.MissionRepository;
 import com.yeojiphap.choki.domain.shopping.dto.ShoppingCreateRequestDto;
+import com.yeojiphap.choki.global.s3.S3Service;
+import com.yeojiphap.choki.global.s3.S3UploadFailedException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MissionService {
 	private final MissionRepository missionRepository;
+	private final S3Service s3Service;
 
 	// 미션 조회하기
 	public MissionDetailResponseDto getMission(String id) {
@@ -91,5 +97,17 @@ public class MissionService {
 		ObjectId missionId = new ObjectId(missionCommentRequestDto.getMissionId());
 		String comment = missionCommentRequestDto.getComment();
 		missionRepository.setMissionComment(missionId, comment).orElseThrow(MissionNotFoundException::new);
+	}
+
+	public void addMissionImage(MissionImageRequestDto missionImageRequestDto, MultipartFile image){
+		ObjectId missionId = new ObjectId(missionImageRequestDto.getMissionId());
+		String imagePath = "";
+		try{
+			imagePath =  s3Service.uploadFile(image);
+		}
+		catch(IOException e){
+			throw new S3UploadFailedException();
+		}
+		missionRepository.setMissionStatusPending(missionId, imagePath).orElseThrow(MissionNotFoundException::new);
 	}
 }
