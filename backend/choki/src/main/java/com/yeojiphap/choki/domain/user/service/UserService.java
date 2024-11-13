@@ -60,14 +60,13 @@ public class UserService {
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
-
+        currentUser.updatePastLevel(currentUser.getLevel());
         return UserResponseDto.from(currentUser, collected);
     }
 
     @Transactional(readOnly = true)
     public UserLevelDto getLevel() {
         User user = findCurrentUser();
-        boolean isLevelEqual = user.getLevel() == user.getPastLevel();
         user.updatePastLevel(user.getLevel());
         return new UserLevelDto(user.getLevel(), user.getExp(), user.getLevel() == user.getPastLevel());
     }
