@@ -1,16 +1,42 @@
+import { getMissionList } from '@/lib/api/user';
 import { getUserData } from '@/lib/api/user';
 import { useCallback, useEffect, useState } from 'react';
 import UnityViewer from '@/components/Unity/UnityViewer';
+import { userAtom } from '@/atoms';
+import { useAtom } from 'jotai';
+import router from 'next/router';
 
 declare global {
 	interface Window {
 		UnityReadyCallback?: () => void;
+		RequestUserData?: () => Promise<void>;
+		handleUnityShowPanel?: () => Promise<void>;
+		navigateToMap?: () => void;
+		navigateToShopping?: (missionId: string) => void;
+		navigateToRecycling?: (missionId: string) => void;
+		createUnityInstance?: (
+			canvas: HTMLCanvasElement,
+			config: {
+				dataUrl: string;
+				frameworkUrl: string;
+				codeUrl: string;
+				streamingAssetsUrl: string;
+				companyName: string;
+				productName: string;
+				productVersion: string;
+			},
+			onProgress: (progress: number) => void,
+		) => Promise<any>; // Replace 'any' with a specific Unity instance type if available
 	}
 }
 
 export default function MainPage() {
 	const [isUnityLoaded, setIsUnityLoaded] = useState(false);
 	const [pendingData, setPendingData] = useState<any>(null);
+	const [user] = useAtom(userAtom);
+
+	console.log('나오나보자.', user.userId);
+	console.log('너도 봐보자.', isUnityLoaded);
 
 	useEffect(() => {
 		window.UnityReadyCallback = () => {
@@ -18,26 +44,105 @@ export default function MainPage() {
 			setIsUnityLoaded(true);
 		};
 
+		window.RequestUserData = async () => {
+			console.log('Unity에서 데이터 갱신 요청됨');
+			try {
+				const kidData = await getUserData();
+				if (kidData) {
+					sendDataToUnity(kidData);
+					console.log('Unity로 새로운 데이터 전송 완료');
+				}
+			} catch (error) {
+				console.error('데이터 갱신 중 오류 발생:', error);
+			}
+		};
+
+		window.navigateToMap = () => {
+			router.push('/child/map');
+		};
+
+		window.navigateToShopping = (missionId: string) => {
+			router.push(`/child/shop/${missionId}/route`);
+		};
+
+		window.navigateToRecycling = (missionId: string) => {
+			router.push(`/child/mission/${missionId}/recycle`);
+		};
+
 		return () => {
 			delete window.UnityReadyCallback;
+			delete window.RequestUserData;
+			delete window.navigateToMap;
+			delete window.navigateToShopping;
+			delete window.navigateToRecycling;
 		};
 	}, []);
 
 	useEffect(() => {
+		window.handleUnityShowPanel = async () => {
+			console.log(user.userId);
+			if (user.userId !== 0) {
+				console.log('Unity에서 ShowPanel 호출됨, 미션 데이터를 가져옵니다.');
+				try {
+					const missionData = await getMissionList(user.userId);
+					console.log('미션 데이터:', missionData);
+					sendMissionDataToUnity(missionData); // Unity로 미션 데이터를 전송
+				} catch (error) {
+					console.error('미션 데이터 가져오기 실패:', error);
+				}
+			} else {
+				console.warn('userId가 설정되지 않았습니다.');
+			}
+		};
+		return () => {
+			delete window.handleUnityShowPanel;
+		};
+	}, [user.userId]);
+
+	useEffect(() => {
+		console.log('와와와와와와ㅣ와ㅗ아와와', pendingData);
+
 		if (isUnityLoaded && pendingData) {
 			console.log('Unity가 로드되었고, 데이터를 전송합니다.');
 			sendDataToUnity(pendingData);
 			setPendingData(null);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isUnityLoaded, pendingData]);
+
+	function sendMissionDataToUnity(missions: InProgressMissionResponse) {
+		console.log('일단 여기까지 왔고??222222');
+		const jsonData = JSON.stringify({ missions });
+
+		// unityInstance를 iframe을 통해 가져오도록 변경
+		const iframe = document.getElementById('unity-iframe') as HTMLIFrameElement;
+		if (iframe && iframe.contentWindow && iframe.contentWindow.unityInstance) {
+			try {
+				iframe.contentWindow.unityInstance.SendMessage(
+					'DataReceiver',
+					'receiveMissionDataFromUnity',
+					jsonData,
+				);
+				console.log('Mission data sent to Unity:', missions);
+			} catch (error) {
+				console.error('Error sending mission data to Unity:', error);
+			}
+		} else {
+			console.error('iframe 또는 unityInstance가 정의되지 않았습니다.');
+		}
+	}
 
 	const sendDataToUnity = useCallback(
 		(data: any) => {
+			console.log('와우 이건 찍히겠지??????');
+
 			if (!isUnityLoaded) {
 				console.warn('Unity is not loaded yet. 데이터를 대기열에 추가합니다.');
 				setPendingData(data);
 				return;
 			}
+
+			console.log('일단 여기까지 왔고??');
 			const iframe = document.getElementById(
 				'unity-iframe',
 			) as HTMLIFrameElement;
@@ -75,24 +180,24 @@ export default function MainPage() {
 		[isUnityLoaded],
 	);
 
-	const getKidInfo = useCallback(async () => {
-		try {
-			const kidData = await getUserData();
-			console.log('Kid data received:', kidData);
-			return kidData;
-		} catch (error) {
-			console.error('Error fetching kid data:', error);
-			return null;
-		}
-	}, []);
-
 	const handleUnityLoaded = useCallback(async () => {
 		console.log('Unity iframe loaded, preparing to send data...');
+		const getKidInfo = async () => {
+			try {
+				const kidData = await getUserData();
+				return kidData;
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			} catch (error) {
+				// setErrorMessage("")
+			}
+			return null;
+		};
+
 		const kidData = await getKidInfo();
 		if (kidData) {
 			sendDataToUnity(kidData);
 		}
-	}, [getKidInfo, sendDataToUnity]);
+	}, [sendDataToUnity]);
 
 	return (
 		<div className="relative">

@@ -41,7 +41,6 @@ export const createShopping = async (
 };
 
 // 장보기 비교
-// TODO - 테스트용 하드코딩 수정 예정
 export const compareShopping = async ({
 	originBarcode,
 	inputBarcode,
@@ -56,6 +55,24 @@ export const compareShopping = async ({
 		return response.data;
 	} catch (error) {
 		console.error('장보기 비교 실패:', error);
+		throw error;
+	}
+};
+// 미션 완료 이미지 전송
+export const uploadMissionImage = async (missionId: string, image: File) => {
+	const formData = new FormData();
+	formData.append('missionId', missionId);
+	formData.append('image', image);
+
+	try {
+		const response = await axiosInstance.post(`/api/mission/image`, formData, {
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
+		});
+		return response.data;
+	} catch (error) {
+		console.error('이미지 업로드 실패:', error);
 		throw error;
 	}
 };

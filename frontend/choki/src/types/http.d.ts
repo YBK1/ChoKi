@@ -26,12 +26,6 @@ interface JoinFamilyResponse {
 	invite_code: string;
 }
 
-// export interface BaseResponse<T> {
-// 	status: number;
-// 	message: string;
-// 	data: T;
-// }
-
 interface NotificationResponse {
 	childId: number;
 	content: string;
@@ -121,6 +115,22 @@ interface CartItem {
 	reason?: string;
 	status?: string;
 }
+interface ParentShoppingCardProps {
+	ParentsShoppingItem: {
+		productName: string;
+		quantity: number;
+		image: string;
+	};
+	ChildrenShoppingItem?: {
+		productName: string;
+		quantity: number;
+		image: string;
+	};
+	status?: 'MATCH' | 'NOT_MATCH' | 'SIMILAR';
+	reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
+	showWarning?: boolean;
+	emptyMessage?: string;
+}
 interface ShoppingItem {
 	barcode: string;
 	category: string;
@@ -169,4 +179,9 @@ interface conmpareRequest {
 
 interface matchStatusReponse {
 	matchStatus: string;
+}
+interface ShoppingListResponse {
+	status: number;
+	matchStatus: string;
+	message: string;
 }
