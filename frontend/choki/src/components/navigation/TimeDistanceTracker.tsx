@@ -47,7 +47,7 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 	};
 
 	useEffect(() => {
-		// Fetch initial position with getCurrentPosition
+		// 현재위치 가져오기
 		navigator.geolocation.getCurrentPosition(
 			position => {
 				const { latitude, longitude } = position.coords;
@@ -61,7 +61,7 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 			},
 		);
 
-		// Set up continuous location tracking with watchPosition
+		// 위치변경 감지
 		const watchId = navigator.geolocation.watchPosition(
 			position => {
 				const { latitude, longitude } = position.coords;
@@ -75,7 +75,6 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 			},
 		);
 
-		// Clear watch on component unmount
 		return () => navigator.geolocation.clearWatch(watchId);
 	}, []);
 
@@ -84,34 +83,18 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 			return;
 		}
 
-		let remainingDistance = 0;
-		let closestPointIndex = 0;
-		let minDistanceToRoute = Infinity;
+		const destination = route[route.length - 1];
 
-		for (let i = 0; i < route.length; i++) {
-			const distance = calculateDistance(
-				userLocation[1],
-				userLocation[0],
-				route[i].latitude,
-				route[i].longitude,
-			);
+		// 현재위치 ~ 목적지까지의 거리 계산해 표시
+		const remainingDistance = calculateDistance(
+			userLocation[1],
+			userLocation[0],
+			destination.latitude,
+			destination.longitude,
+		);
 
-			if (distance < minDistanceToRoute) {
-				minDistanceToRoute = distance;
-				closestPointIndex = i;
-			}
-		}
-
-		setIsOffRoute(minDistanceToRoute > OFF_ROUTE_THRESHOLD);
-
-		for (let i = closestPointIndex; i < route.length - 1; i++) {
-			remainingDistance += calculateDistance(
-				route[i].latitude,
-				route[i].longitude,
-				route[i + 1].latitude,
-				route[i + 1].longitude,
-			);
-		}
+		// 아이가 경로 이탈했는지 확인
+		setIsOffRoute(remainingDistance > OFF_ROUTE_THRESHOLD);
 
 		const timeInSeconds = remainingDistance / AVERAGE_WALKING_SPEED;
 		const steps = remainingDistance / AVERAGE_STEP_LENGTH;

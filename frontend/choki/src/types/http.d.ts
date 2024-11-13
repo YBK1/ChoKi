@@ -89,7 +89,16 @@ interface userDataResponse {
 }
 
 // 웹 소켓 연결 관련 타입
-
+// 쇼핑 아이템의 구조
+interface CartItem {
+	barcode: string;
+	category: string;
+	productName: string;
+	image: string;
+	quantity: number;
+	reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
+	status?: string;
+}
 // ProductCard에서 사용하는 Props
 interface ShoppingCardProps {
 	role: 'CHILD' | 'PARENTS';
@@ -105,16 +114,7 @@ interface ShoppingCardProps {
 	};
 	onCameraClick: () => void; // 카메라 클릭 핸들러 추가
 }
-// 쇼핑 아이템의 구조
-interface CartItem {
-	barcode: string;
-	category: string;
-	productName: string;
-	image: string;
-	quantity: number;
-	reason?: string;
-	status?: string;
-}
+
 interface ParentShoppingCardProps {
 	ParentsShoppingItem: {
 		productName: string;
