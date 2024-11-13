@@ -256,12 +256,12 @@ export default function Index() {
 			console.log(routePoints);
 
 			const startMarkerImage = new kakao.maps.MarkerImage(
-				'/icons/start_icon.svg',
+				'/icons/map_home_icon.svg',
 				new kakao.maps.Size(40, 40),
 				{ offset: new kakao.maps.Point(20, 40) },
 			);
 			const endMarkerImage = new kakao.maps.MarkerImage(
-				'/icons/destination_icon.svg',
+				'/icons/map_shop_icon.svg',
 				new kakao.maps.Size(40, 40),
 				{ offset: new kakao.maps.Point(20, 40) },
 			);
@@ -294,6 +294,11 @@ export default function Index() {
 			const bounds = new kakao.maps.LatLngBounds();
 			routePoints.forEach(point => bounds.extend(point));
 			mapRef.current.setBounds(bounds);
+
+			const sw = bounds.getSouthWest();
+			const ne = bounds.getNorthEast();
+			console.log('Bounds Southwest:', { lat: sw.getLat(), lng: sw.getLng() });
+			console.log('Bounds Northeast:', { lat: ne.getLat(), lng: ne.getLng() });
 		};
 
 		return (

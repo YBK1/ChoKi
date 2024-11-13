@@ -23,14 +23,23 @@ const RouteRecorder = ({
 		const id = navigator.geolocation.watchPosition(
 			position => {
 				const { latitude, longitude } = position.coords;
-				console.log(`위도: ${latitude}, 경도: ${longitude}`);
-				const newPoint = { latitude, longitude };
+				if (
+					latitude >= 33.0 &&
+					latitude <= 38.6 &&
+					longitude >= 124.6 &&
+					longitude <= 131.9
+				) {
+					console.log(`위도: ${latitude}, 경도: ${longitude}`);
+					const newPoint = { latitude, longitude };
 
-				setRoute(prevRoute => {
-					const updatedRoute = [...prevRoute, newPoint];
-					drawRoute(updatedRoute);
-					return updatedRoute;
-				});
+					setRoute(prevRoute => {
+						const updatedRoute = [...prevRoute, newPoint];
+						drawRoute(updatedRoute);
+						return updatedRoute;
+					});
+				} else {
+					console.warn('이상한 좌표 감지');
+				}
 			},
 			error => {
 				console.error('위치 가져오는 중 오류 발생:', error);
