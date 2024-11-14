@@ -214,3 +214,10 @@ interface MissionAcceptRequest {
 	missionId: string;
 	comment: string;
 }
+
+interface DoneMissionResponse {
+	content: string;
+	completedAt: string; //2024-10-25,
+	image: string;
+	type: string;
+}
