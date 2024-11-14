@@ -1,6 +1,7 @@
 package com.yeojiphap.choki.domain.user.service;
 
 import com.yeojiphap.choki.domain.character.domain.Animal;
+import com.yeojiphap.choki.domain.character.dto.AnimalDto;
 import com.yeojiphap.choki.domain.character.service.AnimalService;
 import com.yeojiphap.choki.domain.collected.domain.Collected;
 import com.yeojiphap.choki.domain.collected.repository.CollectedRepository;
@@ -56,20 +57,23 @@ public class UserService {
         return ChildResponseDto.from(user);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
-
-        return UserResponseDto.from(currentUser, collected);
+        UserLevelDto dto = getLevel(currentUser);
+        Long drawAnimalId = 0L;
+        if (dto.isLevelUp()) {
+            drawAnimalId = collectedService.drawRandomAnimal().animalId();
+        }
+        return UserResponseDto.from(currentUser, collected, dto.isLevelUp(), drawAnimalId);
     }
 
-    @Transactional(readOnly = true)
-    public UserLevelDto getLevel() {
-        User user = findCurrentUser();
-        boolean isLevelEqual = user.getLevel() == user.getPastLevel();
+    @Transactional
+    public UserLevelDto getLevel(User user) {
+        boolean isLevelUp = user.getLevel() != user.getPastLevel();
         user.updatePastLevel(user.getLevel());
-        return new UserLevelDto(user.getLevel(), user.getExp(), user.getLevel() == user.getPastLevel());
+        return new UserLevelDto(user.getLevel(), user.getExp(), isLevelUp);
     }
 
     @Transactional(readOnly = true)
