@@ -9,6 +9,7 @@ import UpperNavbar from '../Common/Navbar/UpperNavbar';
 import ChildLocationSender from '@/lib/ws/ChildLocationSender';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import ShoppingCompleteModal from '../Common/Modal/ShoppingCompleteModal';
+import Image from 'next/image';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
@@ -21,9 +22,13 @@ const MapComponent = () => {
 	);
 	const [isGlobeView, setIsGlobeView] = useState(true);
 	const [showLocalViewElements, setShowLocalViewElements] = useState(false);
-	const [route, setRoute] = useState<
+	const [originalRoute, setOriginalRoute] = useState<
 		{ latitude: number; longitude: number }[] | null
 	>(null);
+	const [currentRoute, setCurrentRoute] = useState<
+		{ latitude: number; longitude: number }[] | null
+	>(null);
+	const [destination, setDestination] = useState<'Mart' | 'Home'>('Mart');
 	const [isMissionFinishModalOpen, setIsMissionFinishModalOpen] =
 		useState(false);
 
@@ -81,6 +86,7 @@ const MapComponent = () => {
 			position => {
 				const { latitude, longitude } = position.coords;
 				setUserLocation([longitude, latitude]);
+				console.log('User location obtained:', { latitude, longitude });
 			},
 			error => {
 				console.error('현재 위치 가져오는 중 오류 발생:', error);
@@ -109,9 +115,9 @@ const MapComponent = () => {
 
 		childWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, msg => {
 			console.log('받은 문자:', msg.body);
-
-			const missonRoute = JSON.parse(msg.body).route;
-			setRoute(missonRoute);
+			const missionRoute = JSON.parse(msg.body).route;
+			setOriginalRoute(missionRoute);
+			setCurrentRoute(missionRoute);
 		});
 
 		return () => {
@@ -120,10 +126,20 @@ const MapComponent = () => {
 	}, [missionId]);
 
 	useEffect(() => {
-		if (route) {
-			console.log('Updated route:', route);
+		if (currentRoute) {
+			console.log('Updated route:', currentRoute);
 		}
-	}, [route]);
+	}, [currentRoute]);
+
+	const toggleDestination = () => {
+		if (destination === 'Mart') {
+			setCurrentRoute(originalRoute ? [...originalRoute].reverse() : null);
+			setDestination('Home');
+		} else {
+			setCurrentRoute(originalRoute);
+			setDestination('Mart');
+		}
+	};
 
 	return (
 		<div className="relative w-full h-screen">
@@ -151,7 +167,7 @@ const MapComponent = () => {
 						map={map}
 						userLocation={userLocation}
 						setIsGlobeView={setIsGlobeView}
-						route={route}
+						route={currentRoute}
 					/>
 					<button
 						onClick={goBack}
@@ -173,9 +189,44 @@ const MapComponent = () => {
 						<UpperNavbar missionId={missionId as string} />
 						<CurrentLocationButton map={map} />
 						<TimeDistanceTracker
-							route={route ?? []}
+							route={currentRoute ?? []}
 							userLocation={userLocation}
 						/>
+						<div className="absolute top-28 left-1/2 transform -translate-x-1/2 z-20">
+							{/* Toggle Switch */}
+							<label className="relative inline-flex items-center cursor-pointer">
+								<input
+									type="checkbox"
+									className="sr-only peer"
+									checked={destination === 'Home'}
+									onChange={toggleDestination}
+								/>
+								<div className="w-36 h-12 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-600 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-500 relative">
+									<span
+										className={`absolute flex items-center justify-center left-1 top-1 h-10 w-20 bg-white rounded-full text-sm font-bold transition-transform ${
+											destination === 'Home' ? 'translate-x-14' : ''
+										}`}
+										style={{ fontSize: '1rem' }}
+									>
+										{destination === 'Mart' ? (
+											<Image
+												src="/icons/home_nav.svg"
+												alt="Mart Icon"
+												width={30}
+												height={30}
+											/>
+										) : (
+											<Image
+												src="/icons/map_shop_icon.svg"
+												alt="Home Icon"
+												width={30}
+												height={30}
+											/>
+										)}
+									</span>
+								</div>
+							</label>
+						</div>
 					</>
 				)
 			)}
