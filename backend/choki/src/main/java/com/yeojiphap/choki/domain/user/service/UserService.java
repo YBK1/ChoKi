@@ -1,6 +1,7 @@
 package com.yeojiphap.choki.domain.user.service;
 
 import com.yeojiphap.choki.domain.character.domain.Animal;
+import com.yeojiphap.choki.domain.character.dto.AnimalDto;
 import com.yeojiphap.choki.domain.character.service.AnimalService;
 import com.yeojiphap.choki.domain.collected.domain.Collected;
 import com.yeojiphap.choki.domain.collected.repository.CollectedRepository;
@@ -61,14 +62,18 @@ public class UserService {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
         UserLevelDto dto = getLevel(currentUser);
-        return UserResponseDto.from(currentUser, collected, dto.isLevelEqual());
+        Long drawAnimalId = 0L;
+        if (!dto.isLevelEqual()) {
+            drawAnimalId = collectedService.drawRandomAnimal().animalId();
+        }
+        return UserResponseDto.from(currentUser, collected, dto.isLevelEqual(), drawAnimalId);
     }
 
     @Transactional
     public UserLevelDto getLevel(User user) {
-        boolean isLevelSame = user.getLevel() != user.getPastLevel();
+        boolean isLevelUp = user.getLevel() != user.getPastLevel();
         user.updatePastLevel(user.getLevel());
-        return new UserLevelDto(user.getLevel(), user.getExp(), isLevelSame);
+        return new UserLevelDto(user.getLevel(), user.getExp(), isLevelUp);
     }
 
     @Transactional(readOnly = true)

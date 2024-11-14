@@ -6,9 +6,9 @@ import com.yeojiphap.choki.domain.user.domain.User;
 
 import java.util.List;
 
-public record UserResponseDto (Long userId, String nickname, String address, String name, String tel, Role role, String inviteCode, Long familyId, int level, int exp, boolean isLevelUp, Long mainAnimalId, List<Long> animals) {
+public record UserResponseDto (Long userId, String nickname, String address, String name, String tel, Role role, String inviteCode, Long familyId, int level, int exp, boolean isLevelUp, Long mainAnimalId, List<Long> animals, Long drawAnimalId) {
 
-    public static UserResponseDto from(User user, List<Collected> animalList, boolean isLevelUp) {
+    public static UserResponseDto from(User user, List<Collected> animalList, boolean isLevelUp, Long drawAnimalId) {
         return new UserResponseDto(
                 user.getId(),
                 user.getNickname(),
@@ -24,7 +24,8 @@ public record UserResponseDto (Long userId, String nickname, String address, Str
                 user.getMainAnimal(),
                 animalList.stream()
                         .map(collected -> collected.getAnimal().getId())
-                        .toList()
+                        .toList(),
+                drawAnimalId
         );
     }
 }
