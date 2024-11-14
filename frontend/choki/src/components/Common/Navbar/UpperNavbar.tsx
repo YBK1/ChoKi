@@ -3,9 +3,13 @@ import Link from 'next/link';
 
 interface UpperNavbarProps {
 	missionId: string;
+	setIsReturningToRoute: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const UpperNavbar: React.FC<UpperNavbarProps> = ({ missionId }) => {
+const UpperNavbar: React.FC<UpperNavbarProps> = ({
+	missionId,
+	setIsReturningToRoute,
+}) => {
 	return (
 		<>
 			<nav className="fixed top-5 z-100 w-full left-[50%] transform -translate-x-1/2">
@@ -24,15 +28,19 @@ const UpperNavbar: React.FC<UpperNavbarProps> = ({ missionId }) => {
 
 					{/* 경로 및 장바구니 버튼 */}
 					<div className="w-[190px] h-[60px] bg-light_yellow_nav rounded-full flex justify-center items-center shadow-lg">
-						<Link href={`/child/shop/${missionId}/route`}>
-							<button className="p-2">
-								<Image
-									src="/icons/map.svg"
-									alt="map_icon"
-									width={55}
-									height={55}
-								/>
-							</button>
+						<Link
+							href={`/child/shop/${missionId}/route`}
+							onClick={() => {
+								setIsReturningToRoute(true);
+							}}
+							className="p-2"
+						>
+							<Image
+								src="/icons/map.svg"
+								alt="map_icon"
+								width={55}
+								height={55}
+							/>
 						</Link>
 
 						<div className="w-px h-8 bg-light_yellow_nav mx-2" />

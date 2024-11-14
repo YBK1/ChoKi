@@ -26,6 +26,8 @@ const MapComponent = () => {
 	>(null);
 	const [isMissionFinishModalOpen, setIsMissionFinishModalOpen] =
 		useState(false);
+	const [isReturningToRoute, setIsReturningToRoute] = useState(false);
+
 	const router = useRouter();
 
 	const { missionId } = router.query;
@@ -41,6 +43,8 @@ const MapComponent = () => {
 	const closeMissionFinishModal = () => {
 		setIsMissionFinishModalOpen(false);
 	};
+
+	console.log('Parent isReturningToRoute:', isReturningToRoute);
 
 	useEffect(() => {
 		if (!mapContainerRef.current) return;
@@ -151,6 +155,7 @@ const MapComponent = () => {
 						userLocation={userLocation}
 						setIsGlobeView={setIsGlobeView}
 						route={route}
+						isReturningToRoute={isReturningToRoute}
 					/>
 					<button
 						onClick={goBack}
@@ -169,7 +174,10 @@ const MapComponent = () => {
 						>
 							완료
 						</button>
-						<UpperNavbar missionId={missionId as string} />
+						<UpperNavbar
+							missionId={missionId as string}
+							setIsReturningToRoute={setIsReturningToRoute}
+						/>
 						<CurrentLocationButton map={map} />
 						<TimeDistanceTracker
 							route={route ?? []}
