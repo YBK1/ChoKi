@@ -57,6 +57,7 @@ dependencies {
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
 
     implementation 'org.jgrapht:jgrapht-core:1.5.1'
+    implementation 'org.jgrapht:jgrapht-io:1.5.1'
 }
 
 tasks.named('test') {
