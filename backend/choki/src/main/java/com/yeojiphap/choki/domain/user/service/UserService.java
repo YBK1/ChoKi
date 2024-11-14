@@ -63,10 +63,10 @@ public class UserService {
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
         UserLevelDto dto = getLevel(currentUser);
         Long drawAnimalId = 0L;
-        if (!dto.isLevelEqual()) {
+        if (dto.isLevelUp()) {
             drawAnimalId = collectedService.drawRandomAnimal().animalId();
         }
-        return UserResponseDto.from(currentUser, collected, dto.isLevelEqual(), drawAnimalId);
+        return UserResponseDto.from(currentUser, collected, dto.isLevelUp(), drawAnimalId);
     }
 
     @Transactional
