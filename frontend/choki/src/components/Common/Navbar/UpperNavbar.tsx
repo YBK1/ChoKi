@@ -24,7 +24,7 @@ const UpperNavbar: React.FC<UpperNavbarProps> = ({ missionId }) => {
 
 					{/* 경로 및 장바구니 버튼 */}
 					<div className="w-[190px] h-[60px] bg-light_yellow_nav rounded-full flex justify-center items-center shadow-lg">
-						<Link href={`/child/shop/${missionId}/route`}>
+						<Link href={`/child/shop/${missionId}/route`} legacyBehavior>
 							<button className="p-2">
 								<Image
 									src="/icons/map.svg"
