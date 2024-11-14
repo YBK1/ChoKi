@@ -220,4 +220,6 @@ interface DoneMissionResponse {
 	completedAt: string; //2024-10-25,
 	image: string;
 	type: string;
+	shoppingId: string;
+	missionId: string;
 }
