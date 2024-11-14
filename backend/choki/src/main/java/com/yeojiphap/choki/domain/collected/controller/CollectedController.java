@@ -19,7 +19,7 @@ public class CollectedController implements SpringDocCollectedController {
         return ApiResponse.success(HttpStatus.OK, collectedService.getCollectedAnimals(), COLLECTED_SEARCH_MESSAGE.getMessage());
     }
 
-    @PutMapping("/animal/{animal_id}/main")
+    @PutMapping("/animal/{animalId}/main")
     public ApiResponse updateMainAnimal(@PathVariable Long animalId) {
         return ApiResponse.success(HttpStatus.OK, collectedService.updateMainAnimal(animalId));
     }

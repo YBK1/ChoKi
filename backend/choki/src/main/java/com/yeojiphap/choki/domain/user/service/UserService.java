@@ -60,12 +60,14 @@ public class UserService {
     @Transactional
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
-        List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
         UserLevelDto dto = getLevel(currentUser);
         Long drawAnimalId = 0L;
+
         if (dto.isLevelUp()) {
             drawAnimalId = collectedService.drawRandomAnimal().animalId();
         }
+
+        List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
         return UserResponseDto.from(currentUser, collected, dto.isLevelUp(), drawAnimalId);
     }
 
