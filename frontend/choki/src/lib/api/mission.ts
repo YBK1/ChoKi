@@ -3,7 +3,7 @@ import axiosInstance from './axiosInstance';
 // 상세 미션 조회
 export const getMissionDetail = async (
 	missionId: string,
-): Promise<MissionDetailResponse[]> => {
+): Promise<MissionDetailResponse> => {
 	try {
 		const response = await axiosInstance.get(`/api/mission/${missionId}`);
 		return response.data;
