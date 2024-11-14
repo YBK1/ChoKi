@@ -19,6 +19,10 @@ public class GraphBuilder {
     public void addEdge(Node source, Node target, double length, boolean hasCctv, boolean hasCrossing) {
         if(!source.equals(target)) {
             DefaultWeightedEdge edge = graph.addEdge(source, target);
+            if (edge == null) {
+                return;
+            }
+
             double weight = calculateEdgeWeight(length, hasCctv, hasCrossing);
             graph.setEdgeWeight(edge, weight);
         }
