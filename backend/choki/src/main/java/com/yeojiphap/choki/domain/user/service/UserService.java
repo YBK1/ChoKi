@@ -56,7 +56,7 @@ public class UserService {
         return ChildResponseDto.from(user);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
@@ -66,7 +66,7 @@ public class UserService {
 
     @Transactional
     public UserLevelDto getLevel(User user) {
-        boolean isLevelSame = user.getLevel() == user.getPastLevel();
+        boolean isLevelSame = user.getLevel() != user.getPastLevel();
         user.updatePastLevel(user.getLevel());
         return new UserLevelDto(user.getLevel(), user.getExp(), isLevelSame);
     }
