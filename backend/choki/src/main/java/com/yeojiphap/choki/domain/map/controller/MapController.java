@@ -1,6 +1,6 @@
 package com.yeojiphap.choki.domain.map.controller;
 
-import com.yeojiphap.choki.domain.map.domain.Node;
+import com.yeojiphap.choki.domain.map.domain.Location;
 import com.yeojiphap.choki.domain.map.dto.request.GuidedRouteRequest;
 import com.yeojiphap.choki.domain.map.dto.request.RouteRequest;
 import com.yeojiphap.choki.domain.map.service.MapService;
@@ -38,10 +38,10 @@ public class MapController implements SpringDocMapController{
     }
 
     @GetMapping("/route/safe")
-    public List<Node> findPath(@RequestParam double startLatitude,
-                               @RequestParam double startLongitude,
-                               @RequestParam double goalLatitude,
-                               @RequestParam double goalLongitude) {
+    public List<Location> findPath(@RequestParam double startLatitude,
+                                   @RequestParam double startLongitude,
+                                   @RequestParam double goalLatitude,
+                                   @RequestParam double goalLongitude) {
         return mapService.findOptimalPath(startLatitude, startLongitude, goalLatitude, goalLongitude);
     }
 }

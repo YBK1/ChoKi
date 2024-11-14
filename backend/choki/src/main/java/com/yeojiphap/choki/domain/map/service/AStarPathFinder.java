@@ -1,11 +1,13 @@
 package com.yeojiphap.choki.domain.map.service;
 
+import com.yeojiphap.choki.domain.map.domain.Location;
 import com.yeojiphap.choki.domain.map.domain.Node;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.interfaces.AStarAdmissibleHeuristic;
 import org.jgrapht.alg.shortestpath.AStarShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AStarPathFinder {
@@ -15,16 +17,17 @@ public class AStarPathFinder {
         this.graph = graph;
     }
 
-    public List<Node> findPath(Node start, Node goal) {
-        System.out.println("start lattitude = " + start.getLatitude());
-        System.out.println("start longitude = " + start.getLongitude());
-
-        System.out.println("end lattitude = " + goal.getLatitude());
-        System.out.println("end longitude = " + goal.getLongitude());
-
+    public List<Location> findPath(Node start, Node goal) {
         AStarAdmissibleHeuristic<Node> heuristic = (current, target) -> calculateHeuristic(current, target);
         AStarShortestPath<Node, DefaultWeightedEdge> aStar = new AStarShortestPath<>(graph, heuristic);
-        return aStar.getPath(start, goal).getVertexList();
+        List<Node> pathNodes = aStar.getPath(start, goal).getVertexList();
+
+        List<Location> path = new ArrayList<>();
+        for (Node node : pathNodes) {
+            path.add(new Location("", node.getLatitude(), node.getLongitude()));
+        }
+
+        return path;
     }
 
     private double calculateHeuristic(Node current, Node target) {
