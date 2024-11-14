@@ -61,6 +61,6 @@ public class MissionController implements SpringDocMissionController {
 	@PostMapping()
 	public ApiResponse addMission(@RequestBody MissionAddRequestDto missionAddRequestDto) {
 		missionService.addMission(missionAddRequestDto);
-		return ApiResponse.success(HttpStatus.OK, "미션 등록 성공");
+		return ApiResponse.success(HttpStatus.OK, "미션 추가 성공");
 	}
 }
