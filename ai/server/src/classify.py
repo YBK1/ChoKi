@@ -13,13 +13,14 @@ def classify_image(image):
     image_numpy = load_single_image(image)
 
     # Model 불러오기
-    # from tensorflow.python.keras.models import load_model
-    # model = load_model('./trained_model.h5')
-    import os
-    absolute_path = os.path.abspath('./src/trained_model.keras')
+    # model = keras.models.load_model('./models/trained_model.keras')
+    # 현재 스크립트의 위치를 기준으로 프로젝트 루트 찾기
+    current_dir = os.path.dirname(os.path.abspath(__file__))  # src 디렉토리
+    project_root = os.path.dirname(current_dir)  # project 디렉토리
 
-    model = keras.models.load_model(absolute_path)
-
+    # 모델 경로 생성
+    model_path = os.path.join(project_root, 'models', 'trained_model.keras')
+    model = keras.models.load_model(model_path)
     # Model 사용하기
     result = model.predict(image_numpy)
 

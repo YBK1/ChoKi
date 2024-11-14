@@ -1,7 +1,10 @@
 from flask import Flask, request
 from src import classify
 from flask_cors import CORS
+from flask import jsonify
 app = Flask(__name__)
+
+app.json.ensure_ascii = False
 
 CORS(app, resources={
     r"/*": {
@@ -40,9 +43,16 @@ def classify_recycle():
 
     # 이미지 파일을 받아서 base64로 인코딩
     try:
-        result = {"status" : 200, "class" : class_num, "name" : classes[class_num]}
-        # result = {"status" : 200}
-        return result
+        result = {
+            "status" : 200,
+            "data" : {
+                "class" : class_num,
+                "name" : classes[class_num]
+            },
+            "message" : "분류 성공"
+        }
+        print(result)
+        return jsonify(result)
     except Exception as e:
         return {"status" : 200, "message" : "오류 발생"}
 
