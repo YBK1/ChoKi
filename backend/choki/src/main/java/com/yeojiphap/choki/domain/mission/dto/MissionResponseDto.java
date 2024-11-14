@@ -14,6 +14,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class MissionResponseDto {
+	private String missionId;
 	private String content;
 	private String completedAt;
 	private String image;
