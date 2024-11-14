@@ -205,7 +205,7 @@ interface MissionDetailResponse {
 	content: string;
 	completedAt: string; // 2024-10-25,
 	status: string;
-	type: string;
+	type: MissionType;
 	image: string;
 	comment: string;
 }
