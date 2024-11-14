@@ -193,8 +193,24 @@ interface conmpareRequest {
 interface matchStatusReponse {
 	matchStatus: string;
 }
+
 interface ShoppingListResponse {
 	status: number;
 	matchStatus: string;
 	message: string;
+}
+
+// 미션
+interface MissionDetailResponse {
+	content: string;
+	completedAt: string; // 2024-10-25,
+	status: string;
+	type: string;
+	image: string;
+	comment: string;
+}
+
+interface MissionAcceptRequest {
+	missionId: string;
+	comment: string;
 }
