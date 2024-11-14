@@ -16,6 +16,7 @@ type MapProps = {
 	showChildNavBar: boolean;
 	route?: LatLng[];
 	coordinates?: { latitude: number; longitude: number } | null;
+	showUsersAround?: boolean;
 };
 
 // 카카오맵 실제 지도 props

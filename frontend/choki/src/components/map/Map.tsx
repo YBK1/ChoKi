@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MapContainer from './MapContainer';
 import UserLocationMarker from './UserLocationMarker';
 import RoutePolyline from './RoutePolyline';
@@ -7,6 +7,7 @@ import SetDestination from './SetDestination';
 import ChildNavBar from '../Common/Navbar/ChildNavBar';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { getUsersNearby } from '@/lib/api/user';
 
 const Map = ({
 	coordinates,
@@ -15,6 +16,7 @@ const Map = ({
 	showPreviousButton = true,
 	showChildNavBar = false,
 	route = [],
+	showUsersAround = false,
 }: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
@@ -28,6 +30,19 @@ const Map = ({
 	const router = useRouter();
 
 	// const { missionId } = router.query;
+
+	useEffect(() => {
+		const showNearbyUsers = async () => {
+			try {
+				const users = await getUsersNearby();
+				console.log('주변 아이 목록:', users);
+			} catch (error) {
+				console.error('Error fetching nearby users:', error);
+			}
+		};
+
+		showNearbyUsers();
+	}, [showUsersAround]);
 
 	const handleRecordingFinished = () => {
 		setShowSetDestination(true);
