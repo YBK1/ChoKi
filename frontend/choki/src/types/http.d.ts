@@ -1,5 +1,9 @@
 //http 관련 타입, Request, Response 뒤에 붙이기
 type role = 'PARENT' | 'CHILD';
+
+// 알림이 missionId, shoppingId 모두 가질 수 있도록!
+type NotificationResponse = MissionNotification | ShoppingNotification;
+
 interface SignupRequest {
 	userId: string;
 	userPassword: string;
@@ -26,12 +30,21 @@ interface JoinFamilyResponse {
 	invite_code: string;
 }
 
-interface NotificationResponse {
+interface BaseNotificationResponse {
 	childId: number;
 	content: string;
 	type: MissionType;
-	missionId: string;
 	time: string;
+}
+
+interface MissionNotification extends BaseNotificationResponse {
+	missionId: string;
+	shoppingId: null;
+}
+
+interface ShoppingNotification extends BaseNotificationResponse {
+	missionId: null;
+	shoppingId: string;
 }
 
 interface ItemSearchResponse {
