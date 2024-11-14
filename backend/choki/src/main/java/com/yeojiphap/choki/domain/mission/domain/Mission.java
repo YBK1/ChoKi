@@ -23,7 +23,7 @@ public class Mission {
 
     private String content;
 
-    private int exp;
+    private Long exp;
 
     private Status status;
 

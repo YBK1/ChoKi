@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.domain.MissionType;
 import com.yeojiphap.choki.domain.mission.domain.Status;
+import com.yeojiphap.choki.domain.mission.dto.MissionAddRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionCommentRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionDetailResponseDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionImageRequestDto;
@@ -45,7 +46,7 @@ public class MissionService {
 			.parentId(shoppingCreateRequestDto.getParentId())
 			.childId(shoppingCreateRequestDto.getChildId())
 			.content("동네 마트 장보기")
-			.exp(50)
+			.exp((long)50)
 			.status(Status.IN_PROGRESS)
 			.completedAt(null)
 			.image(null)
@@ -64,8 +65,19 @@ public class MissionService {
 	}
 
 	// 미션 저장하기
-	public void addMission(Mission mission) {
-		missionRepository.save(mission);
+	public void addMission(MissionAddRequestDto missionAddRequestDto) {
+		missionRepository.save(Mission.builder()
+			.missionType(missionAddRequestDto.getMissionType())
+				.parentId(missionAddRequestDto.getParentId())
+				.childId(missionAddRequestDto.getChildId())
+				.content(missionAddRequestDto.getContent())
+				.exp(missionAddRequestDto.getMissionType() == MissionType.RECYCLE ? (long)50 : missionAddRequestDto.getExp())
+				.status(Status.IN_PROGRESS)
+				.shoppingId(null)
+				.image(null)
+				.completedAt(null)
+				.comment(null)
+				.build());
 	}
 
 	// 미션 삭제하기
