@@ -24,7 +24,7 @@ public class MissionDetailResponseDto {
 		this.completedAt = mission.getCompletedAt();
 		this.status = mission.getStatus();
 		this.type = mission.getMissionType();
-		this.image = mission.getAfterImg();
+		this.image = mission.getImage();
 		this.comment = mission.getComment();
 	}
 }

@@ -29,7 +29,7 @@ public class Mission {
 
     private String completedAt;
 
-    private String afterImg;
+    private String image;
 
     private MissionType missionType;
 
