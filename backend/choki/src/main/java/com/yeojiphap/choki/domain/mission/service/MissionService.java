@@ -80,6 +80,7 @@ public class MissionService {
 		// DTO로 변환
 		List<MissionResponseDto> missionResponseDtos = missions.stream()
 			.map((mission) -> MissionResponseDto.builder()
+				.missionId(mission.getId().toString())
 				.content(mission.getContent())
 				.completedAt(mission.getCompletedAt())
 				.image(mission.getImage())

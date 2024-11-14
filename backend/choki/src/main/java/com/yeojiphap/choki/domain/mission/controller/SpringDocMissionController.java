@@ -52,6 +52,7 @@ public interface SpringDocMissionController {
 					    "message": "미션 조회 성공",
 					    "data": [
 					        {
+					        	"missionId" : "672df1def4c5cb7ca5d36531",
 					            "content": "동네 마트 장보기",
 					            "completedAt": null,
 					            "image": null,
