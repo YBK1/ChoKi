@@ -26,6 +26,7 @@ const MapComponent = () => {
 	>(null);
 	const [isMissionFinishModalOpen, setIsMissionFinishModalOpen] =
 		useState(false);
+
 	const router = useRouter();
 
 	const { missionId } = router.query;

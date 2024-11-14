@@ -54,102 +54,109 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 		[map],
 	);
 
+	const applyKoreanLabels = (mapInstance: mapboxgl.Map) => {
+		const style = mapInstance.getStyle();
+		if (style && style.layers) {
+			style.layers.forEach(layer => {
+				if (
+					layer.type === 'symbol' &&
+					layer.layout &&
+					'text-field' in layer.layout
+				) {
+					mapInstance.setLayoutProperty(layer.id, 'text-field', [
+						'coalesce',
+						['get', 'name_ko'],
+						['get', 'name'],
+					]);
+				}
+			});
+		}
+	};
+
 	const transitionToLocalView = useCallback(() => {
 		if (!map || !userLocation || !route) return;
 
-		setIsGlobeView(false);
+		{
+			// 원래 로직
+			setIsGlobeView(false);
 
-		map.flyTo({
-			center: userLocation,
-			zoom: 3,
-			duration: 2000,
-			pitch: 0,
-			bearing: 0,
-		});
-
-		setTimeout(() => {
-			map.setProjection({ name: 'mercator' });
-			map.setStyle('mapbox://styles/mapbox/streets-v11');
-
-			map.once('style.load', () => {
-				const style = map.getStyle();
-				if (style && style.layers) {
-					style.layers.forEach(layer => {
-						if (
-							layer.type === 'symbol' &&
-							layer.layout &&
-							'text-field' in layer.layout
-						) {
-							map.setLayoutProperty(layer.id, 'text-field', [
-								'coalesce',
-								['get', 'name_ko'],
-								['get', 'name'],
-							]);
-						}
-					});
-				}
-
-				map.flyTo({
-					center: userLocation,
-					zoom: 18,
-					pitch: 75,
-					duration: 3000,
-					essential: true,
-				});
-
-				const geojson: GeoJSON.FeatureCollection<GeoJSON.Geometry> = {
-					type: 'FeatureCollection',
-					features: [
-						{
-							type: 'Feature',
-							properties: {},
-							geometry: {
-								type: 'LineString',
-								coordinates: route.map(point => [
-									point.longitude,
-									point.latitude,
-								]),
-							},
-						},
-					],
-				};
-
-				if (!map.getSource('line')) {
-					map.addSource('line', {
-						type: 'geojson',
-						data: geojson,
-					});
-				}
-
-				map.addLayer({
-					id: 'line-background',
-					type: 'line',
-					source: 'line',
-					paint: {
-						'line-color': 'orange',
-						'line-width': 6,
-						'line-opacity': 0.4,
-					},
-				});
-
-				map.addLayer({
-					id: 'line-dashed',
-					type: 'line',
-					source: 'line',
-					paint: {
-						'line-color': 'orange',
-						'line-width': 6,
-						'line-dasharray': [0, 4, 3],
-					},
-				});
-
-				animateDashArray(0);
-
-				SkyLayer(map);
-				ThreeDBuildingsLayer(map);
-				MapStyles(map);
+			map.flyTo({
+				center: userLocation,
+				zoom: 3,
+				duration: 2000,
+				pitch: 0,
+				bearing: 0,
 			});
-		}, 2500);
+
+			setTimeout(() => {
+				map.setProjection({ name: 'mercator' });
+				map.setStyle('mapbox://styles/mapbox/streets-v11');
+
+				map.once('style.load', () => {
+					applyKoreanLabels(map);
+
+					map.flyTo({
+						center: userLocation,
+						zoom: 18,
+						pitch: 75,
+						duration: 3000,
+						essential: true,
+					});
+
+					const geojson: GeoJSON.FeatureCollection<GeoJSON.Geometry> = {
+						type: 'FeatureCollection',
+						features: [
+							{
+								type: 'Feature',
+								properties: {},
+								geometry: {
+									type: 'LineString',
+									coordinates: route.map(point => [
+										point.longitude,
+										point.latitude,
+									]),
+								},
+							},
+						],
+					};
+
+					if (!map.getSource('line')) {
+						map.addSource('line', {
+							type: 'geojson',
+							data: geojson,
+						});
+					}
+
+					map.addLayer({
+						id: 'line-background',
+						type: 'line',
+						source: 'line',
+						paint: {
+							'line-color': 'orange',
+							'line-width': 6,
+							'line-opacity': 0.4,
+						},
+					});
+
+					map.addLayer({
+						id: 'line-dashed',
+						type: 'line',
+						source: 'line',
+						paint: {
+							'line-color': 'orange',
+							'line-width': 6,
+							'line-dasharray': [0, 4, 3],
+						},
+					});
+
+					animateDashArray(0);
+
+					SkyLayer(map);
+					ThreeDBuildingsLayer(map);
+					MapStyles(map);
+				});
+			}, 2500);
+		}
 	}, [map, userLocation, setIsGlobeView, route, animateDashArray]);
 
 	return (
@@ -163,7 +170,7 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
         ${!userLocation ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 active:bg-gray-100'}
       `}
 		>
-			{userLocation ? '시작하기' : '위치 확인 중...'}
+			{userLocation ? '장보러 가기' : '위치 확인 중...'}
 		</button>
 	);
 };
