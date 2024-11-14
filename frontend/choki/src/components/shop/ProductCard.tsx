@@ -66,7 +66,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				{role === 'CHILD' && ChildrenShoppingItem && (
 					<div className="absolute top-1 -right-4 cursor-pointer">
 						<Image
-							src="/public/icons/waste_basket.svg"
+							src="/icons/waste_basket.svg"
 							alt="삭제 아이콘"
 							width={20}
 							height={20}

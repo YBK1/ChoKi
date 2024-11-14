@@ -210,14 +210,14 @@ const MapComponent = () => {
 									>
 										{destination === 'Mart' ? (
 											<Image
-												src="/icons/home_nav.svg"
+												src="/icons/map_shop_icon.svg"
 												alt="Mart Icon"
 												width={30}
 												height={30}
 											/>
 										) : (
 											<Image
-												src="/icons/map_shop_icon.svg"
+												src="/icons/home_nav.svg"
 												alt="Home Icon"
 												width={30}
 												height={30}
