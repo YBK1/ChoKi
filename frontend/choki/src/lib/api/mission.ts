@@ -28,3 +28,14 @@ export const acceptMission = async (
 		throw error;
 	}
 };
+
+export const getDoneMissionList = async (
+	childId: string,
+): Promise<DoneMissionResponse[]> => {
+	const response = await axiosInstance.get('/api/mission/completed', {
+		params: {
+			userId: childId,
+		},
+	});
+	return response.data;
+};
