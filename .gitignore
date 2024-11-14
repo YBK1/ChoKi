@@ -32,3 +32,11 @@ wheels/
 .vscode/
 *.swp
 *.swo
+
+# IDE 설정 파일 및 개발 환경 설정
+**/.idea/
+**/*.iml
+
+# Python 캐시 및 컴파일된 파일
+**/__pycache__/
+**/*.py[cod]

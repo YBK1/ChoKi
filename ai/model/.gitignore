@@ -1,0 +1,4 @@
+./models/trained_model.h5
+./src/test.h5
+./src/test_dataset.tfrecord
+./src/train_dataset.tfrecord
