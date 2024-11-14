@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import SkyLayer from './SkyLayer';
 import ThreeDBuildingsLayer from './3DBuildingsLayer';
 import MapStyles from './MapStyles';
+import Image from 'next/image';
 
 interface TransitionToLocalViewProps {
 	map: mapboxgl.Map | null;
@@ -164,13 +165,26 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 			onClick={transitionToLocalView}
 			disabled={!userLocation}
 			className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-        px-6 py-3 bg-white rounded-lg shadow-lg
+        px-4 py-3 bg-white rounded-lg shadow-lg
         text-lg font-semibold
         transition-all duration-300
+        inline-flex items-center gap-3
         ${!userLocation ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 active:bg-gray-100'}
       `}
 		>
-			{userLocation ? '장보러 가기' : '위치 확인 중...'}
+			{userLocation ? (
+				<>
+					<Image
+						src="/icons/basket_icon.svg"
+						alt="shopping icon"
+						width={40}
+						height={40}
+					/>
+					장보러 가기
+				</>
+			) : (
+				'위치 확인 중...'
+			)}
 		</button>
 	);
 };
