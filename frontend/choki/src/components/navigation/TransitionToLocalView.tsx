@@ -78,7 +78,6 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 		if (!map || !userLocation || !route) return;
 
 		{
-			// 원래 로직
 			setIsGlobeView(false);
 
 			map.flyTo({
@@ -161,16 +160,16 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 	}, [map, userLocation, setIsGlobeView, route, animateDashArray]);
 
 	return (
-		<button
+		<div
+			className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+             pl-4 pr-5 py-3 rounded-full shadow-lg 
+             text-white text-lg font-semibold
+             transition-all duration-300 inline-flex items-center gap-3
+             hover:opacity-90 active:opacity-80"
+			style={{
+				background: 'linear-gradient(180deg, #6360F5 0%, #9896FF 100%)',
+			}}
 			onClick={transitionToLocalView}
-			disabled={!userLocation}
-			className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-        px-4 py-3 bg-white rounded-lg shadow-lg
-        text-lg font-semibold
-        transition-all duration-300
-        inline-flex items-center gap-3
-        ${!userLocation ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 active:bg-gray-100'}
-      `}
 		>
 			{userLocation ? (
 				<>
@@ -185,7 +184,7 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 			) : (
 				'위치 확인 중...'
 			)}
-		</button>
+		</div>
 	);
 };
 

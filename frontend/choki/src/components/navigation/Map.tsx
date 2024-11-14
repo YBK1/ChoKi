@@ -5,7 +5,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import TransitionToLocalView from './TransitionToLocalView';
 import CurrentLocationButton from './CurrentLocationButton';
 import TimeDistanceTracker from './TimeDistanceTracker';
-import UpperNavbar from '../Common/Navbar/UpperNavbar';
+import UpperNavbar from '../Common/Navbar/WhiteUpperNavbar';
 import ChildLocationSender from '@/lib/ws/ChildLocationSender';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import ShoppingCompleteModal from '../Common/Modal/ShoppingCompleteModal';

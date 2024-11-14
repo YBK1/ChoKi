@@ -14,7 +14,7 @@ const UpperNavbar: React.FC<UpperNavbarProps> = ({ missionId }) => {
 					<Link href="/child/main">
 						<div className="flex mt-2">
 							<Image
-								src="/icons/back_icon_kid_yellow.svg"
+								src="/icons/back_icon_kid_white.svg"
 								alt="back_icon"
 								width={65}
 								height={65}
@@ -23,7 +23,7 @@ const UpperNavbar: React.FC<UpperNavbarProps> = ({ missionId }) => {
 					</Link>
 
 					{/* 경로 및 장바구니 버튼 */}
-					<div className="w-[190px] h-[60px] bg-light_yellow_nav rounded-full flex justify-center items-center shadow-lg">
+					<div className="w-[190px] h-[60px] bg-white rounded-full flex justify-center items-center shadow-lg">
 						<Link href={`/child/shop/${missionId}/route`} legacyBehavior>
 							<button className="p-2">
 								<Image
@@ -35,9 +35,9 @@ const UpperNavbar: React.FC<UpperNavbarProps> = ({ missionId }) => {
 							</button>
 						</Link>
 
-						<div className="w-px h-8 bg-light_yellow_nav mx-2" />
+						<div className="w-px h-8 bg-white mx-2" />
 
-						<Link href={`/child/shop/${missionId}/list`}>
+						<Link href={`/child/shop/${missionId}/list`} legacyBehavior>
 							<button className="p-2">
 								<Image
 									src="/icons/basket.svg"
