@@ -182,7 +182,7 @@ const MapComponent = () => {
 						{/* "완료" Button */}
 						<button
 							onClick={openMissionFinishModal}
-							className="absolute top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-10"
+							className="absolute top-1/2 -translate-y-[90%] right-4 bg-green-500 text-white px-3 py-3 rounded-2xl shadow-lg z-10"
 						>
 							완료
 						</button>
@@ -192,21 +192,20 @@ const MapComponent = () => {
 							route={currentRoute ?? []}
 							userLocation={userLocation}
 						/>
-						<div className="absolute top-28 left-1/2 transform -translate-x-1/2 z-20">
-							{/* Toggle Switch */}
-							<label className="relative inline-flex items-center cursor-pointer">
+						<div className="absolute top-1/3 right-4 transform -translate-y-1/2 z-20">
+							{/* Vertical Toggle Switch */}
+							<label className="relative inline-flex flex-col items-center cursor-pointer">
 								<input
 									type="checkbox"
 									className="sr-only peer"
 									checked={destination === 'Home'}
 									onChange={toggleDestination}
 								/>
-								<div className="w-36 h-12 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-600 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-500 relative">
+								<div className="h-36 w-12 bg-white peer-focus:outline-none peer-focus:ring-2 rounded-full peer dark:bg-gray-700 relative">
 									<span
-										className={`absolute flex items-center justify-center left-1 top-1 h-10 w-20 bg-white rounded-full text-sm font-bold transition-transform ${
-											destination === 'Home' ? 'translate-x-14' : ''
+										className={`absolute flex flex-col items-center justify-center top-1 left-1 w-10 h-20 bg-gray-300 rounded-full transition-transform ${
+											destination === 'Home' ? 'translate-y-14' : ''
 										}`}
-										style={{ fontSize: '1rem' }}
 									>
 										{destination === 'Mart' ? (
 											<Image
