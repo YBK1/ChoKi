@@ -181,7 +181,6 @@ export default function ParentPages() {
 							<Image
 								src="/icons/dog_character.svg"
 								alt="강아지 캐릭터"
-								layout="fill"
 								objectFit="contain"
 								width={100}
 								height={100}
