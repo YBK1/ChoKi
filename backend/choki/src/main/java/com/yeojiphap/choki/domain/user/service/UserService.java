@@ -96,8 +96,8 @@ public class UserService {
                     Animal animal = animalService.findById(foundUser.getMainAnimal());
                     return new UserMainCharacterDto(foundUser.getId(), foundUser.getUsername(), foundUser.getLatitude(), foundUser.getLongitude(), foundUser.getMainAnimal(), animal.getAnimalImage());
                 }).toList();
-
-        return new NearbyUsersDto(userMainCharacterDtos);
+        Animal animal = animalService.findById(user.getMainAnimal());
+        return new NearbyUsersDto(user.getLatitude(), user.getLongitude(), animal.getAnimalImage(), userMainCharacterDtos);
     }
 
     // 아이디로 유저 정보 조회하기
