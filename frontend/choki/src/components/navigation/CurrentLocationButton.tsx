@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import useCompass from './useCompass';
 
 const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 	const [currentLocation, setCurrentLocation] = useState<
@@ -8,27 +9,62 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 	const watchId = useRef<number | null>(null);
 	const locationMarker = useRef<mapboxgl.Marker | null>(null);
 
+	const { direction } = useCompass();
+
 	const updateMarker = useCallback(
 		(lngLat: [number, number]) => {
 			if (!map) return;
 
 			if (!locationMarker.current) {
-				const el = document.createElement('div');
-				el.className = 'current-location-marker';
-				el.style.width = '30px';
-				el.style.height = '30px';
-				el.style.backgroundImage = 'url(/maskable_icon_x192.png)';
-				el.style.backgroundSize = 'cover';
-				el.style.boxShadow = '0 0 10px rgba(0,0,0,0.3)';
+				const wrapper = document.createElement('div');
+				wrapper.className = 'current-location-marker';
+				wrapper.style.position = 'relative';
+				wrapper.style.width = '60px';
+				wrapper.style.height = '60px';
 
-				locationMarker.current = new mapboxgl.Marker(el)
+				const dog = document.createElement('div');
+				dog.style.top = '50%';
+				dog.style.left = '50%';
+				dog.style.width = '30px';
+				dog.style.height = '30px';
+				dog.style.position = 'absolute';
+				dog.style.transform = 'translate(-50%, -50%)';
+				dog.style.backgroundImage = 'url(/icons/dog_character.svg)';
+				dog.style.backgroundSize = 'cover';
+
+				const arrow = document.createElement('div');
+				arrow.style.width = '30px';
+				arrow.style.height = '30px';
+				arrow.style.position = 'absolute';
+				arrow.style.backgroundImage = 'url(/icons/direction_arrow.svg)';
+				arrow.style.backgroundSize = 'cover';
+				// arrow.style.top = '0';
+				// arrow.style.left = '50%';
+				// arrow.style.transform = `translateX(-50%) rotate(${direction}deg)`;
+				arrow.style.transition = 'left 0.2s ease-out, top 0.2s ease-out';
+
+				wrapper.appendChild(arrow);
+				wrapper.appendChild(dog);
+
+				locationMarker.current = new mapboxgl.Marker(wrapper)
 					.setLngLat(lngLat)
 					.addTo(map);
 			} else {
 				locationMarker.current.setLngLat(lngLat);
+
+				console.log(direction);
+
+				const arrowElement = locationMarker.current.getElement()
+					.children[0] as HTMLElement;
+				const radius = 40;
+				const radian = (direction * Math.PI) / 180;
+				const xOffset = radius * Math.sin(radian);
+				const yOffset = radius * Math.cos(radian);
+				arrowElement.style.left = `calc(50% + ${xOffset - 15}px)`;
+				arrowElement.style.top = `calc(50% - ${yOffset + 10}px)`;
 			}
 		},
-		[map],
+		[map, direction],
 	);
 
 	useEffect(() => {

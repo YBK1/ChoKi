@@ -26,3 +26,8 @@ export const getMissionList = async (userId: number) => {
 	});
 	return response.data;
 };
+
+export const getUsersNearby = async () => {
+	const response = await axiosInstance.get('/api/user/nearby');
+	return response.data;
+};
