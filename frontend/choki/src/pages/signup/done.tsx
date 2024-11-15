@@ -8,7 +8,7 @@ import {
 } from 'react';
 import InviteCodeModal from '@/components/Common/Modal/nonCloseModal';
 import CommonButton from '@/components/Common/Button';
-import DogCharacter from '@/assets/icons/dog_character.svg';
+// import DogCharacter from '@/assets/icons/dog_character.svg';
 import Image from 'next/image';
 import { createInviteCode, joinFamily } from '@/lib/api/inviteCode';
 import { Toast } from '@/components/Toast/Toast';
@@ -34,7 +34,7 @@ export default function DonePage() {
 		} catch (err) {
 			console.error('초대 코드 입력 실패:', err);
 		}
-		router.push('/child/mainPage');
+		router.push('/child/main');
 	};
 	const handleGoInviteCode = () => {
 		setDonStep(1);
@@ -118,10 +118,12 @@ export default function DonePage() {
 
 						<div className="w-32 h-32 relative">
 							<Image
-								src={DogCharacter}
+								src="/icons/dog_character.svg"
 								alt="강아지 캐릭터"
 								layout="fill"
 								objectFit="contain"
+								width={48}
+								height={48}
 							/>
 						</div>
 						<p className="text-center text-lg mt-4">
@@ -164,10 +166,12 @@ export default function DonePage() {
 
 						<div className="w-32 h-32 relative">
 							<Image
-								src={DogCharacter}
+								src="/icons/dog_character.svg"
 								alt="강아지 캐릭터"
 								layout="fill"
 								objectFit="contain"
+								width={48}
+								height={48}
 							/>
 						</div>
 
@@ -212,7 +216,12 @@ export default function DonePage() {
 						)}
 					</div>
 				</InviteCodeModal>
-				{showToast && <Toast message="복사되었습니다!" />}
+				{showToast && (
+					<Toast
+						message="복사되었습니다!"
+						onClose={() => setShowToast(false)}
+					/>
+				)}
 			</div>
 		);
 	}

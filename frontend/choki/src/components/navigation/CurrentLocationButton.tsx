@@ -17,7 +17,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				el.className = 'current-location-marker';
 				el.style.width = '30px';
 				el.style.height = '30px';
-				el.style.backgroundImage = 'url(/choki192x192.png)';
+				el.style.backgroundImage = 'url(/maskable_icon_x192.png)';
 				el.style.backgroundSize = 'cover';
 				el.style.boxShadow = '0 0 10px rgba(0,0,0,0.3)';
 

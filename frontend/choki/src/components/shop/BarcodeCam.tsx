@@ -1,86 +1,84 @@
 import React, { useRef, useEffect, useState } from 'react';
-import Image from 'next/image';
+// import Image from 'next/image';
 import Button from '../Common/Button';
 import { BrowserMultiFormatReader } from '@zxing/browser';
+import AddModal from './AddModal';
+import { Toast } from '@/components/Toast/Toast';
+import { compareShopping } from '@/lib/api/shopping';
 
 interface CamProps {
-	onCaptureChange: (captured: boolean) => void;
-	onCaptureImage?: (imageDataUrl: string) => void;
+	onCaptureChange: (isCaptured: boolean) => void;
+	originBarcode: string;
+	productName: string;
+	addNewItem: (newItem: ShoppingItem) => void;
+	onClose: () => void;
 }
 
-const Cam: React.FC<CamProps> = ({ onCaptureChange, onCaptureImage }) => {
+const Cam: React.FC<CamProps> = ({
+	onCaptureChange,
+	originBarcode,
+	productName,
+	onClose,
+}) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
-	const [capturedImage, setCapturedImage] = useState<string | null>(null);
+	const [compareResult, setCompareResult] = useState<string | null>(null);
+	const [inputBarcode, setInputBarcode] = useState<string | null>(null);
+	const [showToast, setShowToast] = useState<boolean>(false);
+	const [barcodeReader] = useState(new BrowserMultiFormatReader());
 
-	const startCamera = async () => {
+	const goCompare = async (originBarcode: string, inputBarcode: string) => {
 		try {
-			const stream = await navigator.mediaDevices.getUserMedia({
-				video: true,
-			});
-			if (videoRef.current) {
-				videoRef.current.srcObject = stream;
-				videoRef.current.play();
+			if (originBarcode === '') {
+				setCompareResult('MATCH');
+				setInputBarcode(inputBarcode);
+			} else {
+				const response = await compareShopping({ originBarcode, inputBarcode });
+				const matchStatus = response.matchStatus;
+				setCompareResult(matchStatus);
+				setInputBarcode(inputBarcode);
 			}
 		} catch (error) {
-			console.error('카메라 권한 요청 실패:', error);
+			console.error('장보기 비교 실패:', error);
 		}
 	};
 
 	useEffect(() => {
-		startCamera();
-		const currentVideoRef = videoRef.current;
-		return () => {
-			if (currentVideoRef && currentVideoRef.srcObject) {
-				(currentVideoRef.srcObject as MediaStream)
-					.getTracks()
-					.forEach(track => track.stop());
+		const startScan = async () => {
+			if (videoRef.current) {
+				try {
+					const deviceId = await getRearCameraDeviceId();
+					await barcodeReader.decodeFromVideoDevice(
+						deviceId, // deviceId를 문자열로 바로 전달
+						videoRef.current,
+						result => {
+							if (result) {
+								const scannedBarcode = result.getText();
+								goCompare(originBarcode, scannedBarcode);
+								videoRef.current?.pause(); // 바코드 인식이 완료되면 스캔 중지
+							}
+						},
+					);
+				} catch (error) {
+					console.error('카메라 접근 실패:', error);
+				}
 			}
 		};
-	}, []);
 
-	const captureImage = async () => {
-		if (videoRef.current) {
-			// 비디오의 실제 해상도를 기반으로 캔버스 크기 설정
-			const videoWidth = videoRef.current.videoWidth;
-			const videoHeight = videoRef.current.videoHeight;
-			const canvas = document.createElement('canvas');
-			canvas.width = videoWidth;
-			canvas.height = videoHeight;
+		const getRearCameraDeviceId = async () => {
+			const devices = await navigator.mediaDevices.enumerateDevices();
+			const rearCamera = devices.find(
+				device =>
+					device.kind === 'videoinput' &&
+					device.label.toLowerCase().includes('back'),
+			);
+			return rearCamera?.deviceId || 'environment';
+		};
 
-			const ctx = canvas.getContext('2d');
-			if (ctx) {
-				// video 요소에 표시된 화면을 그대로 캡처
-				ctx.drawImage(videoRef.current, 0, 0, videoWidth, videoHeight);
-
-				const imageDataUrl = canvas.toDataURL('image/png');
-				setCapturedImage(imageDataUrl);
-				console.log('캡처된 이미지 데이터 URL:', imageDataUrl);
-
-				const codeReader = new BrowserMultiFormatReader();
-
-				const imgElement = document.createElement('img');
-				imgElement.src = imageDataUrl;
-
-				imgElement.onload = async () => {
-					try {
-						const result = await codeReader.decodeFromImageElement(imgElement);
-						if (result) {
-							console.log('인식된 바코드:', result.getText());
-							if (onCaptureImage) {
-								onCaptureImage(result.getText());
-							}
-						}
-					} catch {
-						console.log('바코드를 찾을 수 없습니다. 재촬영 해주세요.');
-					}
-				};
-			} else {
-				console.error('캔버스 컨텍스트를 가져올 수 없습니다.');
-			}
-		} else {
-			console.error('비디오 요소가 초기화되지 않았습니다.');
-		}
-	};
+		startScan();
+		return () => {
+			videoRef.current?.pause(); // 컴포넌트가 언마운트될 때 스캔 중지
+		};
+	}, [barcodeReader, originBarcode]);
 
 	const handleConfirm = () => {
 		onCaptureChange(true);
@@ -88,45 +86,40 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, onCaptureImage }) => {
 
 	return (
 		<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg mx-auto w-[80%] max-w-lg">
-			<div className="mb-4 w-full flex justify-center">
-				<div className="bg-gray-200 rounded-md shadow-md overflow-hidden w-80 h-36 flex items-center justify-center">
-					{capturedImage ? (
-						<Image
-							src={capturedImage}
-							alt="Captured"
-							width={320}
-							height={150}
-							className="w-full h-full object-cover"
-						/>
-					) : (
+			{compareResult ? (
+				<AddModal
+					conpareResult={compareResult}
+					ProductName={productName || '새로 담은 상품'}
+					originBarcode={originBarcode}
+					inputBarcode={inputBarcode || ''}
+					onClose={onClose}
+				/>
+			) : (
+				<>
+					<div className="relative mb-4 w-full flex justify-center">
 						<video
 							ref={videoRef}
 							autoPlay
 							className="w-full h-full object-cover"
 						/>
-					)}
-				</div>
-			</div>
+					</div>
 
-			{capturedImage ? (
-				<div className="flex gap-4 mt-4">
-					<Button
-						size="small"
-						color="blue"
-						onClick={handleConfirm}
-						text="알겠어!"
-					/>
-				</div>
-			) : (
-				<div onClick={captureImage} className="cursor-pointer mt-2">
-					<Image
-						src="/icons/camera_icon.svg"
-						alt="Capture Image"
-						width={50}
-						height={50}
-						className="hover:scale-110 transition-transform"
-					/>
-				</div>
+					<div className="flex gap-4 mt-4">
+						<Button
+							size="small"
+							color="blue"
+							onClick={handleConfirm}
+							text="돌아가기"
+						/>
+					</div>
+				</>
+			)}
+
+			{showToast && (
+				<Toast
+					message="바코드를 찾을 수 없습니다. 재촬영 해주세요."
+					onClose={() => setShowToast(false)}
+				/>
 			)}
 		</div>
 	);

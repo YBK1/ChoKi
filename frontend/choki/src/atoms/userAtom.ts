@@ -1,8 +1,14 @@
 import { atom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
 
-//아래는 예제 코드입니다
-export const userAtom = atom({
-	id: '',
-	name: '',
-	isLoggedIn: false,
+interface UserState {
+	userId: number;
+	username: string;
+}
+
+export const userAtom = atomWithStorage<UserState>('user', {
+	userId: 0,
+	username: '',
 });
+
+export const selectedChildIdAtom = atom<number | null>(null);

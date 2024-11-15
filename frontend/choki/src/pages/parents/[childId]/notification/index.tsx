@@ -1,15 +1,15 @@
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import previous_icon from '@/assets/icons/previous.svg';
+// import previous_icon from '@/assets/icons/previous.svg';
 import { MISSION_IMAGES } from '@/constants/mission';
-import right_arrow from '@/assets/icons/right_arrow.svg';
-import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
+// import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
 import { useState, useEffect } from 'react';
 import { getNotification } from '@/lib/api/parent';
 
 export default function NotificationPage() {
 	const [notificationList, setNotificationList] =
 		useState<NotificationResponse[]>();
+	const [childId, setChildId] = useState<number | null>(null);
 
 	const router = useRouter();
 
@@ -47,6 +47,7 @@ export default function NotificationPage() {
 
 		// 뒤에서 두 번째 숫자 가져오기
 		const id = parseInt(pathSegments[pathSegments.length - 2] || '0');
+		setChildId(id);
 		console.log(id);
 		getNotifications(id);
 	}, []);
@@ -55,24 +56,34 @@ export default function NotificationPage() {
 		router.back();
 	};
 
-	const subscribeWebSocket = () => {
-		parentWebSocketClient.connect();
-
-		parentWebSocketClient.subscribe(
-			`/user/sub/shopping/672f0b493251e83e3031604c`,
-			msg => {
-				console.log('받은 문자:', msg.body);
-			},
-		);
+	const handleNotificationClick = (notification: NotificationResponse) => {
+		if (notification.shoppingId && !notification.missionId) {
+			// shoppingId 있고 missionId null일 때
+			router.push(`/parents/${childId}/shop/${notification.shoppingId}/route`);
+		} else if (notification.missionId && !notification.shoppingId) {
+			// missionId 있고 shoppingId null일 때
+			router.push(`/parents/${childId}/${notification.missionId}/accept`);
+		}
 	};
+
+	// const subscribeWebSocket = (missionId: string) => {
+	// 	parentWebSocketClient.connect();
+
+	// 	parentWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, msg => {
+	// 		console.log('받은 문자:', msg.body);
+	// 		router.push(`/parents/shop/${missionId}/route`);
+	// 	});
+	// };
 
 	return (
 		<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow min-h-screen">
 			<Image
-				src={previous_icon}
+				src="/icons/previous_nav.svg"
 				alt="previous_icon"
-				className="w-12 h-12 m-4 cursor-pointer"
+				className="w-12 h-12 m-5 cursor-pointer rounded-2xl shadow-md"
 				onClick={handleGoBack}
+				width={48}
+				height={48}
 			/>
 
 			{/* 알림목록 */}
@@ -100,11 +111,11 @@ export default function NotificationPage() {
 						</div>
 						<div className="min-w-[24px] min-h-[24px]">
 							<Image
-								src={right_arrow}
+								src="/icons/right_arrow.svg"
 								alt="detail"
 								width={24}
 								height={24}
-								onClick={subscribeWebSocket}
+								onClick={() => handleNotificationClick(notification)}
 							/>
 						</div>
 					</div>

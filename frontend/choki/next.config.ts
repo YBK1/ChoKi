@@ -11,7 +11,11 @@ const nextConfig: NextConfig = {
 	reactStrictMode: true,
 	// 이미지 도메인 설정 추가
 	images: {
-		domains: ['www.koreannet.or.kr'],
+		domains: [
+			'www.koreannet.or.kr',
+			'choki.co.kr',
+			'choki-s3.s3.ap-southeast-2.amazonaws.com',
+		],
 	},
 	// WebAssembly 파일을 위한 headers 설정 추가
 	async headers() {

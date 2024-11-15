@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import TransitionToLocalView from './TransitionToLocalView';
@@ -7,6 +8,7 @@ import TimeDistanceTracker from './TimeDistanceTracker';
 import UpperNavbar from '../Common/Navbar/UpperNavbar';
 import ChildLocationSender from '@/lib/ws/ChildLocationSender';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
+import ShoppingCompleteModal from '../Common/Modal/ShoppingCompleteModal';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
@@ -22,6 +24,23 @@ const MapComponent = () => {
 	const [route, setRoute] = useState<
 		{ latitude: number; longitude: number }[] | null
 	>(null);
+	const [isMissionFinishModalOpen, setIsMissionFinishModalOpen] =
+		useState(false);
+	const router = useRouter();
+
+	const { missionId } = router.query;
+
+	const goBack = () => {
+		router.push('/child/main');
+	};
+
+	const openMissionFinishModal = () => {
+		setIsMissionFinishModalOpen(true);
+	};
+
+	const closeMissionFinishModal = () => {
+		setIsMissionFinishModalOpen(false);
+	};
 
 	useEffect(() => {
 		if (!mapContainerRef.current) return;
@@ -83,19 +102,21 @@ const MapComponent = () => {
 	}, [isGlobeView]);
 
 	useEffect(() => {
+		if (!missionId) return;
+
 		childWebSocketClient.connect();
 
-		childWebSocketClient.subscribe(
-			`/user/sub/shopping/672f0b493251e83e3031604c`,
-			msg => {
-				console.log('받은 문자:', msg.body);
+		childWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, msg => {
+			console.log('받은 문자:', msg.body);
 
-				const missonRoute = JSON.parse(msg.body).route;
-				setRoute(missonRoute);
-			},
-		);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+			const missonRoute = JSON.parse(msg.body).route;
+			setRoute(missonRoute);
+		});
+
+		return () => {
+			childWebSocketClient.disconnect();
+		};
+	}, [missionId]);
 
 	useEffect(() => {
 		if (route) {
@@ -105,9 +126,24 @@ const MapComponent = () => {
 
 	return (
 		<div className="relative w-full h-screen">
-			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>{' '}
+			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>
 			<div ref={mapContainerRef} className="w-full h-full" />
-			<ChildLocationSender shoppingId="672f0b493251e83e3031604c" />
+			{missionId && <ChildLocationSender shoppingId={missionId as string} />}
+
+			{isMissionFinishModalOpen && (
+				<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+					<div className="relative">
+						<ShoppingCompleteModal missionId={missionId as string} />
+						<button
+							onClick={closeMissionFinishModal}
+							className="absolute top-2 right-2 bg-white text-black px-2 py-1 rounded-full"
+						>
+							X
+						</button>
+					</div>
+				</div>
+			)}
+
 			{isGlobeView ? (
 				<>
 					<TransitionToLocalView
@@ -116,13 +152,29 @@ const MapComponent = () => {
 						setIsGlobeView={setIsGlobeView}
 						route={route}
 					/>
+					<button
+						onClick={goBack}
+						className="absolute top-4 left-4 px-4 py-2 bg-white rounded-lg shadow-lg text-lg font-semibold transition-all duration-300"
+					>
+						돌아가기
+					</button>
 				</>
 			) : (
 				showLocalViewElements && (
 					<>
+						{/* "완료" Button */}
+						<button
+							onClick={openMissionFinishModal}
+							className="absolute top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-10"
+						>
+							완료
+						</button>
+						<UpperNavbar missionId={missionId as string} />
 						<CurrentLocationButton map={map} />
-						<TimeDistanceTracker />
-						<UpperNavbar />
+						<TimeDistanceTracker
+							route={route ?? []}
+							userLocation={userLocation}
+						/>
 					</>
 				)
 			)}
