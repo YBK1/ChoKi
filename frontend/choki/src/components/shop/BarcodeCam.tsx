@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-// import Image from 'next/image';
-import Button from '../Common/Button';
 import { BrowserMultiFormatReader } from '@zxing/browser';
+import Button from '../Common/Button';
 import AddModal from './AddModal';
 import { Toast } from '@/components/Toast/Toast';
 import { compareShopping } from '@/lib/api/shopping';
@@ -10,7 +9,6 @@ interface CamProps {
 	onCaptureChange: (isCaptured: boolean) => void;
 	originBarcode: string;
 	productName: string;
-	addNewItem: (newItem: ShoppingItem) => void;
 	onClose: () => void;
 }
 
@@ -44,39 +42,46 @@ const Cam: React.FC<CamProps> = ({
 
 	useEffect(() => {
 		const startScan = async () => {
-			if (videoRef.current) {
-				try {
-					const deviceId = await getRearCameraDeviceId();
-					await barcodeReader.decodeFromVideoDevice(
-						deviceId, // deviceId를 문자열로 바로 전달
-						videoRef.current,
-						result => {
-							if (result) {
-								const scannedBarcode = result.getText();
-								goCompare(originBarcode, scannedBarcode);
-								videoRef.current?.pause(); // 바코드 인식이 완료되면 스캔 중지
-							}
-						},
-					);
-				} catch (error) {
-					console.error('카메라 접근 실패:', error);
-				}
-			}
-		};
+			const stream = await navigator.mediaDevices.getUserMedia({
+				video: { facingMode: 'environment' },
+			});
 
-		const getRearCameraDeviceId = async () => {
-			const devices = await navigator.mediaDevices.enumerateDevices();
-			const rearCamera = devices.find(
-				device =>
-					device.kind === 'videoinput' &&
-					device.label.toLowerCase().includes('back'),
+			if (videoRef.current) {
+				videoRef.current.srcObject = stream;
+				videoRef.current.setAttribute('playsinline', 'true'); // 모바일 전체 화면 방지
+				videoRef.current.play();
+			}
+
+			barcodeReader.decodeFromVideoDevice(
+				undefined,
+				videoRef.current as HTMLVideoElement,
+				(result, error) => {
+					if (result) {
+						const scannedBarcode = result.getText();
+						if (
+							(scannedBarcode.length === 13 || scannedBarcode.length === 8) &&
+							/^\d+$/.test(scannedBarcode)
+						) {
+							goCompare(originBarcode, scannedBarcode);
+							videoRef.current?.pause(); // 바코드 인식 완료 후 스캔 중지
+						}
+					} else if (error && error.name !== 'NotFoundException') {
+						console.error('바코드 스캔 오류:', error);
+					}
+				},
 			);
-			return rearCamera?.deviceId || 'environment';
 		};
 
 		startScan();
+
 		return () => {
-			videoRef.current?.pause(); // 컴포넌트가 언마운트될 때 스캔 중지
+			barcodeReader.decodeFromVideoDevice(undefined, undefined, () => {}); // 디코딩 중지
+			const currentVideoRef = videoRef.current;
+			if (currentVideoRef && currentVideoRef.srcObject) {
+				(currentVideoRef.srcObject as MediaStream)
+					.getTracks()
+					.forEach((track: MediaStreamTrack) => track.stop());
+			}
 		};
 	}, [barcodeReader, originBarcode]);
 
@@ -102,6 +107,12 @@ const Cam: React.FC<CamProps> = ({
 							autoPlay
 							className="w-full h-full object-cover"
 						/>
+						{/* 바코드 인식 가이드 박스 */}
+						<div className="absolute top-1/2 left-1/2 w-3/4 h-1/3 transform -translate-x-1/2 -translate-y-1/2 border-4 border-yellow-300 bg-yellow-100 bg-opacity-50 rounded-lg flex items-center justify-center pointer-events-none">
+							<p className="text-pink-500 font-bold text-lg text-center">
+								여기 바코드를 맞춰주세요!
+							</p>
+						</div>
 					</div>
 
 					<div className="flex gap-4 mt-4">
