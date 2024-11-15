@@ -123,6 +123,8 @@ export default function SignupPage() {
 				<Image
 					src="/icons/back_icon.svg"
 					alt="Back Icon"
+					width={24}
+					height={24}
 					className="w-6 h-6 cursor-pointer absolute left-0"
 					onClick={() => window.history.back()}
 				/>
@@ -209,6 +211,8 @@ export default function SignupPage() {
 						<Image
 							src="/icons/search_icon.png"
 							alt="Search Icon"
+							width={24}
+							height={24}
 							className="w-6 h-6"
 						/>
 					</div>
