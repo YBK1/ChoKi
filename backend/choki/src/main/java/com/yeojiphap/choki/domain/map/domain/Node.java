@@ -1,11 +1,9 @@
 package com.yeojiphap.choki.domain.map.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 
 import java.util.Objects;
 
@@ -20,6 +18,7 @@ public class Node {
     private Geometry geometry;
     private Boolean hasCctv;
     private Boolean hasCrossing;
+    private Geometry geom;
 
     @Override
     public boolean equals(Object o) {
