@@ -27,23 +27,28 @@ const Map = ({
 	>([]);
 	const [showSetDestination, setShowSetDestination] = useState(false);
 	const [isRecording, setIsRecording] = useState(false);
+	const [nearbyUsers, setNearbyUsers] = useState<NearbyUserData | null>(null);
 	const router = useRouter();
 
 	// const { missionId } = router.query;
 
 	useEffect(() => {
-		const showNearbyUsers = async () => {
-			try {
-				const users = await getUsersNearby();
-				console.log('주변 아이 목록:', users);
-			} catch (error) {
-				console.error('Error fetching nearby users:', error);
-			}
-		};
+		if (showUsersAround) {
+			const showNearbyUsers = async () => {
+				try {
+					const response = await getUsersNearby();
+					setNearbyUsers(response);
+					console.log('주변 아이 목록:', response);
+				} catch (error) {
+					console.error('주변 아이 정보 가져오는데 오류 발생:', error);
+				}
+			};
 
-		showNearbyUsers();
+			showNearbyUsers();
+		} else {
+			setNearbyUsers(null);
+		}
 	}, [showUsersAround]);
-
 	const handleRecordingFinished = () => {
 		setShowSetDestination(true);
 		setIsRecording(false);
@@ -86,7 +91,11 @@ const Map = ({
 			)}
 			<MapContainer onMapLoad={setMapInstance} />
 			{mapInstance && (
-				<UserLocationMarker map={mapInstance} coordinates={coordinates} />
+				<UserLocationMarker
+					map={mapInstance}
+					coordinates={coordinates}
+					nearbyUsers={nearbyUsers ?? undefined}
+				/>
 			)}
 			{mapInstance && showPolyline && (
 				<RoutePolyline
