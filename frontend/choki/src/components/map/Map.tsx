@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MapContainer from './MapContainer';
 import UserLocationMarker from './UserLocationMarker';
 import RoutePolyline from './RoutePolyline';
@@ -7,6 +7,7 @@ import SetDestination from './SetDestination';
 import ChildNavBar from '../Common/Navbar/ChildNavBar';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { getUsersNearby } from '@/lib/api/user';
 
 const Map = ({
 	coordinates,
@@ -15,6 +16,7 @@ const Map = ({
 	showPreviousButton = true,
 	showChildNavBar = false,
 	route = [],
+	showUsersAround = false,
 }: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
@@ -25,10 +27,28 @@ const Map = ({
 	>([]);
 	const [showSetDestination, setShowSetDestination] = useState(false);
 	const [isRecording, setIsRecording] = useState(false);
+	const [nearbyUsers, setNearbyUsers] = useState<NearbyUserData | null>(null);
 	const router = useRouter();
 
 	// const { missionId } = router.query;
 
+	useEffect(() => {
+		if (showUsersAround) {
+			const showNearbyUsers = async () => {
+				try {
+					const response = await getUsersNearby();
+					setNearbyUsers(response);
+					console.log('주변 아이 목록:', response);
+				} catch (error) {
+					console.error('주변 아이 정보 가져오는데 오류 발생:', error);
+				}
+			};
+
+			showNearbyUsers();
+		} else {
+			setNearbyUsers(null);
+		}
+	}, [showUsersAround]);
 	const handleRecordingFinished = () => {
 		setShowSetDestination(true);
 		setIsRecording(false);
@@ -71,7 +91,11 @@ const Map = ({
 			)}
 			<MapContainer onMapLoad={setMapInstance} />
 			{mapInstance && (
-				<UserLocationMarker map={mapInstance} coordinates={coordinates} />
+				<UserLocationMarker
+					map={mapInstance}
+					coordinates={coordinates}
+					nearbyUsers={nearbyUsers ?? undefined}
+				/>
 			)}
 			{mapInstance && showPolyline && (
 				<RoutePolyline

@@ -1,5 +1,5 @@
 import Modal from '@/components/Common/Modal/nonCloseModalLarge';
-import Navbar from '@/components/Common/Navbar/UpperNavbar';
+import Navbar from '@/components/Common/Navbar/YellowUpperNavbar';
 import Image from 'next/image';
 import SpeechBubble from '@/components/shop/SpeechBubble';
 import ProductCard from '@/components/shop/ProductCard';

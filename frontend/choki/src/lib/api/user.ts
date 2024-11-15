@@ -14,6 +14,7 @@ export const getFamily = async () => {
 
 export const getUserData = async (): Promise<userDataResponse> => {
 	const response = await axiosInstance.get('/api/user/mypage');
+	console.log('내 정보 조회');
 	return response.data;
 };
 
@@ -23,5 +24,10 @@ export const getMissionList = async (userId: number) => {
 			userId: userId,
 		},
 	});
+	return response.data;
+};
+
+export const getUsersNearby = async () => {
+	const response = await axiosInstance.get('/api/user/nearby');
 	return response.data;
 };
