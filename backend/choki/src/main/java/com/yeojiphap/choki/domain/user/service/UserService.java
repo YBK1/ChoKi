@@ -89,9 +89,11 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public NearbyUsersDto findNearbyUsers() {
+        //Todo: 나의 정보를 한번 더 검색하는 것 filter에서 제외된 이미 검색된 동물을 사용하는걸로 수정
         User user = findCurrentUser();
         List<User> users = userRepository.findUsersWithinRadius(user.getLatitude(), user.getLongitude(), SEARCH_RADIUS_KM);
         List<UserMainCharacterDto> userMainCharacterDtos = users.stream()
+                .filter(foundUser -> !foundUser.getId().equals(user.getId()))
                 .map(foundUser -> {
                     Animal animal = animalService.findById(foundUser.getMainAnimal());
                     return new UserMainCharacterDto(foundUser.getId(), foundUser.getUsername(), foundUser.getLatitude(), foundUser.getLongitude(), foundUser.getMainAnimal(), animal.getAnimalImage());
