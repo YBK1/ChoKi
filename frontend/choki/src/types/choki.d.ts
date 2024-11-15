@@ -16,6 +16,7 @@ type MapProps = {
 	showChildNavBar: boolean;
 	route?: LatLng[];
 	coordinates?: { latitude: number; longitude: number } | null;
+	showUsersAround?: boolean;
 };
 
 // 카카오맵 실제 지도 props
@@ -52,10 +53,25 @@ type RouteRecorderProps = {
 	setIsRecording: (isRecording: boolean) => void;
 };
 
+interface NearbyUserData {
+	latitude: number;
+	longitude: number;
+	animalImage: string;
+	users: Array<{
+		userId: number;
+		username: string;
+		latitude: number;
+		longitude: number;
+		animalId: number;
+		animalImage: string;
+	}>;
+}
+
 // 카카오맵 유저 표시 props
 interface UserLocationMarkerProps {
 	map: any;
 	coordinates?: { latitude: number; longitude: number } | null;
+	nearbyUsers?: NearbyUserData;
 }
 
 type MissionType = 'SHOP' | 'RECYCLE' | 'EXTRA_MISSION';

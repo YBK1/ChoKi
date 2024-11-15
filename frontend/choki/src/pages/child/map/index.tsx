@@ -13,6 +13,7 @@ const MapPage = () => {
 				showDestinationSearch={false}
 				showPreviousButton={false}
 				showChildNavBar={true}
+				showUsersAround={true}
 			/>
 		</div>
 	);

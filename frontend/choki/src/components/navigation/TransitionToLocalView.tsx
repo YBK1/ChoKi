@@ -2,6 +2,7 @@ import { useCallback, useRef } from 'react';
 import SkyLayer from './SkyLayer';
 import ThreeDBuildingsLayer from './3DBuildingsLayer';
 import MapStyles from './MapStyles';
+import Image from 'next/image';
 
 interface TransitionToLocalViewProps {
 	map: mapboxgl.Map | null;
@@ -54,117 +55,136 @@ const TransitionToLocalView: React.FC<TransitionToLocalViewProps> = ({
 		[map],
 	);
 
+	const applyKoreanLabels = (mapInstance: mapboxgl.Map) => {
+		const style = mapInstance.getStyle();
+		if (style && style.layers) {
+			style.layers.forEach(layer => {
+				if (
+					layer.type === 'symbol' &&
+					layer.layout &&
+					'text-field' in layer.layout
+				) {
+					mapInstance.setLayoutProperty(layer.id, 'text-field', [
+						'coalesce',
+						['get', 'name_ko'],
+						['get', 'name'],
+					]);
+				}
+			});
+		}
+	};
+
 	const transitionToLocalView = useCallback(() => {
 		if (!map || !userLocation || !route) return;
 
-		setIsGlobeView(false);
+		{
+			setIsGlobeView(false);
 
-		map.flyTo({
-			center: userLocation,
-			zoom: 3,
-			duration: 2000,
-			pitch: 0,
-			bearing: 0,
-		});
-
-		setTimeout(() => {
-			map.setProjection({ name: 'mercator' });
-			map.setStyle('mapbox://styles/mapbox/streets-v11');
-
-			map.once('style.load', () => {
-				const style = map.getStyle();
-				if (style && style.layers) {
-					style.layers.forEach(layer => {
-						if (
-							layer.type === 'symbol' &&
-							layer.layout &&
-							'text-field' in layer.layout
-						) {
-							map.setLayoutProperty(layer.id, 'text-field', [
-								'coalesce',
-								['get', 'name_ko'],
-								['get', 'name'],
-							]);
-						}
-					});
-				}
-
-				map.flyTo({
-					center: userLocation,
-					zoom: 18,
-					pitch: 75,
-					duration: 3000,
-					essential: true,
-				});
-
-				const geojson: GeoJSON.FeatureCollection<GeoJSON.Geometry> = {
-					type: 'FeatureCollection',
-					features: [
-						{
-							type: 'Feature',
-							properties: {},
-							geometry: {
-								type: 'LineString',
-								coordinates: route.map(point => [
-									point.longitude,
-									point.latitude,
-								]),
-							},
-						},
-					],
-				};
-
-				if (!map.getSource('line')) {
-					map.addSource('line', {
-						type: 'geojson',
-						data: geojson,
-					});
-				}
-
-				map.addLayer({
-					id: 'line-background',
-					type: 'line',
-					source: 'line',
-					paint: {
-						'line-color': 'orange',
-						'line-width': 6,
-						'line-opacity': 0.4,
-					},
-				});
-
-				map.addLayer({
-					id: 'line-dashed',
-					type: 'line',
-					source: 'line',
-					paint: {
-						'line-color': 'orange',
-						'line-width': 6,
-						'line-dasharray': [0, 4, 3],
-					},
-				});
-
-				animateDashArray(0);
-
-				SkyLayer(map);
-				ThreeDBuildingsLayer(map);
-				MapStyles(map);
+			map.flyTo({
+				center: userLocation,
+				zoom: 3,
+				duration: 2000,
+				pitch: 0,
+				bearing: 0,
 			});
-		}, 2500);
+
+			setTimeout(() => {
+				map.setProjection({ name: 'mercator' });
+				map.setStyle('mapbox://styles/mapbox/streets-v11');
+
+				map.once('style.load', () => {
+					applyKoreanLabels(map);
+
+					map.flyTo({
+						center: userLocation,
+						zoom: 18,
+						pitch: 75,
+						duration: 3000,
+						essential: true,
+					});
+
+					const geojson: GeoJSON.FeatureCollection<GeoJSON.Geometry> = {
+						type: 'FeatureCollection',
+						features: [
+							{
+								type: 'Feature',
+								properties: {},
+								geometry: {
+									type: 'LineString',
+									coordinates: route.map(point => [
+										point.longitude,
+										point.latitude,
+									]),
+								},
+							},
+						],
+					};
+
+					if (!map.getSource('line')) {
+						map.addSource('line', {
+							type: 'geojson',
+							data: geojson,
+						});
+					}
+
+					map.addLayer({
+						id: 'line-background',
+						type: 'line',
+						source: 'line',
+						paint: {
+							'line-color': 'orange',
+							'line-width': 6,
+							'line-opacity': 0.4,
+						},
+					});
+
+					map.addLayer({
+						id: 'line-dashed',
+						type: 'line',
+						source: 'line',
+						paint: {
+							'line-color': 'orange',
+							'line-width': 6,
+							'line-dasharray': [0, 4, 3],
+						},
+					});
+
+					animateDashArray(0);
+
+					SkyLayer(map);
+					ThreeDBuildingsLayer(map);
+					MapStyles(map);
+				});
+			}, 2500);
+		}
 	}, [map, userLocation, setIsGlobeView, route, animateDashArray]);
 
 	return (
-		<button
+		<div
+			className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+             pl-4 pr-5 py-3 rounded-full shadow-lg 
+             text-white text-lg font-semibold
+             transition-all duration-300 inline-flex items-center gap-3
+             hover:opacity-90 active:opacity-80"
+			style={{
+				background: 'linear-gradient(180deg, #6360F5 0%, #9896FF 100%)',
+			}}
 			onClick={transitionToLocalView}
-			disabled={!userLocation}
-			className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
-        px-6 py-3 bg-white rounded-lg shadow-lg
-        text-lg font-semibold
-        transition-all duration-300
-        ${!userLocation ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 active:bg-gray-100'}
-      `}
 		>
-			{userLocation ? '시작하기' : '위치 확인 중...'}
-		</button>
+			{userLocation ? (
+				<>
+					<Image
+						src="/icons/basket_icon.svg"
+						alt="shopping icon"
+						width={40}
+						height={40}
+					/>
+					장보러 가기
+				</>
+			) : (
+				'위치 확인 중...'
+			)}
+		</div>
 	);
 };
 
