@@ -62,6 +62,8 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				locationMarker.current = new mapboxgl.Marker({
 					element: wrapper,
 					rotationAlignment: 'map',
+					pitchAlignment: 'viewport',
+					anchor: 'center',
 				})
 					.setLngLat(lngLat)
 					.addTo(map);
