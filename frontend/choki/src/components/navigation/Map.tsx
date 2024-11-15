@@ -10,7 +10,6 @@ import ChildLocationSender from '@/lib/ws/ChildLocationSender';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import ShoppingCompleteModal from '../Common/Modal/ShoppingCompleteModal';
 import Image from 'next/image';
-import useCompass from './useCompass';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
@@ -36,8 +35,6 @@ const MapComponent = () => {
 	const router = useRouter();
 
 	const { missionId } = router.query;
-
-	const { direction } = useCompass();
 
 	const goBack = () => {
 		router.push('/child/main');
@@ -81,12 +78,6 @@ const MapComponent = () => {
 			mapInstance.remove();
 		};
 	}, []);
-
-	useEffect(() => {
-		if (map && direction !== null) {
-			map.easeTo({ bearing: 360 - direction, duration: 200 });
-		}
-	}, [map, direction]);
 
 	useEffect(() => {
 		if (!map) return;
