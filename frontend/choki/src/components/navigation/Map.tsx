@@ -83,8 +83,8 @@ const MapComponent = () => {
 	}, []);
 
 	useEffect(() => {
-		if (map) {
-			map.setBearing(360 - direction);
+		if (map && direction !== null) {
+			map.easeTo({ bearing: 360 - direction, duration: 200 });
 		}
 	}, [map, direction]);
 
