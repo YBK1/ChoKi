@@ -5,17 +5,20 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.mission.domain.MissionType;
 import com.yeojiphap.choki.domain.mission.domain.Status;
+import com.yeojiphap.choki.domain.mission.dto.MissionAddRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionCommentRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionDetailResponseDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionImageRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionResponseDto;
 import com.yeojiphap.choki.domain.mission.exception.MissionNotFoundException;
 import com.yeojiphap.choki.domain.mission.repository.MissionRepository;
+import com.yeojiphap.choki.domain.notification.service.NotificationService;
 import com.yeojiphap.choki.domain.shopping.dto.ShoppingCreateRequestDto;
 import com.yeojiphap.choki.global.s3.S3Service;
 import com.yeojiphap.choki.global.s3.S3UploadFailedException;
@@ -27,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 public class MissionService {
 	private final MissionRepository missionRepository;
 	private final S3Service s3Service;
+	private final NotificationService notificationService;
 
 	// 미션 조회하기
 	public MissionDetailResponseDto getMission(String id) {
@@ -42,10 +46,10 @@ public class MissionService {
 			.parentId(shoppingCreateRequestDto.getParentId())
 			.childId(shoppingCreateRequestDto.getChildId())
 			.content("동네 마트 장보기")
-			.exp(50)
+			.exp((long)50)
 			.status(Status.IN_PROGRESS)
 			.completedAt(null)
-			.afterImg(null)
+			.image(null)
 			.missionType(MissionType.SHOP)
 			.shoppingId(null)
 			.comment(null)
@@ -61,8 +65,19 @@ public class MissionService {
 	}
 
 	// 미션 저장하기
-	public void addMission(Mission mission) {
-		missionRepository.save(mission);
+	public void addMission(MissionAddRequestDto missionAddRequestDto) {
+		missionRepository.save(Mission.builder()
+			.missionType(missionAddRequestDto.getMissionType())
+				.parentId(missionAddRequestDto.getParentId())
+				.childId(missionAddRequestDto.getChildId())
+				.content(missionAddRequestDto.getContent())
+				.exp(missionAddRequestDto.getMissionType() == MissionType.RECYCLE ? (long)50 : missionAddRequestDto.getExp())
+				.status(Status.IN_PROGRESS)
+				.shoppingId(null)
+				.image(null)
+				.completedAt(null)
+				.comment(null)
+				.build());
 	}
 
 	// 미션 삭제하기
@@ -77,9 +92,10 @@ public class MissionService {
 		// DTO로 변환
 		List<MissionResponseDto> missionResponseDtos = missions.stream()
 			.map((mission) -> MissionResponseDto.builder()
+				.missionId(mission.getId().toString())
 				.content(mission.getContent())
 				.completedAt(mission.getCompletedAt())
-				.image(mission.getAfterImg())
+				.image(mission.getImage())
 				.type(mission.getMissionType())
 				.shoppingId(mission.getShoppingId().toString())
 				.build())
@@ -99,8 +115,10 @@ public class MissionService {
 		missionRepository.setMissionComment(missionId, comment).orElseThrow(MissionNotFoundException::new);
 	}
 
+	@Transactional
 	public void addMissionImage(MissionImageRequestDto missionImageRequestDto, MultipartFile image){
 		ObjectId missionId = new ObjectId(missionImageRequestDto.getMissionId());
+		Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
 		String imagePath = "";
 		try{
 			imagePath =  s3Service.uploadFile(image);
@@ -109,5 +127,7 @@ public class MissionService {
 			throw new S3UploadFailedException();
 		}
 		missionRepository.setMissionStatusPending(missionId, imagePath).orElseThrow(MissionNotFoundException::new);
+
+		notificationService.addNotificationFromMission(mission);
 	}
 }

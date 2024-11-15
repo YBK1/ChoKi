@@ -1,6 +1,7 @@
 package com.yeojiphap.choki.domain.user.service;
 
 import com.yeojiphap.choki.domain.character.domain.Animal;
+import com.yeojiphap.choki.domain.character.dto.AnimalDto;
 import com.yeojiphap.choki.domain.character.service.AnimalService;
 import com.yeojiphap.choki.domain.collected.domain.Collected;
 import com.yeojiphap.choki.domain.collected.repository.CollectedRepository;
@@ -56,19 +57,25 @@ public class UserService {
         return ChildResponseDto.from(user);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
-        List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
+        UserLevelDto dto = getLevel(currentUser);
+        Long drawAnimalId = 0L;
 
-        return UserResponseDto.from(currentUser, collected);
+        if (dto.isLevelUp()) {
+            drawAnimalId = collectedService.drawRandomAnimal().animalId();
+        }
+
+        List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
+        return UserResponseDto.from(currentUser, collected, dto.isLevelUp(), drawAnimalId);
     }
 
-    @Transactional(readOnly = true)
-    public UserLevelDto getLevel() {
-        User user = findCurrentUser();
+    @Transactional
+    public UserLevelDto getLevel(User user) {
+        boolean isLevelUp = user.getLevel() != user.getPastLevel();
         user.updatePastLevel(user.getLevel());
-        return new UserLevelDto(user.getLevel(), user.getExp(), user.getLevel() == user.getPastLevel());
+        return new UserLevelDto(user.getLevel(), user.getExp(), isLevelUp);
     }
 
     @Transactional(readOnly = true)
@@ -82,15 +89,17 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public NearbyUsersDto findNearbyUsers() {
+        //Todo: 나의 정보를 한번 더 검색하는 것 filter에서 제외된 이미 검색된 동물을 사용하는걸로 수정
         User user = findCurrentUser();
         List<User> users = userRepository.findUsersWithinRadius(user.getLatitude(), user.getLongitude(), SEARCH_RADIUS_KM);
         List<UserMainCharacterDto> userMainCharacterDtos = users.stream()
+                .filter(foundUser -> !foundUser.getId().equals(user.getId()))
                 .map(foundUser -> {
                     Animal animal = animalService.findById(foundUser.getMainAnimal());
                     return new UserMainCharacterDto(foundUser.getId(), foundUser.getUsername(), foundUser.getLatitude(), foundUser.getLongitude(), foundUser.getMainAnimal(), animal.getAnimalImage());
                 }).toList();
-
-        return new NearbyUsersDto(userMainCharacterDtos);
+        Animal animal = animalService.findById(user.getMainAnimal());
+        return new NearbyUsersDto(user.getLatitude(), user.getLongitude(), animal.getAnimalImage(), userMainCharacterDtos);
     }
 
     // 아이디로 유저 정보 조회하기

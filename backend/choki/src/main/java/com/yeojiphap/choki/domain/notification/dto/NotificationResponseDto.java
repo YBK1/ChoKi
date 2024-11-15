@@ -23,6 +23,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class NotificationResponseDto {
+	private Long id;
 	private Long childId;
 	private String content;
 	private String missionId;

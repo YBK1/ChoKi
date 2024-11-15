@@ -66,8 +66,8 @@ public class User {
         this.mainAnimal = mainAnimal;
     }
 
-    public void updatePastLevel(int pastLevel) {
-        this.pastLevel = pastLevel;
+    public void updatePastLevel(int level) {
+        this.pastLevel = level;
     }
 
     public void increaseExperience(int amount) {

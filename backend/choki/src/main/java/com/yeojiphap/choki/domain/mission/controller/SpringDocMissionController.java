@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yeojiphap.choki.domain.mission.domain.Status;
+import com.yeojiphap.choki.domain.mission.dto.MissionAddRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionCommentRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionImageRequestDto;
 import com.yeojiphap.choki.domain.shopping.dto.ProductCompareRequestDto;
@@ -52,6 +53,7 @@ public interface SpringDocMissionController {
 					    "message": "미션 조회 성공",
 					    "data": [
 					        {
+					        	"missionId" : "672df1def4c5cb7ca5d36531",
 					            "content": "동네 마트 장보기",
 					            "completedAt": null,
 					            "image": null,
@@ -160,6 +162,7 @@ public interface SpringDocMissionController {
 					    "message": "미션 조회 성공",
 					    "data": [
 					        {
+					        	"missionId" : "672df1def4c5cb7ca5d36531",
 					            "content": "동네 마트 장보기",
 					            "completedAt": "2024-11-12T16:49:38.178365600",
 					            "image": null,
@@ -205,6 +208,36 @@ public interface SpringDocMissionController {
 	public ApiResponse addImage(
 		@RequestPart("data") MissionImageRequestDto missionImageRequestDto,
 		@RequestPart("image") MultipartFile image);
+	
+	@Operation(
+		summary = "미션 생성",
+		parameters = {
+			@Parameter(
+				name = "access",
+				description = "JWT 토큰",
+				in = ParameterIn.HEADER,
+				required = true,
+				example = "eyJhbGciOiJ..."
+			)
+		},
+		description = "새로운 미션 생성하기"
+	)
+	@ApiResponses(value = {
+		@io.swagger.v3.oas.annotations.responses.ApiResponse(
+			responseCode = "200",
+			description = "미션 추가 성공",
+			content = @Content(
+				mediaType = "application/json",
+				examples = @ExampleObject(value = """
+					{
+					    "status": 200,
+					    "message": "미션 추가 성공",
+					}"""
+				)
+			)
+		),
+	})
+	public ApiResponse addMission(@RequestBody MissionAddRequestDto missionAddRequestDto);
 }
 
 

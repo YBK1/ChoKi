@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.yeojiphap.choki.domain.mission.domain.Status;
+import com.yeojiphap.choki.domain.mission.dto.MissionAddRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionCommentRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionImageRequestDto;
 import com.yeojiphap.choki.domain.mission.service.MissionService;
@@ -55,5 +56,11 @@ public class MissionController implements SpringDocMissionController {
 		@RequestPart("image") MultipartFile image) {
 		missionService.addMissionImage(missionImageRequestDto, image);
 		return ApiResponse.success(HttpStatus.OK, "미션 사진 등록 성공");
+	}
+
+	@PostMapping()
+	public ApiResponse addMission(@RequestBody MissionAddRequestDto missionAddRequestDto) {
+		missionService.addMission(missionAddRequestDto);
+		return ApiResponse.success(HttpStatus.OK, "미션 추가 성공");
 	}
 }

@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.yeojiphap.choki.domain.mission.domain.Mission;
 import com.yeojiphap.choki.domain.notification.Repository.NotificationRepository;
 import com.yeojiphap.choki.domain.notification.dto.NotificationResponseDto;
 import com.yeojiphap.choki.domain.notification.entity.Notification;
@@ -37,6 +38,7 @@ public class NotificationService {
 		// DTO로 변환
 		List<NotificationResponseDto> dtos = notifications.stream()
 			.map((notification) -> NotificationResponseDto.builder()
+				.id(notification.getId())
 				.childId(notification.getChild().getId())
 				.type(notification.getType())
 				.content(notification.getContent())
@@ -99,6 +101,23 @@ public class NotificationService {
 			.content("아이가 장보기를 종료했어요")
 			.missionId(shopping.getMissionId())
 			.type(NotificationType.SHOP)
+			.build();
+
+		notificationRepository.save(notification);
+	}
+
+	@Transactional
+	public void addNotificationFromMission(Mission mission) {
+		User child = userService.findById(mission.getChildId());
+		User parent = userService.findById(mission.getParentId());
+
+		// 알림 생성
+		Notification notification = Notification.builder()
+			.parent(parent)
+			.child(child)
+			.content("아이가 장보기를 종료했어요")
+			.missionId(mission.getId().toString())
+			.type(NotificationType.valueOf(mission.getMissionType().name()))
 			.build();
 
 		notificationRepository.save(notification);

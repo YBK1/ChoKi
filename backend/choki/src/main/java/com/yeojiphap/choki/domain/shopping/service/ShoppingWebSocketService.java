@@ -102,7 +102,7 @@ public class ShoppingWebSocketService {
 		ProductDto productDto = shoppingService.searchProductByBarcode(addProductToCartRequestDto.getBarcode());
 
 		AddProductToCartResponseDto addProductToCartResponseDto = new AddProductToCartResponseDto(
-			addProductToCartRequestDto, productDto.getProductName(), productDto.getImage());
+			addProductToCartRequestDto, productDto.getProductName(), productDto.getImage(), productDto.getCategory());
 		addProductToCartResponseDto.setStatus(
 			// 비어있으면 빈 문자열을 담아서 보내기
 			addProductToCartRequestDto.getListBarcode().isEmpty() ? "" :

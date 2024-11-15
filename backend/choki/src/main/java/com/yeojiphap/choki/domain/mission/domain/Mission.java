@@ -23,13 +23,13 @@ public class Mission {
 
     private String content;
 
-    private int exp;
+    private Long exp;
 
     private Status status;
 
     private String completedAt;
 
-    private String afterImg;
+    private String image;
 
     private MissionType missionType;
 

@@ -62,7 +62,10 @@ public class CustomMissionRepositoryImpl implements CustomMissionRepository{
 	@Override
 	public Optional<Mission> setMissionStatusPending(ObjectId missionId, String image){
 		Query query = new Query(Criteria.where("_id").is(missionId));
-		Update update = new Update().set("status", "PENDING").set("image", image);
+		Update update = new Update()
+			.set("status", "PENDING")
+			.set("image", image)
+			.set("completedAt", LocalDateTime.now().toString());
 		return Optional.ofNullable(mongoTemplate.findAndModify(
 			query,
 			update,
@@ -76,8 +79,7 @@ public class CustomMissionRepositoryImpl implements CustomMissionRepository{
 		Query query = new Query(Criteria.where("_id").is(missionId));
 		Update update = new Update()
 			.set("status", "COMPLETED")
-			.set("comment", comment)
-			.set("completedAt", LocalDateTime.now().toString());
+			.set("comment", comment);
 		return Optional.ofNullable(mongoTemplate.findAndModify(
 			query,
 			update,

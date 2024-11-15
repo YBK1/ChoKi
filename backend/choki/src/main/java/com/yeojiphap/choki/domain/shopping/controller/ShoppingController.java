@@ -68,7 +68,7 @@ public class ShoppingController implements SpringDocShoppingController{
 	}
 
 	// 아이가 장보기 종료 하기
-	@PostMapping(value = "/finish", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+	@PostMapping(value = "/image", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
 	public ApiResponse finishShopping(
 		@RequestPart("data") FinishShoppingRequestDto requestData,
 		@RequestPart("image") MultipartFile completeImage) {
