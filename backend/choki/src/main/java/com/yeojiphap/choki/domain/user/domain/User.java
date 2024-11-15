@@ -9,6 +9,7 @@ import static com.yeojiphap.choki.domain.user.domain.EXP.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(name = "member")
 public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
