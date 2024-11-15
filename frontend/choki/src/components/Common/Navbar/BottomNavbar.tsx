@@ -28,6 +28,7 @@ export default function BottomNavbar() {
 							alt="home_nav"
 							width={62}
 							height={62}
+							priority
 						/>
 					</div>
 				</div>
@@ -42,6 +43,8 @@ export default function BottomNavbar() {
 							alt="gallery_nav"
 							width={62}
 							height={62}
+							className="w-auto h-auto"
+							priority
 						/>
 					</div>
 				</div>
