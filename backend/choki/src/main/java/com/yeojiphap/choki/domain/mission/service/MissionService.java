@@ -18,8 +18,11 @@ import com.yeojiphap.choki.domain.mission.dto.MissionImageRequestDto;
 import com.yeojiphap.choki.domain.mission.dto.MissionResponseDto;
 import com.yeojiphap.choki.domain.mission.exception.MissionNotFoundException;
 import com.yeojiphap.choki.domain.mission.repository.MissionRepository;
+import com.yeojiphap.choki.domain.notification.entity.Notification;
 import com.yeojiphap.choki.domain.notification.service.NotificationService;
 import com.yeojiphap.choki.domain.shopping.dto.ShoppingCreateRequestDto;
+import com.yeojiphap.choki.domain.user.domain.User;
+import com.yeojiphap.choki.domain.user.service.UserService;
 import com.yeojiphap.choki.global.s3.S3Service;
 import com.yeojiphap.choki.global.s3.S3UploadFailedException;
 
@@ -31,6 +34,7 @@ public class MissionService {
 	private final MissionRepository missionRepository;
 	private final S3Service s3Service;
 	private final NotificationService notificationService;
+	private final UserService userService;
 
 	// 미션 조회하기
 	public MissionDetailResponseDto getMission(String id) {
@@ -113,6 +117,8 @@ public class MissionService {
 		ObjectId missionId = new ObjectId(missionCommentRequestDto.getMissionId());
 		String comment = missionCommentRequestDto.getComment();
 		missionRepository.setMissionComment(missionId, comment).orElseThrow(MissionNotFoundException::new);
+
+		notificationService.deleteNotificationByMissionId(missionId.toString());
 	}
 
 	@Transactional
