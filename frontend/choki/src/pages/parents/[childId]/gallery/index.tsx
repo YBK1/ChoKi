@@ -34,7 +34,7 @@ export default function Index() {
 	return (
 		<>
 			<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow min-h-screen pb-24">
-				<div className="flex m-5 items-center gap-24 mt-8">
+				<div className="flex m-5 items-center gap-24 mt-8 mb-10">
 					<Image
 						src="/icons/previous_nav.svg"
 						alt="previous_icon"
