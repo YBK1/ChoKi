@@ -214,9 +214,9 @@ export default function SignupPage() {
 						<Image
 							src="/icons/search_icon.png"
 							alt="Search Icon"
-							className="w-6 h-6"
 							width={24}
 							height={24}
+							className="w-6 h-6"
 						/>
 					</div>
 				</div>
