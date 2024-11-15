@@ -174,7 +174,12 @@ export default function ParentPages() {
 
 			{/* Modal */}
 			{isModalOpen && (
-				<CommonModal onClose={handleCloseModal} isOpen={true} size="medium">
+				<CommonModal
+					onClose={handleCloseModal}
+					isOpen={true}
+					size="medium"
+					hideBackdrop={false}
+				>
 					<div className="flex flex-col items-center gap-4 mt-14">
 						<h4 className="text-2xl font-bold">초대 코드를 공유해주세요!</h4>
 						<div className="w-32 h-32 relative mt-8">
