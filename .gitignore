@@ -40,3 +40,5 @@ wheels/
 # Python 캐시 및 컴파일된 파일
 **/__pycache__/
 **/*.py[cod]
+
+ai/yolov5
