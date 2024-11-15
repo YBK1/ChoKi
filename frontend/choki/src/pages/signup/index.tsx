@@ -127,6 +127,8 @@ export default function SignupPage() {
 					height={24}
 					className="w-6 h-6 cursor-pointer absolute left-0"
 					onClick={() => window.history.back()}
+					width={24}
+					height={24}
 				/>
 				<h1 className="text-2xl font-bold">회원가입</h1>
 			</div>
@@ -214,6 +216,8 @@ export default function SignupPage() {
 							width={24}
 							height={24}
 							className="w-6 h-6"
+							width={24}
+							height={24}
 						/>
 					</div>
 				</div>
