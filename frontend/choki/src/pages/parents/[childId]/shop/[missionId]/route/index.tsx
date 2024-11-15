@@ -47,8 +47,9 @@ export default function ChildIsShoppingPage() {
 			<div
 				className="w-full max-w-3xl overflow-hidden shadow-lg rounded-lg p-2"
 				style={{
-					height: '450px',
+					height: '550px',
 					position: 'relative',
+					marginTop: '230px',
 				}}
 			>
 				<div
@@ -68,6 +69,7 @@ export default function ChildIsShoppingPage() {
 						showChildNavBar={false}
 						route={route}
 						coordinates={currentLocation}
+						showUsersAround={false}
 					/>
 				</div>
 			</div>

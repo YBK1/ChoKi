@@ -174,14 +174,18 @@ export default function ParentPages() {
 
 			{/* Modal */}
 			{isModalOpen && (
-				<CommonModal onClose={handleCloseModal} isOpen={true} size="medium">
+				<CommonModal
+					onClose={handleCloseModal}
+					isOpen={true}
+					size="medium"
+					hideBackdrop={false}
+				>
 					<div className="flex flex-col items-center gap-4 mt-14">
 						<h4 className="text-2xl font-bold">초대 코드를 공유해주세요!</h4>
 						<div className="w-32 h-32 relative mt-8">
 							<Image
 								src="/icons/dog_character.svg"
 								alt="강아지 캐릭터"
-								layout="fill"
 								objectFit="contain"
 								width={100}
 								height={100}
