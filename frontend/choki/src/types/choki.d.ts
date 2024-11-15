@@ -15,6 +15,7 @@ type MapProps = {
 	showPreviousButton?: boolean;
 	showChildNavBar: boolean;
 	route?: LatLng[];
+	coordinates?: { latitude: number; longitude: number } | null;
 };
 
 // 카카오맵 실제 지도 props
@@ -34,6 +35,12 @@ interface RoutePolylineProps {
 	route: LatLng[];
 	polyline: kakao.maps.Polyline | null;
 	setPolyline: React.Dispatch<React.SetStateAction<kakao.maps.Polyline | null>>;
+	startMarker: kakao.maps.Marker | null;
+	endMarker: kakao.maps.Marker | null;
+	setStartMarker: React.Dispatch<
+		React.SetStateAction<kakao.maps.Marker | null>
+	>;
+	setEndMarker: React.Dispatch<React.SetStateAction<kakao.maps.Marker | null>>;
 }
 
 // 카카오맵 경로 기록하는 props
@@ -46,9 +53,11 @@ type RouteRecorderProps = {
 };
 
 // 카카오맵 유저 표시 props
-type UserLocationMarkerProps = {
+interface UserLocationMarkerProps {
 	map: any;
-};
+	coordinates?: { latitude: number; longitude: number } | null;
+}
+
 type MissionType = 'SHOP' | 'RECYCLE' | 'EXTRA_MISSION';
 type KakaoMaps = {
 	load: () => void;
@@ -200,4 +209,16 @@ interface ChildMainUnityProps {
 	pastLevel: number;
 	mainAnimal: number;
 	nickname: string;
+}
+
+interface ProductCardProps {
+	conpareResult: string;
+	ProductName: string;
+}
+// AddModal 컴포넌트의 타입 정의
+interface AddModalProps {
+	conpareResult: string;
+	ProductName: string;
+	originBarcode: string; // originBarcode 속성 추가
+	inputBarcode: string; // inputBarcode 속성 추가
 }

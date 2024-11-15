@@ -9,6 +9,7 @@ import { useRouter } from 'next/router';
 import Image from 'next/image';
 
 const Map = ({
+	coordinates,
 	showRouteRecorder = true,
 	showPolyline = true,
 	showPreviousButton = true,
@@ -17,12 +18,16 @@ const Map = ({
 }: MapProps) => {
 	const [mapInstance, setMapInstance] = useState<any>(null);
 	const [polyline, setPolyline] = useState<any>(null);
+	const [startMarker, setStartMarker] = useState<any>(null);
+	const [endMarker, setEndMarker] = useState<any>(null);
 	const [finalRoute, setFinalRoute] = useState<
 		{ latitude: number; longitude: number }[]
 	>([]);
 	const [showSetDestination, setShowSetDestination] = useState(false);
 	const [isRecording, setIsRecording] = useState(false);
 	const router = useRouter();
+
+	// const { missionId } = router.query;
 
 	const handleRecordingFinished = () => {
 		setShowSetDestination(true);
@@ -65,13 +70,19 @@ const Map = ({
 				</button>
 			)}
 			<MapContainer onMapLoad={setMapInstance} />
-			{mapInstance && <UserLocationMarker map={mapInstance} />}
+			{mapInstance && (
+				<UserLocationMarker map={mapInstance} coordinates={coordinates} />
+			)}
 			{mapInstance && showPolyline && (
 				<RoutePolyline
 					map={mapInstance}
 					route={route.length ? route : finalRoute}
 					polyline={polyline}
 					setPolyline={setPolyline}
+					startMarker={startMarker}
+					endMarker={endMarker}
+					setStartMarker={setStartMarker}
+					setEndMarker={setEndMarker}
 				/>
 			)}
 			{showRouteRecorder && (

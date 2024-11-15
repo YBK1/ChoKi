@@ -11,3 +11,18 @@ export const getFamily = async () => {
 		throw error;
 	}
 };
+
+export const getUserData = async (): Promise<userDataResponse> => {
+	const response = await axiosInstance.get('/api/user/mypage');
+	console.log('내 정보 조회');
+	return response.data;
+};
+
+export const getMissionList = async (userId: number) => {
+	const response = await axiosInstance.get('/api/mission/inProgress', {
+		params: {
+			userId: userId,
+		},
+	});
+	return response.data;
+};

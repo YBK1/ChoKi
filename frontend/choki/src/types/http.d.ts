@@ -1,5 +1,9 @@
 //http 관련 타입, Request, Response 뒤에 붙이기
 type role = 'PARENT' | 'CHILD';
+
+// 알림이 missionId, shoppingId 모두 가질 수 있도록!
+type NotificationResponse = MissionNotification | ShoppingNotification;
+
 interface SignupRequest {
 	userId: string;
 	userPassword: string;
@@ -26,27 +30,32 @@ interface JoinFamilyResponse {
 	invite_code: string;
 }
 
-// export interface BaseResponse<T> {
-// 	status: number;
-// 	message: string;
-// 	data: T;
-// }
-
-interface NotificationResponse {
+interface BaseNotificationResponse {
 	childId: number;
 	content: string;
 	type: MissionType;
-	missionId: string;
 	time: string;
+}
+
+interface MissionNotification extends BaseNotificationResponse {
+	missionId: string;
+	shoppingId: null;
+}
+
+interface ShoppingNotification extends BaseNotificationResponse {
+	missionId: null;
+	shoppingId: string;
 }
 
 interface ItemSearchResponse {
 	barcode: string;
 	category: string;
 	productName: string;
+	title: string;
 	image: string;
+	count: number;
 }
-interface CartItem extends ItemSearchResponse {
+interface SearchCartItem extends ItemSearchResponse {
 	quantity: number;
 }
 
@@ -76,8 +85,8 @@ interface ShoppingRequest {
 	shoppingList: ReturnType<typeof getShoppingList>;
 }
 
-interface KidDataResponse {
-	id: string;
+interface userDataResponse {
+	userId: number;
 	nickname: string;
 	address: string;
 	name: string;
@@ -100,7 +109,7 @@ interface CartItem {
 	productName: string;
 	image: string;
 	quantity: number;
-	reason?: string;
+	reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
 	status?: string;
 }
 // ProductCard에서 사용하는 Props
@@ -118,28 +127,40 @@ interface ShoppingCardProps {
 	};
 	onCameraClick: () => void; // 카메라 클릭 핸들러 추가
 }
+
+interface ParentShoppingCardProps {
+	ParentsShoppingItem: {
+		productName: string;
+		quantity: number;
+		image: string;
+	};
+	ChildrenShoppingItem?: {
+		productName: string;
+		quantity: number;
+		image: string;
+	};
+	status?: 'MATCH' | 'NOT_MATCH' | 'SIMILAR';
+	reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
+	showWarning?: boolean;
+	emptyMessage?: string;
+}
 interface ShoppingItem {
 	barcode: string;
 	category: string;
 	productName: string;
 	image: string;
 	quantity: number;
-	cartItem?: {
-		productName: string;
-		quantity: number;
-		image: string;
-		reason?: string;
-		status?: string;
-	};
+	cartItem?: CartItem;
 }
 
 interface UnityMainResponse {
-	id: number;
+	userId: number;
 	nickname: string;
-	mainAnimalId: number;
 	level: number;
 	exp: number;
-	isLevelUp: string;
+	isLevelUp: number; // Unity expects 0 or 1
+	mainAnimalId: number;
+	animals: number[];
 }
 
 interface KidDataResponseFromParent {
@@ -162,4 +183,18 @@ interface InProgressMissionResponse {
 	image: string;
 	type: MissionType;
 	shoppingId: string;
+}
+
+interface conmpareRequest {
+	originBarcode: string;
+	inputBarcode: string;
+}
+
+interface matchStatusReponse {
+	matchStatus: string;
+}
+interface ShoppingListResponse {
+	status: number;
+	matchStatus: string;
+	message: string;
 }
