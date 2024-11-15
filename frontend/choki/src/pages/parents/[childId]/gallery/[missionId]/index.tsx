@@ -46,14 +46,14 @@ export default function GalleryDetailPage() {
 					</h1>
 				</div>
 
-				<div className="flex justify-center mt-5">
+				<div className="flex justify-center mt-6">
 					<MissionItem
 						type={missionDetail.type as MissionType}
 						content={missionDetail.content}
 					/>
 				</div>
 
-				<div className="flex justify-center items-center mt-2">
+				<div className="flex justify-center items-center mt-5">
 					<div className="w-[330px] h-[330px] rounded-2xl bg-gray-100">
 						<div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center">
 							{missionDetail.image && (
@@ -69,9 +69,9 @@ export default function GalleryDetailPage() {
 					</div>
 				</div>
 
-				<div className="flex flex-col items-center">
-					<div className="text-lg font-bold mt-4 mb-2">한마디</div>
-					<div className="w-[310px] p-3 min-h-[20px] rounded-3xl border-2 border-black bg-gray-50">
+				<div className="flex flex-col ml-10">
+					<div className="text-lg font-bold mt-8 mb-2">한마디</div>
+					<div className="w-[310px] p-3 min-h-[20px] rounded-3xl border-2 border-gray-300 bg-gray-50">
 						{missionDetail.comment || '작성된 코멘트가 없습니다.'}
 					</div>
 				</div>
