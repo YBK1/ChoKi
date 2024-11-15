@@ -5,6 +5,7 @@ import UnityViewer from '@/components/Unity/UnityViewer';
 import { userAtom } from '@/atoms';
 import { useAtom } from 'jotai';
 import router from 'next/router';
+import { changeMainAnimal } from '@/lib/api/unity';
 
 declare global {
 	interface Window {
@@ -14,6 +15,7 @@ declare global {
 		navigateToMap?: () => void;
 		navigateToShopping?: (missionId: string) => void;
 		navigateToRecycling?: (missionId: string) => void;
+		changeRepresentativeAnimal?: (animalId: number) => void;
 		createUnityInstance?: (
 			canvas: HTMLCanvasElement,
 			config: {
@@ -71,12 +73,24 @@ export default function MainPage() {
 			router.push(`/child/mission/${missionId}/recycle`);
 		};
 
+		window.changeRepresentativeAnimal = (animalId: number) => {
+			console.log('AnimalID : ', animalId);
+			if (typeof animalId === 'number' && animalId >= 0) {
+				// animalId가 유효한 경우에만 실행
+				console.log('대표 동물 변경 요청됨:', animalId);
+				changeMainAnimal(animalId);
+			} else {
+				console.error('유효하지 않은 animalId:', animalId);
+			}
+		};
+
 		return () => {
 			delete window.UnityReadyCallback;
 			delete window.RequestUserData;
 			delete window.navigateToMap;
 			delete window.navigateToShopping;
 			delete window.navigateToRecycling;
+			delete window.changeRepresentativeAnimal;
 		};
 	}, []);
 
