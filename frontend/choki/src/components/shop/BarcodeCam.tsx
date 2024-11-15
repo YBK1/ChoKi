@@ -58,6 +58,7 @@ const Cam: React.FC<CamProps> = ({
 				(result, error) => {
 					if (result) {
 						const scannedBarcode = result.getText();
+						console.log('Scanned Barcode:', scannedBarcode); // 바코드 번호 콘솔 출력
 						if (
 							(scannedBarcode.length === 13 || scannedBarcode.length === 8) &&
 							/^\d+$/.test(scannedBarcode)
