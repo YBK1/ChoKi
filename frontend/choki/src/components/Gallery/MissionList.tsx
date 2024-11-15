@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { MISSION_IMAGES } from '@/constants/mission';
 
 interface MissionListProps {
+	childId: string;
 	missionId: string;
 	completedAt: string;
 	image: string;
@@ -10,6 +11,7 @@ interface MissionListProps {
 }
 
 const MissionList: React.FC<MissionListProps> = ({
+	childId,
 	missionId,
 	completedAt,
 	image,
@@ -17,43 +19,34 @@ const MissionList: React.FC<MissionListProps> = ({
 }) => {
 	const router = useRouter();
 	const handleMissionDetail = () => {
-		router.push(`${missionId}`);
+		router.push(`/parents/${childId}/gallery/${missionId}`);
 	};
 	return (
-		<div className="flex flex-col items-center">
-			<div
-				className="relative w-40 aspect-square mb-2 cursor-pointer"
-				onClick={handleMissionDetail}
-			>
-				<div className="absolute inset-0 bg-white rounded-3xl shadow-sm">
-					<div
-						className={
-							'absolute -top-1 -left-1 z-10 flex items-center justify-center w-8 h-8 rounded-full'
-						}
-					>
-						<div className="relative w-5 h-5">
-							<Image
-								src={MISSION_IMAGES[type as MissionType]}
-								alt={`${type} icon`}
-								fill
-								className="object-contain"
-							/>
-						</div>
-					</div>
-
-					<div className="relative w-[160px] h-[180px] bg-grey-100 rounded-3xl overflow-hidden">
-						<Image
-							src={image}
-							alt="Mission image"
-							fill
-							className="object-cover"
-						/>
-					</div>
-				</div>
+		<div
+			className="relative w-[160px] h-[180px] bg-gray-100 rounded-3xl flex items-center justify-center cursor-pointer"
+			onClick={handleMissionDetail}
+		>
+			<div className="absolute top-0 left-0 w-10 h-10">
+				<Image
+					src={MISSION_IMAGES[type as MissionType]}
+					alt={`${type} icon`}
+					fill
+				/>
 			</div>
-
-			<span className="text-sm text-gray-600">{completedAt}</span>
+			<div className="flex flex-col items-center gap-1">
+				<Image
+					src={image}
+					alt="mission_img"
+					width={130}
+					height={130}
+					className="rounded-2xl mt-4"
+				/>
+				<span className="text-md font-semibold text-gray-600">
+					{completedAt}
+				</span>
+			</div>
 		</div>
 	);
 };
+
 export default MissionList;

@@ -47,13 +47,14 @@ export default function MissionAcceptPage() {
 	return (
 		<>
 			<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow min-h-screen pb-10">
-				<div className="flex items-center p-4 border-b relative mt-3">
+				<div className="flex items-center p-4 relative mt-5">
 					<button onClick={() => router.back()} className="p-2 absolute left-4">
 						<Image
 							src="/icons/previous_nav.svg"
-							alt="back"
-							width={24}
-							height={24}
+							alt="previous_icon"
+							className="w-10 h-10 cursor-pointer rounded-2xl shadow-xl mr-2"
+							width={48}
+							height={48}
 						/>
 					</button>
 					<h1 className="w-full text-center text-xl font-bold">
