@@ -8,6 +8,7 @@ function useCompass() {
 			const { alpha } = event;
 			if (alpha !== null) {
 				const heading = 360 - alpha;
+				console.log(`Device heading: ${heading}`);
 				setDirection(heading);
 			}
 		};
