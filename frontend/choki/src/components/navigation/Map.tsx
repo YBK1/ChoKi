@@ -205,7 +205,7 @@ const MapComponent = () => {
 							userLocation={userLocation}
 						/>
 						<div className="absolute top-1/3 right-4 transform -translate-y-1/2 z-20">
-							{/* Toggle Switch */}
+							{/* Vertical Toggle Switch */}
 							<label className="relative inline-flex flex-col items-center cursor-pointer">
 								<input
 									type="checkbox"
