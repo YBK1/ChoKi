@@ -179,7 +179,7 @@ const MapComponent = () => {
 			) : (
 				showLocalViewElements && (
 					<>
-						{/* Show the 완료 button only if the destination is Home */}
+						{/* 목적지 집일 때에만 완료버튼 표시되도록 */}
 						{destination === 'Home' && (
 							<button
 								onClick={openMissionFinishModal}
@@ -194,9 +194,10 @@ const MapComponent = () => {
 						<TimeDistanceTracker
 							route={currentRoute ?? []}
 							userLocation={userLocation}
+							shoppingId={missionId as string}
 						/>
 						<div className="absolute top-1/3 right-4 transform -translate-y-1/2 z-20">
-							{/* Vertical Toggle Switch */}
+							{/* 목적지 변경 토글 스위치 */}
 							<label className="relative inline-flex flex-col items-center cursor-pointer">
 								<input
 									type="checkbox"
