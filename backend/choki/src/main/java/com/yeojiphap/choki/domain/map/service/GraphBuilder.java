@@ -1,17 +1,18 @@
-package com.yeojiphap.choki.domain.map.domain;
+package com.yeojiphap.choki.domain.map.service;
 
+import com.yeojiphap.choki.domain.map.domain.Node;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 public class GraphBuilder {
-
     private final Graph<Node, DefaultWeightedEdge> graph;
+    private final WeightCalculator weightCalculator;
 
-    public GraphBuilder() {
+    public GraphBuilder(WeightCalculator weightCalculator) {
         this.graph = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
+        this.weightCalculator = weightCalculator;
     }
-
     public void addNode(Node node) {
         graph.addVertex(node);
     }
@@ -23,16 +24,9 @@ public class GraphBuilder {
                 return;
             }
 
-            double weight = calculateEdgeWeight(length, hasCctv, hasCrossing);
+            double weight = weightCalculator.calculate(length, hasCctv, hasCrossing);
             graph.setEdgeWeight(edge, weight);
         }
-    }
-
-    private double calculateEdgeWeight(double length, boolean hasCctv, boolean hasCrossing) {
-        double weight = length;
-        if (hasCctv) weight *= 0.5;     // CCTV가 있으면 가중치를 낮춤
-        if (hasCrossing) weight *= 2.0; // 횡단보도가 있으면 가중치를 높임
-        return weight;
     }
 
     public Graph<Node, DefaultWeightedEdge> getGraph() {
