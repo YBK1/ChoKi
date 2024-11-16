@@ -16,9 +16,9 @@ COPY . .
 RUN mkdir -p ./public/unity && \
     wget -q -P ./public/unity https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/index.html && \
     wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unitybuild.loader.js && \
-    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unity.framework.js && \
-    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unity.data && \
-    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unity.wasm
+    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unitybuild.framework.js && \
+    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unitybuild.data && \
+    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unitybuild.wasm
 
 # Next.js 프로젝트 빌드
 RUN npm run build
