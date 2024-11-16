@@ -1,12 +1,11 @@
 package com.yeojiphap.choki.domain.map.service;
 
 import com.yeojiphap.choki.domain.map.domain.*;
-import com.yeojiphap.choki.domain.map.dto.request.GuidedRouteRequest;
-import com.yeojiphap.choki.domain.map.dto.request.RouteRequest;
-import com.yeojiphap.choki.domain.map.dto.response.DestinationDto;
+import com.yeojiphap.choki.domain.map.dto.request.RouteSearchRequest;
+import com.yeojiphap.choki.domain.map.dto.request.RouteRegisterRequest;
 import com.yeojiphap.choki.domain.map.dto.response.RouteDto;
-import com.yeojiphap.choki.domain.map.dto.response.GuidedRouteListDto;
-import com.yeojiphap.choki.domain.map.exception.GuidedRouteNotFoundException;
+import com.yeojiphap.choki.domain.map.dto.response.DestinationsDto;
+import com.yeojiphap.choki.domain.map.exception.RouteNotFoundException;
 import com.yeojiphap.choki.domain.map.repository.EdgeRepository;
 import com.yeojiphap.choki.domain.map.repository.RouteRepository;
 import com.yeojiphap.choki.domain.map.repository.NodeRepository;
@@ -29,7 +28,7 @@ public class MapService {
     private final EdgeRepository edgeRepository;
     private final RouteRepository routeRepository;
 
-    public String saveRoutes(RouteRequest request) {
+    public String saveRoutes(RouteRegisterRequest request) {
         User user = userService.findCurrentUser();
         Location userLocation = getUserLocation(user);
         saveRoute(user, userLocation, request.destination(), request.routes(), RouteType.GUIDED_PATH);
@@ -50,16 +49,13 @@ public class MapService {
         routeRepository.save(route);
     }
 
-    public GuidedRouteListDto getGuidedRoutes() {
-        List<Route> routes = routeRepository.findByUserId(SecurityUtil.getCurrentUsername());
-        List<DestinationDto> routeList = routes.stream()
-                .map(route -> new DestinationDto(route.getDestination(), route.getId().toHexString()))
-                .toList();
-        return new GuidedRouteListDto(routeList);
+    public DestinationsDto getDestinations() {
+        List<Location> destinations = routeRepository.findDistinctDestinations(SecurityUtil.getCurrentUsername());
+        return new DestinationsDto(destinations);
     }
 
-    public RouteDto getGuidedRoute(GuidedRouteRequest request) {
-        Route route = routeRepository.findById(request.id()).orElseThrow(GuidedRouteNotFoundException::new);
+    public RouteDto getRoute(RouteSearchRequest request) {
+        Route route = routeRepository.findByUserIdAndDestinationAndRouteType(SecurityUtil.getCurrentUsername(), request.destination(), request.routeType()).orElseThrow(RouteNotFoundException::new);
         return RouteDto.from(route);
     }
 
