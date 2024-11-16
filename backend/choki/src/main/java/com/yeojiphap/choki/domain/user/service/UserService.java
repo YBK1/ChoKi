@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -78,15 +79,16 @@ public class UserService {
         return UserResponseDto.from(currentUser, collected, dto.isLevelUp(), drawAnimalId);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UserLevelDto getLevel(User user) {
         log.info("Before update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
         boolean isLevelUp = user.getLevel() != user.getPastLevel();
         user.updatePastLevel(user.getLevel());
-        em.flush(); // 영속성 컨텍스트 강제 동기화
+        em.flush(); // 데이터베이스 동기화
         log.info("After update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
         return new UserLevelDto(user.getLevel(), user.getExp(), isLevelUp);
     }
+
 
     @Transactional(readOnly = true)
     public String validateUserId(UserIdRequest request) {
