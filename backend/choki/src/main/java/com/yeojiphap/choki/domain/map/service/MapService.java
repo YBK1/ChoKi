@@ -31,16 +31,17 @@ public class MapService {
 
     public String saveRoutes(RouteRequest request) {
         User user = userService.findCurrentUser();
-        saveRoute(user, request.destination(), request.routes(), RouteType.GUIDED_PATH);
-        saveSafeRoute(user, getUserLocation(user), request.destination());
-        saveShortestRoute(user, getUserLocation(user), request.destination());
+        Location userLocation = getUserLocation(user);
+        saveRoute(user, userLocation, request.destination(), request.routes(), RouteType.GUIDED_PATH);
+        saveSafeRoute(user, userLocation, request.destination());
+        saveShortestRoute(user, userLocation, request.destination());
         return GUIDED_ROUTE_SAVE_SUCCESS.getMessage();
     }
 
-    private void saveRoute(User user, Location request, List<Location> routes, RouteType guidedPath) {
+    private void saveRoute(User user, Location userLocation, Location request, List<Location> routes, RouteType guidedPath) {
         Route route = Route.builder()
                 .userId(user.getUsername())
-                .startPoint(getUserLocation(user))
+                .startPoint(userLocation)
                 .destination(request)
                 .routes(routes)
                 .routeType(guidedPath)
@@ -91,7 +92,7 @@ public class MapService {
         validateMappedNodes(mappedStart, mappedGoal);
 
         List<Location> path = findPath(graphBuilder, mappedStart, mappedGoal);
-        saveRoute(user, destination, path, RouteType.SAFE_PATH);
+        saveRoute(user, startPoint, destination, path, RouteType.SAFE_PATH);
     }
 
     public void saveShortestRoute(User user, Location startPoint, Location destination) {
@@ -118,7 +119,7 @@ public class MapService {
         validateMappedNodes(mappedStart, mappedGoal);
 
         List<Location> path = findPath(graphBuilder, mappedStart, mappedGoal);
-        saveRoute(user, destination, path, RouteType.SHORTEST_PATH);
+        saveRoute(user, startPoint, destination, path, RouteType.SHORTEST_PATH);
     }
 
     private Node findNearestNode(Location location) {
