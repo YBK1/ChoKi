@@ -93,9 +93,15 @@ const Cam: React.FC<BarcodeCamProps> = ({
 							autoPlay
 							className="w-full h-full object-cover"
 						/>
+						{/* 비디오 배경 어둡게 처리 */}
+						<div className="absolute inset-0 bg-black bg-opacity-50 pointer-events-none"></div>
 						{/* 가이드라인 추가 */}
 						<div className="absolute inset-0 flex justify-center items-center pointer-events-none">
-							<div className="border-2 border-orange-300 w-[80%] h-[20%]"></div>
+							<div className="border-2 border-orange-300 w-[80%] h-[20%]">
+								<span className="text-white mt-2 text-sm bg-opacity-50 px-2 py-1 rounded">
+									바코드를 박스 안에 맞춰주세요
+								</span>
+							</div>
 						</div>
 					</div>
 
