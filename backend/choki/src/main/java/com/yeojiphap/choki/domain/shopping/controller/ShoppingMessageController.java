@@ -107,7 +107,7 @@ public class ShoppingMessageController {
 		log.info("위기 알림 수신함");
 
 		// redis에 위치 저장
-		shoppingService.sendDangerFcm(dangerRequestDto);
+		// shoppingService.sendDangerFcm(dangerRequestDto);
 		// sub에 메세지를 전송
 		shoppingWebSocketService.sendDangerNotification(dangerRequestDto, access);
 	}
