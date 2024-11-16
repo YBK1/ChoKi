@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ParentsShoppingNavbar from '@/components/Common/Navbar/ParentsShoppingNavbar';
 import OffRouteModal from '@/components/map/OffRouteModal';
+import { getKidDataFromParent } from '@/lib/api/parent';
+import CallConfirmModal from '@/components/map/CallConfirmModal';
 
 export default function ChildIsShoppingPage() {
 	const [route, setRoute] = useState<
@@ -14,12 +16,34 @@ export default function ChildIsShoppingPage() {
 		longitude: number;
 	} | null>(null);
 	const [showOffRouteModal, setShowOffRouteModal] = useState(false);
+	const [showPhoneConfirm, setShowPhoneConfirm] = useState(false);
+	const [phoneNumber, setPhoneNumber] = useState('');
 
 	const router = useRouter();
 	const { childId, missionId } = router.query;
 
-	const handleCallChild = () => {
-		console.log('아가야 전화받아라...');
+	const handleCallChild = async () => {
+		try {
+			const kidData = await getKidDataFromParent(Number(childId));
+			if (kidData.tel) {
+				setPhoneNumber(kidData.tel);
+				setShowPhoneConfirm(true);
+			} else {
+				console.log('전화번호를 찾을 수 없습니다.');
+			}
+		} catch (error) {
+			console.error('아이 정보를 가져오는데 실패했습니다:', error);
+		}
+	};
+
+	const handleConfirmCall = () => {
+		window.location.href = `tel:${phoneNumber}`;
+		setShowPhoneConfirm(false);
+		setShowOffRouteModal(false); // Optionally close the off-route modal as well
+	};
+
+	const handleCancelCall = () => {
+		setShowPhoneConfirm(false);
 	};
 
 	useEffect(() => {
@@ -87,6 +111,14 @@ export default function ChildIsShoppingPage() {
 				<OffRouteModal
 					onClose={() => setShowOffRouteModal(false)}
 					onCallChild={handleCallChild}
+				/>
+			)}
+
+			{showPhoneConfirm && (
+				<CallConfirmModal
+					phoneNumber={phoneNumber}
+					onConfirm={handleConfirmCall}
+					onCancel={handleCancelCall}
 				/>
 			)}
 		</div>
