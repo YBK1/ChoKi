@@ -81,15 +81,21 @@ public class UserService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UserLevelDto getLevel(User user) {
-        em.detach(user); // 영속성 컨텍스트에서 객체 분리
-        user = em.find(User.class, user.getId()); // 데이터베이스에서 최신 상태 가져오기
+        // 영속성 컨텍스트에서 분리 후 최신 상태 조회
+        em.detach(user);
+        user = em.find(User.class, user.getId());
+
         log.info("Before update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
+
         boolean isLevelUp = user.getLevel() != user.getPastLevel();
         user.updatePastLevel(user.getLevel());
-        em.flush(); // 변경 사항 강제 동기화
+
+        em.flush();
+
         log.info("After update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
         return new UserLevelDto(user.getLevel(), user.getExp(), isLevelUp);
     }
+
 
 
 
