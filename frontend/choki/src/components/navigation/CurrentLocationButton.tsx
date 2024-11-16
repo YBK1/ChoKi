@@ -5,6 +5,10 @@ interface DeviceOrientationEventiOS extends DeviceOrientationEvent {
 	requestPermission?: () => Promise<'granted' | 'denied'>;
 }
 
+interface DeviceOrientationEventWithWebkit extends DeviceOrientationEvent {
+	webkitCompassHeading?: number;
+}
+
 const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 	const [currentLocation, setCurrentLocation] = useState<
 		[number, number] | null
@@ -15,15 +19,59 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 
 	useEffect(() => {
 		const handleOrientation = (event: DeviceOrientationEvent) => {
-			const { alpha } = event;
-			if (alpha !== null) {
-				const heading = 360 - alpha;
-				console.log('Device direction:', heading);
+			const eventWithWebkit = event as DeviceOrientationEventWithWebkit;
+
+			// iOS devices
+			if (eventWithWebkit.webkitCompassHeading) {
+				const compassHeading = eventWithWebkit.webkitCompassHeading;
+				console.log('Compass heading:', compassHeading);
+				setDeviceDirection(compassHeading);
+			}
+			// Android devices
+			else if (event.alpha !== null) {
+				let heading = event.alpha;
+
+				if (event.beta !== null && event.gamma !== null) {
+					// Adjust for screen orientation
+					if (typeof window.orientation !== 'undefined') {
+						switch (window.orientation) {
+							case 0:
+								heading = event.alpha;
+								break;
+							case 90:
+								heading = event.alpha + 90;
+								break;
+							case -90:
+								heading = event.alpha - 90;
+								break;
+							case 180:
+								heading = event.alpha + 180;
+								break;
+						}
+					}
+
+					// Normalize to 0-360
+					heading = (heading + 360) % 360;
+				}
+
+				console.log('Calculated heading:', heading);
 				setDeviceDirection(heading);
 			}
 		};
 
 		const requestOrientationPermission = async () => {
+			try {
+				// Try absolute orientation first
+				window.addEventListener('deviceorientationabsolute', handleOrientation);
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			} catch (e) {
+				console.log(
+					'Absolute orientation not available, trying regular orientation',
+				);
+				window.addEventListener('deviceorientation', handleOrientation);
+			}
+
+			// For iOS devices
 			const requestPermissionFunc = (
 				DeviceOrientationEvent as unknown as DeviceOrientationEventiOS
 			).requestPermission;
@@ -49,6 +97,10 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 		requestOrientationPermission();
 
 		return () => {
+			window.removeEventListener(
+				'deviceorientationabsolute',
+				handleOrientation,
+			);
 			window.removeEventListener('deviceorientation', handleOrientation);
 		};
 	}, []);
@@ -67,25 +119,17 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				wrapper.style.justifyContent = 'center';
 				wrapper.style.alignItems = 'center';
 
-				const arrowContainer = document.createElement('div');
-				arrowContainer.style.position = 'absolute';
-				arrowContainer.style.width = '100%';
-				arrowContainer.style.height = '100%';
-				arrowContainer.style.display = 'flex';
-				arrowContainer.style.justifyContent = 'center';
-				arrowContainer.style.alignItems = 'center';
-
-				const arrow = document.createElement('div');
-				arrow.className = 'direction-arrow';
-				arrow.style.width = '24px';
-				arrow.style.height = '24px';
-				arrow.style.position = 'absolute';
-				arrow.style.backgroundImage = 'url(/icons/direction_arrow.svg)';
-				arrow.style.backgroundSize = 'contain';
-				arrow.style.backgroundRepeat = 'no-repeat';
-				arrow.style.backgroundPosition = 'center';
-				arrow.style.transition = 'transform 0.3s ease-out';
-				arrow.style.transformOrigin = 'center';
+				// Simple direction pointer
+				const pointer = document.createElement('div');
+				pointer.style.width = '0';
+				pointer.style.height = '0';
+				pointer.style.borderLeft = '8px solid transparent';
+				pointer.style.borderRight = '8px solid transparent';
+				pointer.style.borderBottom = '16px solid red';
+				pointer.style.position = 'absolute';
+				pointer.style.top = '0';
+				pointer.style.transformOrigin = 'bottom center';
+				pointer.style.transition = 'transform 0.3s ease-out';
 
 				const dog = document.createElement('div');
 				dog.style.width = '30px';
@@ -97,8 +141,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				dog.style.backgroundPosition = 'center';
 				dog.style.zIndex = '1';
 
-				arrowContainer.appendChild(arrow);
-				wrapper.appendChild(arrowContainer);
+				wrapper.appendChild(pointer);
 				wrapper.appendChild(dog);
 
 				locationMarker.current = new mapboxgl.Marker({
@@ -113,24 +156,20 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				locationMarker.current.setLngLat(lngLat);
 			}
 
+			// Update direction pointer
 			if (locationMarker.current) {
-				const arrow = locationMarker.current
+				const pointer = locationMarker.current
 					.getElement()
-					.querySelector('.direction-arrow') as HTMLElement;
-				if (arrow) {
-					const radius = 25;
-					const angleRad = (deviceDirection * Math.PI) / 180;
-
-					arrow.style.transform = `
-						translate(${radius * Math.sin(angleRad)}px, ${-radius * Math.cos(angleRad)}px)
-						rotate(${deviceDirection}deg)
-					`;
+					.querySelector('div') as HTMLElement;
+				if (pointer) {
+					pointer.style.transform = `rotate(${deviceDirection}deg)`;
 				}
 			}
 		},
 		[map, deviceDirection],
 	);
 
+	// Rest of your code remains the same
 	useEffect(() => {
 		if (navigator.geolocation && map) {
 			navigator.geolocation.getCurrentPosition(

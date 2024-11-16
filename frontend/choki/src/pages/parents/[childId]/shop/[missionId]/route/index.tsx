@@ -39,7 +39,7 @@ export default function ChildIsShoppingPage() {
 	const handleConfirmCall = () => {
 		window.location.href = `tel:${phoneNumber}`;
 		setShowPhoneConfirm(false);
-		setShowOffRouteModal(false); // Optionally close the off-route modal as well
+		setShowOffRouteModal(false);
 	};
 
 	const handleCancelCall = () => {
