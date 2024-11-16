@@ -19,7 +19,7 @@ public record UserResponseDto (Long userId, String nickname, String address, Str
                 user.getFamily().getInviteCode(),
                 user.getFamily().getId(),
                 levelInfo.level(),
-                levelInfo.exp(),
+                user.getExp(),
                 levelInfo.isLevelUp(),
                 user.getMainAnimal(),
                 animalList.stream()
