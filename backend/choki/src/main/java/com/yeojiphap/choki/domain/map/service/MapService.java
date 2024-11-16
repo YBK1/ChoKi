@@ -33,6 +33,7 @@ public class MapService {
         User user = userService.findCurrentUser();
         saveRoute(user, request.destination(), request.routes(), RouteType.GUIDED_PATH);
         saveSafeRoute(user, getUserLocation(user), request.destination());
+        saveShortestRoute(user, getUserLocation(user), request.destination());
         return GUIDED_ROUTE_SAVE_SUCCESS.getMessage();
     }
 
@@ -91,6 +92,33 @@ public class MapService {
 
         List<Location> path = findPath(graphBuilder, mappedStart, mappedGoal);
         saveRoute(user, destination, path, RouteType.SAFE_PATH);
+    }
+
+    public void saveShortestRoute(User user, Location startPoint, Location destination) {
+        Node start = findNearestNode(startPoint);
+        Node goal = findNearestNode(destination);
+
+        System.out.println("Start와 Goal: " + formatNodeInfo(start) + ", " + formatNodeInfo(goal));
+
+        double radius = 500.0; // 반경 설정
+        Map<Long, Node> nodeMap = findNearbyNodesAsMap(startPoint, destination, radius);
+
+        System.out.println("Nearby Nodes 개수: " + nodeMap.size());
+
+        List<Edge> nearbyEdges = findEdgesForNodes(nodeMap);
+
+        GraphBuilder graphBuilder = new GraphBuilder(new ShortestWeightCalculator());
+
+        nodeMap.values().forEach(graphBuilder::addNode);
+        nearbyEdges.forEach(edge -> addEdgeToGraph(graphBuilder, edge));
+
+        Node mappedStart = nodeMap.get(start.getId());
+        Node mappedGoal = nodeMap.get(goal.getId());
+
+        validateMappedNodes(mappedStart, mappedGoal);
+
+        List<Location> path = findPath(graphBuilder, mappedStart, mappedGoal);
+        saveRoute(user, destination, path, RouteType.SHORTEST_PATH);
     }
 
     private Node findNearestNode(Location location) {
