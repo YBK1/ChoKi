@@ -1,128 +1,102 @@
 import React, { useRef, useEffect, useState } from 'react';
-// import Image from 'next/image';
-import Button from '../Common/Button';
-import { BrowserMultiFormatReader } from '@zxing/browser';
-import AddModal from './AddModal';
-import { Toast } from '@/components/Toast/Toast';
-import { compareShopping } from '@/lib/api/shopping';
+import confetti from 'canvas-confetti';
 
 interface CamProps {
 	onCaptureChange: (isCaptured: boolean) => void;
 	originBarcode: string;
-	productName: string;
-	addNewItem: (newItem: ShoppingItem) => void;
-	onClose: () => void;
 }
 
-const Cam: React.FC<CamProps> = ({
-	onCaptureChange,
-	originBarcode,
-	productName,
-	onClose,
-}) => {
+const Cam: React.FC<CamProps> = ({ onCaptureChange, originBarcode }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
-	const [compareResult, setCompareResult] = useState<string | null>(null);
-	const [inputBarcode, setInputBarcode] = useState<string | null>(null);
-	const [showToast, setShowToast] = useState<boolean>(false);
-	const [barcodeReader] = useState(new BrowserMultiFormatReader());
-
-	const goCompare = async (originBarcode: string, inputBarcode: string) => {
-		try {
-			if (originBarcode === '') {
-				setCompareResult('MATCH');
-				setInputBarcode(inputBarcode);
-			} else {
-				const response = await compareShopping({ originBarcode, inputBarcode });
-				const matchStatus = response.matchStatus;
-				setCompareResult(matchStatus);
-				setInputBarcode(inputBarcode);
-			}
-		} catch (error) {
-			console.error('장보기 비교 실패:', error);
-		}
-	};
+	const [isScanning, setIsScanning] = useState(true);
+	const [isSuccess, setIsSuccess] = useState(false);
 
 	useEffect(() => {
 		const startScan = async () => {
-			if (videoRef.current) {
-				try {
-					const deviceId = await getRearCameraDeviceId();
-					await barcodeReader.decodeFromVideoDevice(
-						deviceId, // deviceId를 문자열로 바로 전달
-						videoRef.current,
-						result => {
-							if (result) {
-								const scannedBarcode = result.getText();
-								goCompare(originBarcode, scannedBarcode);
-								videoRef.current?.pause(); // 바코드 인식이 완료되면 스캔 중지
-							}
-						},
-					);
-				} catch (error) {
-					console.error('카메라 접근 실패:', error);
+			// Mock barcode scanning process
+			setTimeout(() => {
+				if (originBarcode) {
+					setIsScanning(false);
+					setIsSuccess(true);
+					triggerConfetti();
 				}
-			}
-		};
-
-		const getRearCameraDeviceId = async () => {
-			const devices = await navigator.mediaDevices.enumerateDevices();
-			const rearCamera = devices.find(
-				device =>
-					device.kind === 'videoinput' &&
-					device.label.toLowerCase().includes('back'),
-			);
-			return rearCamera?.deviceId || 'environment';
+			}, 3000); // Simulate a 3-second scan
 		};
 
 		startScan();
 		return () => {
-			videoRef.current?.pause(); // 컴포넌트가 언마운트될 때 스캔 중지
+			videoRef.current?.pause();
 		};
-	}, [barcodeReader, originBarcode]);
+	}, [originBarcode]);
 
-	const handleConfirm = () => {
-		onCaptureChange(true);
+	const triggerConfetti = () => {
+		confetti({
+			particleCount: 150,
+			spread: 60,
+			origin: { y: 0.6 },
+			colors: ['#FFC0CB', '#FFD700', '#ADD8E6'], // 파스텔 톤 색상
+		});
 	};
 
 	return (
-		<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg mx-auto w-[80%] max-w-lg">
-			{compareResult ? (
-				<AddModal
-					conpareResult={compareResult}
-					ProductName={productName || '새로 담은 상품'}
-					originBarcode={originBarcode}
-					inputBarcode={inputBarcode || ''}
-					onClose={onClose}
+		<div className="flex flex-col items-center p-4 bg-gradient-to-b from-pink-100 to-blue-50 rounded-lg shadow-lg w-full max-w-md mx-auto">
+			{/* 카메라 영역 */}
+			<div className="relative w-full h-64 bg-gray-200 rounded-lg">
+				<video
+					ref={videoRef}
+					autoPlay
+					className="absolute inset-0 w-full h-full object-cover rounded-lg"
 				/>
-			) : (
-				<>
-					<div className="relative mb-4 w-full flex justify-center">
-						<video
-							ref={videoRef}
-							autoPlay
-							className="w-full h-full object-cover"
-						/>
+				{/* 바코드 가이드라인 */}
+				<div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+					<div className="relative w-48 h-24 border-4 border-dashed border-pink-400 rounded-lg animate-blink">
+						<p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-pink-500 font-bold text-sm">
+							여기에 바코드를 맞춰주세요!
+						</p>
 					</div>
+				</div>
+			</div>
 
-					<div className="flex gap-4 mt-4">
-						<Button
-							size="small"
-							color="blue"
-							onClick={handleConfirm}
-							text="돌아가기"
-						/>
-					</div>
-				</>
-			)}
+			{/* 상태 표시 */}
+			<div className="mt-4 text-center">
+				{isScanning && (
+					<p className="text-blue-600 text-lg font-semibold animate-pulse">
+						바코드를 찾고 있어요!
+					</p>
+				)}
+				{isSuccess && (
+					<p className="text-green-600 text-lg font-bold">잘했어요! 🎉</p>
+				)}
+			</div>
 
-			{showToast && (
-				<Toast
-					message="바코드를 찾을 수 없습니다. 재촬영 해주세요."
-					onClose={() => setShowToast(false)}
-				/>
-			)}
+			{/* 버튼 */}
+			<div className="mt-6">
+				<button
+					onClick={() => onCaptureChange(false)}
+					className="px-4 py-2 bg-blue-400 text-white rounded-lg shadow hover:bg-blue-500"
+				>
+					돌아가기
+				</button>
+			</div>
 		</div>
 	);
 };
 
 export default Cam;
+
+<style jsx>{`
+	@keyframes blink {
+		0% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+	.animate-blink {
+		animation: blink 1s infinite;
+	}
+`}</style>;
