@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import { useAtom } from 'jotai';
 import {
 	shoppingListAtom,
-	deleteCartItemInShoppingList,
+	deleteCartItemAndCheckEmptyProductName,
 	shoppingMessageAtom,
 	missionIdAtom,
 } from '@/atoms/shoppingAtom';
@@ -59,7 +59,8 @@ export default function ChildShoppingPage() {
 	};
 
 	const deleteItemFromShoppingList = (barcode: string) => {
-		deleteCartItemInShoppingList(setShoppingList, barcode);
+		// 해당하는  barcode를 가진 아이템을 삭제
+		deleteCartItemAndCheckEmptyProductName(setShoppingList, barcode);
 	};
 
 	return (
@@ -102,7 +103,6 @@ export default function ChildShoppingPage() {
 													quantity: item.cartItem.quantity,
 													image: item.cartItem.image,
 													barcode: item.cartItem?.barcode || '',
-													category: item.cartItem.category,
 												}
 											: undefined
 									}
