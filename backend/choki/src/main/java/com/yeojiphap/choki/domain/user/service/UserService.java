@@ -67,10 +67,13 @@ public class UserService {
 
     @Transactional
     public UserResponseDto getUserDetailInfo() {
+        // 새로운 트랜잭션에서 최신 유저 정보 조회
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
-        UserLevelDto dto = getLevel(currentUser);
-        Long drawAnimalId = 0L;
 
+        // 별도 트랜잭션으로 레벨 체크
+        UserLevelDto dto = checkLevelInNewTransaction(currentUser.getId());
+
+        Long drawAnimalId = 0L;
         if (dto.isLevelUp()) {
             drawAnimalId = collectedService.drawRandomAnimal().animalId();
         }
@@ -80,24 +83,20 @@ public class UserService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public UserLevelDto getLevel(User user) {
-        // 영속성 컨텍스트에서 분리 후 최신 상태 조회
-        em.detach(user);
-        user = em.find(User.class, user.getId());
+    public UserLevelDto checkLevelInNewTransaction(Long userId) {
+        // 새로운 트랜잭션에서 최신 데이터 조회
+        User user = em.find(User.class, userId);
 
         log.info("Before update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
 
-        boolean isLevelUp = user.getLevel() != user.getPastLevel();
-        user.updatePastLevel(user.getLevel());
-
-        em.flush();
+        boolean isLevelUp = user.getLevel() > user.getPastLevel();
+        if (isLevelUp) {
+            user.updatePastLevel(user.getLevel());
+        }
 
         log.info("After update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
         return new UserLevelDto(user.getLevel(), user.getExp(), isLevelUp);
     }
-
-
-
 
     @Transactional(readOnly = true)
     public String validateUserId(UserIdRequest request) {
