@@ -79,13 +79,14 @@ public class UserService {
         return UserResponseDto.from(currentUser, collected, dto.isLevelUp(), drawAnimalId);
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public UserLevelDto getLevel(User user) {
-        em.refresh(user); // 데이터베이스 값으로 강제 동기화
+        em.detach(user); // 영속성 컨텍스트에서 객체 분리
+        user = em.find(User.class, user.getId()); // 데이터베이스에서 최신 상태 가져오기
         log.info("Before update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
         boolean isLevelUp = user.getLevel() != user.getPastLevel();
         user.updatePastLevel(user.getLevel());
-        em.flush(); // 변경 사항 동기화
+        em.flush(); // 변경 사항 강제 동기화
         log.info("After update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
         return new UserLevelDto(user.getLevel(), user.getExp(), isLevelUp);
     }
