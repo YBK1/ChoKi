@@ -65,37 +65,24 @@ public class UserService {
         return ChildResponseDto.from(user);
     }
 
-    @Transactional
     public UserResponseDto getUserDetailInfo() {
-        // 새로운 트랜잭션에서 최신 유저 정보 조회
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
 
-        // 별도 트랜잭션으로 레벨 체크
-        UserLevelDto dto = checkLevelInNewTransaction(currentUser.getId());
+        // DTO에서 레벨업 여부 판단
+        UserLevelDto levelInfo = UserLevelDto.of(
+                currentUser.getLevel(),
+                currentUser.getPastLevel(),
+                currentUser.getExp()
+        );
 
-        Long drawAnimalId = 0L;
-        if (dto.isLevelUp()) {
-            drawAnimalId = collectedService.drawRandomAnimal().animalId();
+        // 레벨업 시 동물 뽑기 및 DTO 업데이트
+        if (levelInfo.isLevelUp()) {
+            AnimalDto drawnAnimal = collectedService.drawRandomAnimal();
+            levelInfo = levelInfo.withDrawnAnimal(drawnAnimal.animalId());
         }
 
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
-        return UserResponseDto.from(currentUser, collected, dto.isLevelUp(), drawAnimalId);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public UserLevelDto checkLevelInNewTransaction(Long userId) {
-        // 새로운 트랜잭션에서 최신 데이터 조회
-        User user = em.find(User.class, userId);
-
-        log.info("Before update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
-
-        boolean isLevelUp = user.getLevel() > user.getPastLevel();
-        if (isLevelUp) {
-            user.updatePastLevel(user.getLevel());
-        }
-
-        log.info("After update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
-        return new UserLevelDto(user.getLevel(), user.getExp(), isLevelUp);
+        return UserResponseDto.from(currentUser, collected, levelInfo);
     }
 
     @Transactional(readOnly = true)
