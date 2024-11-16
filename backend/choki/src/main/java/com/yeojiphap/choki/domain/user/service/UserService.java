@@ -68,19 +68,29 @@ public class UserService {
     @Transactional
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
-        // 레벨 비교를 위한 변수 저장 (영속성 컨텍스트와 분리된 값)
-        int currentLevel = currentUser.getLevel();
+
         int pastLevel = currentUser.getPastLevel();
+        int currentLevel = currentUser.getLevel();
+
         UserLevelDto levelInfo = UserLevelDto.of(currentLevel, pastLevel);
         log.info("현재 레벨 : {}, 이전 레벨 : {}, isLevelUp : {}", currentLevel, pastLevel, levelInfo.isLevelUp());
+
+        // 동물 뽑기 처리
         AnimalDto drawnAnimal = null;
         if (levelInfo.isLevelUp()) {
             drawnAnimal = collectedService.drawRandomAnimal();
             levelInfo = levelInfo.withDrawnAnimal(drawnAnimal.animalId());
+            updatePastLevelInNewTransaction(currentUser.getId(), currentLevel);
         }
-        currentUser.updatePastLevel(currentLevel);
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
         return UserResponseDto.from(currentUser, collected, levelInfo);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updatePastLevelInNewTransaction(Long userId, int currentLevel) {
+        // 별도의 트랜잭션으로 사용자 조회 및 pastLevel 업데이트
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.updatePastLevel(currentLevel);
     }
 
     @Transactional(readOnly = true)
