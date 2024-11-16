@@ -176,6 +176,7 @@ export default function MainPage() {
 					isLevelUp: data.isLevelUp, // Convert boolean to 0 or 1 for Unity
 					mainAnimalId: data.mainAnimalId,
 					animals: data.animals,
+					drawAnimalId: data.drawAnimalId,
 				};
 				const jsonData = JSON.stringify(unityData);
 				try {
