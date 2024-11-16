@@ -65,22 +65,20 @@ public class UserService {
         return ChildResponseDto.from(user);
     }
 
+    @Transactional
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
+        // 레벨 비교를 위한 변수 저장 (영속성 컨텍스트와 분리된 값)
+        int currentLevel = currentUser.getLevel();
+        int pastLevel = currentUser.getPastLevel();
+        UserLevelDto levelInfo = UserLevelDto.of(currentLevel, pastLevel, currentUser.getExp());
 
-        // DTO에서 레벨업 여부 판단
-        UserLevelDto levelInfo = UserLevelDto.of(
-                currentUser.getLevel(),
-                currentUser.getPastLevel(),
-                currentUser.getExp()
-        );
-
-        // 레벨업 시 동물 뽑기 및 DTO 업데이트
+        AnimalDto drawnAnimal = null;
         if (levelInfo.isLevelUp()) {
-            AnimalDto drawnAnimal = collectedService.drawRandomAnimal();
+            drawnAnimal = collectedService.drawRandomAnimal();
             levelInfo = levelInfo.withDrawnAnimal(drawnAnimal.animalId());
         }
-
+        currentUser.updatePastLevel(currentLevel);
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
         return UserResponseDto.from(currentUser, collected, levelInfo);
     }
