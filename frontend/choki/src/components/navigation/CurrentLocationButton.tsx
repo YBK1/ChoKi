@@ -1,15 +1,57 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-import useCompass from './useCompass';
+
+interface DeviceOrientationEventiOS extends DeviceOrientationEvent {
+	requestPermission?: () => Promise<'granted' | 'denied'>;
+}
 
 const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 	const [currentLocation, setCurrentLocation] = useState<
 		[number, number] | null
 	>(null);
+	const [deviceDirection, setDeviceDirection] = useState<number>(0);
 	const watchId = useRef<number | null>(null);
 	const locationMarker = useRef<mapboxgl.Marker | null>(null);
 
-	const { direction } = useCompass();
+	useEffect(() => {
+		const handleOrientation = (event: DeviceOrientationEvent) => {
+			const { alpha } = event;
+			if (alpha !== null) {
+				const heading = 360 - alpha;
+				console.log('Device direction:', heading);
+				setDeviceDirection(heading);
+			}
+		};
+
+		const requestOrientationPermission = async () => {
+			const requestPermissionFunc = (
+				DeviceOrientationEvent as unknown as DeviceOrientationEventiOS
+			).requestPermission;
+
+			if (
+				requestPermissionFunc &&
+				typeof requestPermissionFunc === 'function'
+			) {
+				try {
+					const permission = await requestPermissionFunc();
+					if (permission === 'granted') {
+						window.addEventListener('deviceorientation', handleOrientation);
+					}
+				} catch (error) {
+					console.error('Permission denied:', error);
+				}
+			} else {
+				// Non-iOS devices don't need permission
+				window.addEventListener('deviceorientation', handleOrientation);
+			}
+		};
+
+		requestOrientationPermission();
+
+		return () => {
+			window.removeEventListener('deviceorientation', handleOrientation);
+		};
+	}, []);
 
 	const updateMarker = useCallback(
 		(lngLat: [number, number]) => {
@@ -71,22 +113,22 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				locationMarker.current.setLngLat(lngLat);
 			}
 
-			if (locationMarker.current && direction !== null) {
+			if (locationMarker.current) {
 				const arrow = locationMarker.current
 					.getElement()
 					.querySelector('.direction-arrow') as HTMLElement;
 				if (arrow) {
 					const radius = 25;
-					const angleRad = (direction * Math.PI) / 180;
+					const angleRad = (deviceDirection * Math.PI) / 180;
 
 					arrow.style.transform = `
-            translate(${radius * Math.sin(angleRad)}px, ${-radius * Math.cos(angleRad)}px)
-            rotate(${direction}deg)
-          `;
+						translate(${radius * Math.sin(angleRad)}px, ${-radius * Math.cos(angleRad)}px)
+						rotate(${deviceDirection}deg)
+					`;
 				}
 			}
 		},
-		[map, direction],
+		[map, deviceDirection],
 	);
 
 	useEffect(() => {
@@ -105,6 +147,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 
 			watchId.current = navigator.geolocation.watchPosition(
 				position => {
+					console.log('위치 변화 감지:', position.coords);
 					const { latitude, longitude } = position.coords;
 					const newLocation: [number, number] = [longitude, latitude];
 					setCurrentLocation(newLocation);

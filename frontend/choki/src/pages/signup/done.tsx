@@ -119,7 +119,7 @@ export default function DonePage() {
 							<Image
 								src="/icons/dog_character.svg"
 								alt="강아지 캐릭터"
-								// layout="fill"
+								layout="fill"
 								objectFit="contain"
 							/>
 						</div>

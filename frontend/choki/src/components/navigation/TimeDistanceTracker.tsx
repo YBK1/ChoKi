@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
+import OffRouteWarning from '@/lib/ws/OffRouteWarning';
 
 type RoutePoint = {
 	latitude: number;
@@ -9,13 +10,17 @@ type RoutePoint = {
 type TimeDistanceTrackerProps = {
 	route: RoutePoint[];
 	userLocation: [number, number] | null;
+	shoppingId: string;
 };
 
 const AVERAGE_WALKING_SPEED = 1.0;
 const AVERAGE_STEP_LENGTH = 0.5;
 const OFF_ROUTE_THRESHOLD = 20;
 
-const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
+const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
+	route,
+	shoppingId,
+}) => {
 	const [userLocation, setUserLocation] = useState<[number, number] | null>(
 		null,
 	);
@@ -47,20 +52,6 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 	};
 
 	useEffect(() => {
-		// 현재위치 가져오기
-		navigator.geolocation.getCurrentPosition(
-			position => {
-				const { latitude, longitude } = position.coords;
-				setUserLocation([longitude, latitude]);
-			},
-			error => console.error('Error getting initial location:', error),
-			{
-				enableHighAccuracy: true,
-				timeout: 10000,
-				maximumAge: 0,
-			},
-		);
-
 		// 위치변경 감지
 		const watchId = navigator.geolocation.watchPosition(
 			position => {
@@ -98,7 +89,9 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 		});
 
 		// 아이가 경로 이탈했는지 확인
-		setIsOffRoute(minDistanceToRoute > OFF_ROUTE_THRESHOLD);
+		const isDeviated = minDistanceToRoute > OFF_ROUTE_THRESHOLD;
+
+		setIsOffRoute(isDeviated);
 
 		const destination = route[route.length - 1];
 
@@ -118,49 +111,52 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({ route }) => {
 	}, [route, userLocation]);
 
 	return (
-		<div
-			style={{
-				position: 'absolute',
-				bottom: '0',
-				width: '100%',
-				backgroundColor: isOffRoute ? '#FF6347' : '#ADD8E6',
-				borderTopLeftRadius: '20px',
-				borderTopRightRadius: '20px',
-				padding: '20px',
-				display: 'flex',
-				justifyContent: 'space-around',
-				alignItems: 'center',
-				boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
-			}}
-		>
-			<div style={{ textAlign: 'center' }}>
-				<Image
-					src="/icons/clock_icon.png"
-					alt="Time Icon"
-					width={30}
-					height={30}
-					style={{ marginBottom: '5px', marginLeft: '10px' }}
-				/>
-				<div style={{ fontSize: '18px', fontWeight: 'bold', color: 'white' }}>
-					{remainingTime}분
+		<>
+			<OffRouteWarning isOffRoute={isOffRoute} shoppingId={shoppingId} />
+			<div
+				style={{
+					position: 'absolute',
+					bottom: '0',
+					width: '100%',
+					backgroundColor: isOffRoute ? '#FF6347' : '#ADD8E6',
+					borderTopLeftRadius: '20px',
+					borderTopRightRadius: '20px',
+					padding: '20px',
+					display: 'flex',
+					justifyContent: 'space-around',
+					alignItems: 'center',
+					boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)',
+				}}
+			>
+				<div style={{ textAlign: 'center' }}>
+					<Image
+						src="/icons/clock_icon.png"
+						alt="Time Icon"
+						width={30}
+						height={30}
+						style={{ marginBottom: '5px', marginLeft: '10px' }}
+					/>
+					<div style={{ fontSize: '18px', fontWeight: 'bold', color: 'white' }}>
+						{remainingTime}분
+					</div>
+					<div style={{ fontSize: '14px', color: 'white' }}>남은 시간</div>
 				</div>
-				<div style={{ fontSize: '14px', color: 'white' }}>남은 시간</div>
-			</div>
 
-			<div style={{ textAlign: 'center' }}>
-				<Image
-					src="/icons/step_icon.png"
-					alt="Steps Icon"
-					width={30}
-					height={30}
-					style={{ marginBottom: '5px', marginLeft: '15px' }}
-				/>
-				<div style={{ fontSize: '18px', fontWeight: 'bold', color: 'white' }}>
-					{remainingSteps}보
+				<div style={{ textAlign: 'center' }}>
+					<Image
+						src="/icons/step_icon.png"
+						alt="Steps Icon"
+						width={30}
+						height={30}
+						style={{ marginBottom: '5px', marginLeft: '15px' }}
+					/>
+					<div style={{ fontSize: '18px', fontWeight: 'bold', color: 'white' }}>
+						{remainingSteps}보
+					</div>
+					<div style={{ fontSize: '14px', color: 'white' }}>남은 걸음 수</div>
 				</div>
-				<div style={{ fontSize: '14px', color: 'white' }}>남은 걸음 수</div>
 			</div>
-		</div>
+		</>
 	);
 };
 
