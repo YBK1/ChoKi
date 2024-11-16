@@ -194,7 +194,13 @@ interface Speech {
 interface CamProps {
 	onCaptureChange: (captured: boolean) => void;
 }
-
+interface BarcodeCamProps {
+	onCaptureChange: (isCaptured: boolean) => void;
+	originBarcode: string;
+	productName: string;
+	addNewItem: (newItem: ShoppingItem) => void;
+	onClose: () => void;
+}
 // 재활용 동물 대화 인터페이스
 interface AnimalSpeechProps {
 	isImageCaptured: boolean;

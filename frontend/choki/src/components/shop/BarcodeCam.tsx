@@ -1,12 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
 
-interface CamProps {
-	onCaptureChange: (isCaptured: boolean) => void;
-	originBarcode: string;
-}
-
-const Cam: React.FC<CamProps> = ({ onCaptureChange, originBarcode }) => {
+const Cam: React.FC<BarcodeCamProps> = ({ onCaptureChange, originBarcode }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [isScanning, setIsScanning] = useState(true);
 	const [isSuccess, setIsSuccess] = useState(false);
