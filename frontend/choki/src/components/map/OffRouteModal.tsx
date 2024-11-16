@@ -25,7 +25,7 @@ const OffRouteModal: React.FC<OffRouteModalProps> = ({
 					width={300}
 					height={300}
 				/>
-				<p className="w-full bg-red_warning text-white text-xl rounded-2xl py-3 mb-3 flex items-center justify-center gap-2">
+				<p className="w-full bg-red_warning text-white text-xl rounded-2xl py-3 mb-3 mt-5 flex items-center justify-center gap-2">
 					경로를 벗어났습니다
 				</p>
 
