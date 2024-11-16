@@ -20,6 +20,7 @@ import com.yeojiphap.choki.domain.user.repository.UserRepository;
 import com.yeojiphap.choki.global.auth.service.TokenService;
 import com.yeojiphap.choki.global.auth.util.SecurityUtil;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,7 +34,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-    EntityManager em;
+    @PersistenceContext
+    private EntityManager em;
+
     private final JWTUtil jwtUtil;
     private final TokenService tokenService;
     private final AnimalService animalService;
@@ -77,11 +80,11 @@ public class UserService {
 
     @Transactional
     public UserLevelDto getLevel(User user) {
+        log.info("Before update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
         boolean isLevelUp = user.getLevel() != user.getPastLevel();
         user.updatePastLevel(user.getLevel());
-        log.info("pastLevel: {}, currentLevel: {}, isLevelUp: {}", user.getPastLevel(), user.getLevel(), isLevelUp);
-        em.flush();
-        log.info("pastLevel: {}, currentLevel: {}, isLevelUp: {}", user.getPastLevel(), user.getLevel(), isLevelUp);
+        em.flush(); // 영속성 컨텍스트 강제 동기화
+        log.info("After update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
         return new UserLevelDto(user.getLevel(), user.getExp(), isLevelUp);
     }
 
