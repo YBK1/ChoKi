@@ -140,7 +140,7 @@ public class ShoppingWebSocketService {
 	// 위기 알림 메세지 전송
 	public void sendDangerNotification(DangerRequestDto dangerRequestDto, String access){
 		DangerResponseDto dangerResponseDto = new DangerResponseDto(dangerRequestDto);
-		simpMessagingTemplate.convertAndSendToUser(getParentUserName(access), "/sub/shoppingId/" + dangerRequestDto.getShoppingId(), dangerResponseDto);
+		simpMessagingTemplate.convertAndSendToUser(getParentUserName(access), "/sub/shopping/" + dangerRequestDto.getShoppingId(), dangerResponseDto);
 	}
 
 	// 헬프 메시지 전송
