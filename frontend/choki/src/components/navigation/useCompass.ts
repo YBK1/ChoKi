@@ -5,14 +5,19 @@ function useCompass() {
 
 	useEffect(() => {
 		const handleOrientation = (event: DeviceOrientationEvent) => {
-			const { alpha } = event; // alpha == 돌아가야 하는 각도
-			setDirection(alpha || 0);
+			const { alpha } = event;
+			if (alpha !== null) {
+				const heading = 360 - alpha;
+				console.log(`각도: ${heading}`);
+				setDirection(heading);
+			}
 		};
 
 		window.addEventListener('deviceorientation', handleOrientation, true);
 
-		return () =>
+		return () => {
 			window.removeEventListener('deviceorientation', handleOrientation);
+		};
 	}, []);
 
 	return { direction };

@@ -120,14 +120,17 @@ export default function SignupPage() {
 	return (
 		<div className="bg-light_yellow_mid flex flex-col items-center h-screen px-4 py-6 gap-5">
 			<div className="flex items-center justify-center w-full relative mb-8">
-				<Image
-					src="/icons/back_icon.svg"
-					alt="Back Icon"
-					width={24}
-					height={24}
+				<div
 					className="w-6 h-6 cursor-pointer absolute left-0"
 					onClick={() => window.history.back()}
-				/>
+				>
+					<Image
+						src="/icons/back_icon.svg"
+						alt="Back Icon"
+						width={24}
+						height={24}
+					/>
+				</div>
 				<h1 className="text-2xl font-bold">회원가입</h1>
 			</div>
 

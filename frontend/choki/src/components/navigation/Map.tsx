@@ -10,7 +10,6 @@ import ChildLocationSender from '@/lib/ws/ChildLocationSender';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import ShoppingCompleteModal from '../Common/Modal/ShoppingCompleteModal';
 import Image from 'next/image';
-import useCompass from './useCompass';
 
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
@@ -36,8 +35,6 @@ const MapComponent = () => {
 	const router = useRouter();
 
 	const { missionId } = router.query;
-
-	const { direction } = useCompass();
 
 	const goBack = () => {
 		router.push('/child/main');
@@ -81,12 +78,6 @@ const MapComponent = () => {
 			mapInstance.remove();
 		};
 	}, []);
-
-	useEffect(() => {
-		if (map) {
-			map.setBearing(360 - direction);
-		}
-	}, [map, direction]);
 
 	useEffect(() => {
 		if (!map) return;
@@ -205,7 +196,7 @@ const MapComponent = () => {
 							userLocation={userLocation}
 						/>
 						<div className="absolute top-1/3 right-4 transform -translate-y-1/2 z-20">
-							{/* Toggle Switch */}
+							{/* Vertical Toggle Switch */}
 							<label className="relative inline-flex flex-col items-center cursor-pointer">
 								<input
 									type="checkbox"

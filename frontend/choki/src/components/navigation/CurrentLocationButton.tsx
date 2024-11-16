@@ -19,49 +19,71 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				const wrapper = document.createElement('div');
 				wrapper.className = 'current-location-marker';
 				wrapper.style.position = 'relative';
-				wrapper.style.width = '60px';
-				wrapper.style.height = '60px';
+				wrapper.style.width = '80px';
+				wrapper.style.height = '80px';
+				wrapper.style.display = 'flex';
+				wrapper.style.justifyContent = 'center';
+				wrapper.style.alignItems = 'center';
+
+				const arrowContainer = document.createElement('div');
+				arrowContainer.style.position = 'absolute';
+				arrowContainer.style.width = '100%';
+				arrowContainer.style.height = '100%';
+				arrowContainer.style.display = 'flex';
+				arrowContainer.style.justifyContent = 'center';
+				arrowContainer.style.alignItems = 'center';
+
+				const arrow = document.createElement('div');
+				arrow.className = 'direction-arrow';
+				arrow.style.width = '24px';
+				arrow.style.height = '24px';
+				arrow.style.position = 'absolute';
+				arrow.style.backgroundImage = 'url(/icons/direction_arrow.svg)';
+				arrow.style.backgroundSize = 'contain';
+				arrow.style.backgroundRepeat = 'no-repeat';
+				arrow.style.backgroundPosition = 'center';
+				arrow.style.transition = 'transform 0.3s ease-out';
+				arrow.style.transformOrigin = 'center';
 
 				const dog = document.createElement('div');
-				dog.style.top = '50%';
-				dog.style.left = '50%';
 				dog.style.width = '30px';
 				dog.style.height = '30px';
 				dog.style.position = 'absolute';
-				dog.style.transform = 'translate(-50%, -50%)';
 				dog.style.backgroundImage = 'url(/icons/dog_character.svg)';
-				dog.style.backgroundSize = 'cover';
+				dog.style.backgroundSize = 'contain';
+				dog.style.backgroundRepeat = 'no-repeat';
+				dog.style.backgroundPosition = 'center';
+				dog.style.zIndex = '1';
 
-				const arrow = document.createElement('div');
-				arrow.style.width = '30px';
-				arrow.style.height = '30px';
-				arrow.style.position = 'absolute';
-				arrow.style.backgroundImage = 'url(/icons/direction_arrow.svg)';
-				arrow.style.backgroundSize = 'cover';
-				// arrow.style.top = '0';
-				// arrow.style.left = '50%';
-				// arrow.style.transform = `translateX(-50%) rotate(${direction}deg)`;
-				arrow.style.transition = 'left 0.2s ease-out, top 0.2s ease-out';
-
-				wrapper.appendChild(arrow);
+				arrowContainer.appendChild(arrow);
+				wrapper.appendChild(arrowContainer);
 				wrapper.appendChild(dog);
 
-				locationMarker.current = new mapboxgl.Marker(wrapper)
+				locationMarker.current = new mapboxgl.Marker({
+					element: wrapper,
+					rotationAlignment: 'map',
+					pitchAlignment: 'viewport',
+					anchor: 'center',
+				})
 					.setLngLat(lngLat)
 					.addTo(map);
 			} else {
 				locationMarker.current.setLngLat(lngLat);
+			}
 
-				console.log(direction);
+			if (locationMarker.current && direction !== null) {
+				const arrow = locationMarker.current
+					.getElement()
+					.querySelector('.direction-arrow') as HTMLElement;
+				if (arrow) {
+					const radius = 25;
+					const angleRad = (direction * Math.PI) / 180;
 
-				const arrowElement = locationMarker.current.getElement()
-					.children[0] as HTMLElement;
-				const radius = 40;
-				const radian = (direction * Math.PI) / 180;
-				const xOffset = radius * Math.sin(radian);
-				const yOffset = radius * Math.cos(radian);
-				arrowElement.style.left = `calc(50% + ${xOffset - 15}px)`;
-				arrowElement.style.top = `calc(50% - ${yOffset + 10}px)`;
+					arrow.style.transform = `
+            translate(${radius * Math.sin(angleRad)}px, ${-radius * Math.cos(angleRad)}px)
+            rotate(${direction}deg)
+          `;
+				}
 			}
 		},
 		[map, direction],
