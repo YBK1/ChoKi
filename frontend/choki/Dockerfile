@@ -29,7 +29,7 @@ RUN wget -q -P ./public/unity https://choki-s3.s3.ap-southeast-2.amazonaws.com/u
     wget -q -P ./public/unity/TemplateData https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/TemplateData/unity-logo-dark.png && \
     wget -q -P ./public/unity/TemplateData https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/TemplateData/unity-logo-light.png && \
     wget -q -P ./public/unity/TemplateData https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/TemplateData/webgl-logo.png && \
-    wget -q -P ./public/unity/TemplateData https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/TemplateData/webemmd-icon.png
+    wget -q -P ./public/unity/TemplateData https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/TemplateData/webmemd-icon.png
 
 # Next.js 프로젝트 빌드
 RUN npm run build
