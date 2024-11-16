@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import OffRouteWarning from '@/lib/ws/OffRouteWarning';
 
 type RoutePoint = {
@@ -53,20 +52,6 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
 	};
 
 	useEffect(() => {
-		// 현재위치 가져오기
-		// navigator.geolocation.getCurrentPosition(
-		// 	position => {
-		// 		const { latitude, longitude } = position.coords;
-		// 		setUserLocation([longitude, latitude]);
-		// 	},
-		// 	error => console.error('현재 위치 가져오는데 오류:', error),
-		// 	{
-		// 		enableHighAccuracy: true,
-		// 		timeout: 10000,
-		// 		maximumAge: 0,
-		// 	},
-		// );
-
 		// 위치변경 감지
 		const watchId = navigator.geolocation.watchPosition(
 			position => {
@@ -83,20 +68,6 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
 
 		return () => navigator.geolocation.clearWatch(watchId);
 	}, []);
-
-	useEffect(() => {
-		if (!shoppingId) return;
-
-		childWebSocketClient.connect();
-
-		childWebSocketClient.subscribe(`/user/sub/shopping/${shoppingId}`, msg => {
-			console.log('받은 문자:', msg.body);
-		});
-
-		return () => {
-			childWebSocketClient.disconnect();
-		};
-	}, [shoppingId]);
 
 	useEffect(() => {
 		if (!userLocation || route.length === 0) {

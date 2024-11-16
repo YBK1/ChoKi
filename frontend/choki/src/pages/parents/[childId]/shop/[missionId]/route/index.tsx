@@ -3,6 +3,7 @@ import { parentWebSocketClient } from '@/lib/ws/WebSocketClient';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ParentsShoppingNavbar from '@/components/Common/Navbar/ParentsShoppingNavbar';
+import OffRouteModal from '@/components/map/OffRouteModal';
 
 export default function ChildIsShoppingPage() {
 	const [route, setRoute] = useState<
@@ -12,9 +13,14 @@ export default function ChildIsShoppingPage() {
 		latitude: number;
 		longitude: number;
 	} | null>(null);
+	const [showOffRouteModal, setShowOffRouteModal] = useState(false);
 
 	const router = useRouter();
 	const { childId, missionId } = router.query;
+
+	const handleCallChild = () => {
+		console.log('아가야 전화받아라...');
+	};
 
 	useEffect(() => {
 		parentWebSocketClient.connect();
@@ -30,6 +36,9 @@ export default function ChildIsShoppingPage() {
 					latitude: data.latitude,
 					longitude: data.longitude,
 				});
+			} else if (data.type === 'DANGER') {
+				console.log('경로 이탈 메시지 수신');
+				setShowOffRouteModal(true);
 			}
 		});
 
@@ -73,6 +82,13 @@ export default function ChildIsShoppingPage() {
 					/>
 				</div>
 			</div>
+
+			{showOffRouteModal && (
+				<OffRouteModal
+					onClose={() => setShowOffRouteModal(false)}
+					onCallChild={handleCallChild}
+				/>
+			)}
 		</div>
 	);
 }
