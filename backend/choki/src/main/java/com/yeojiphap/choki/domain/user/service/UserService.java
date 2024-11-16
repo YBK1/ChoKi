@@ -71,8 +71,8 @@ public class UserService {
         // 레벨 비교를 위한 변수 저장 (영속성 컨텍스트와 분리된 값)
         int currentLevel = currentUser.getLevel();
         int pastLevel = currentUser.getPastLevel();
-        UserLevelDto levelInfo = UserLevelDto.of(currentLevel, pastLevel, currentUser.getExp());
-
+        UserLevelDto levelInfo = UserLevelDto.of(currentLevel, pastLevel);
+        log.info("현재 레벨 : {}, 이전 레벨 : {}, isLevelUp : {}", currentLevel, pastLevel, levelInfo.isLevelUp());
         AnimalDto drawnAnimal = null;
         if (levelInfo.isLevelUp()) {
             drawnAnimal = collectedService.drawRandomAnimal();
