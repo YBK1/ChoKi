@@ -2,7 +2,8 @@ import React from 'react';
 import Image from 'next/image';
 
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
-
+import { missionIdAtom } from '@/atoms/shoppingAtom';
+import { useAtom } from 'jotai';
 interface ShoppingCardProps {
 	role: string;
 	ParentsShoppingItem: {
@@ -23,10 +24,11 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 	onCameraClick,
 	onDelete,
 }) => {
+	const [missionId] = useAtom(missionIdAtom);
 	const handleDelete = () => {
 		if (ChildrenShoppingItem) {
 			const requestBody = {
-				shoppingId: '672df1def4c5cb7ca5d36532',
+				shoppingId: missionId,
 				listBarcode: ParentsShoppingItem.barcode,
 				barcode: ChildrenShoppingItem.barcode,
 			};
