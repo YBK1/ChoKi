@@ -158,6 +158,11 @@ public class UserService {
         return ChildResponseDto.from(user);
     }
 
+    public UserRoleDto getUserRole() {
+        User user = findCurrentUser();
+        return UserRoleDto.from(user);
+    }
+
     private TokenResponse createToken(String username, Role role) {
         String access = jwtUtil.createJwt("access", username, Role.valueOf(role.toString()), 86400000L);
         String refresh = jwtUtil.createJwt("refresh", username, Role.valueOf(role.toString()), 86400000L);
