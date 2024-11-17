@@ -44,7 +44,7 @@ public interface SpringDocMapController {
                                       "status": 200,
                                       "message": "경로 목록 조회 성공",
                                       "data": {
-                                          "routeList": [
+                                          "destinationList": [
                                               {
                                                   "buildingName": "Myeongdong Cathedral",
                                                   "latitude": 37.5512,

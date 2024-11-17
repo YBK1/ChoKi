@@ -4,5 +4,5 @@ import com.yeojiphap.choki.domain.map.domain.Location;
 
 import java.util.List;
 
-public record DestinationsDto(List<Location> routeList) {
+public record DestinationsDto(List<Location> destinationList) {
 }
