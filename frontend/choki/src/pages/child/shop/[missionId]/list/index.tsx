@@ -84,7 +84,13 @@ export default function ChildShoppingPage() {
 					/>
 				) : (
 					<Modal>
-						<div className="flex flex-col items-center">
+						<div
+							className="flex flex-col items-center"
+							style={{
+								maxHeight: '70vh', // 모달 높이를 70% 뷰포트 높이로 제한
+								overflowY: 'auto', // 내용이 넘칠 경우 스크롤 가능
+							}}
+						>
 							<h1 className="text-2xl font-bold mb-6">장바구니</h1>
 							{shoppingList.map(item => (
 								<ProductCard
@@ -127,7 +133,7 @@ export default function ChildShoppingPage() {
 			<Image
 				src="/icons/shopping_character.svg"
 				alt="장보기 캐릭터"
-				className="absolute bottom-16 right-4"
+				className="absolute bottom-4 right-4 z-50" // bottom 값을 줄여 캐릭터가 화면 안에 잘 표시되도록 설정
 				width={100}
 				height={100}
 			/>
