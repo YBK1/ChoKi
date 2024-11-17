@@ -16,7 +16,7 @@ declare global {
 		navigateToShopping?: (missionId: string) => void;
 		navigateToRecycling?: (missionId: string) => void;
 		changeRepresentativeAnimal?: (animalId: number) => void;
-		getData: () => void;
+		getData?: () => void;
 		createUnityInstance?: (
 			canvas: HTMLCanvasElement,
 			config: {
@@ -52,8 +52,6 @@ export default function MainPage() {
 				console.error('getUserData 호출 중 오류:', error);
 			});
 	}
-
-	window.getData = getData;
 
 	// Unity가 완전히 로드된 후 사용자 데이터를 가져오고 Unity로 전달
 	const fetchAndSendUserData = useCallback(async () => {
@@ -95,6 +93,7 @@ export default function MainPage() {
 
 	// Unity 관련 글로벌 이벤트 설정
 	useEffect(() => {
+		window.getData = getData;
 		window.UnityReadyCallback = () => {
 			console.log('Unity가 완전히 로드되었습니다.');
 			setIsUnityLoaded(true); // Unity 로드 완료
