@@ -1,15 +1,109 @@
 import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-import useCompass from './useCompass';
+
+interface DeviceOrientationEventiOS extends DeviceOrientationEvent {
+	requestPermission?: () => Promise<'granted' | 'denied'>;
+}
+
+interface DeviceOrientationEventWithWebkit extends DeviceOrientationEvent {
+	webkitCompassHeading?: number;
+}
 
 const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 	const [currentLocation, setCurrentLocation] = useState<
 		[number, number] | null
 	>(null);
+	const [deviceDirection, setDeviceDirection] = useState<number>(0);
 	const watchId = useRef<number | null>(null);
 	const locationMarker = useRef<mapboxgl.Marker | null>(null);
 
-	const { direction } = useCompass();
+	useEffect(() => {
+		const handleOrientation = (event: DeviceOrientationEvent) => {
+			const eventWithWebkit = event as DeviceOrientationEventWithWebkit;
+
+			// iOS devices
+			if (eventWithWebkit.webkitCompassHeading) {
+				const compassHeading = eventWithWebkit.webkitCompassHeading;
+				console.log('Compass heading:', compassHeading);
+				setDeviceDirection(compassHeading);
+			}
+			// Android devices
+			else if (event.alpha !== null) {
+				let heading = event.alpha;
+
+				if (event.beta !== null && event.gamma !== null) {
+					// Adjust for screen orientation
+					if (typeof window.orientation !== 'undefined') {
+						switch (window.orientation) {
+							case 0:
+								heading = event.alpha;
+								break;
+							case 90:
+								heading = event.alpha + 90;
+								break;
+							case -90:
+								heading = event.alpha - 90;
+								break;
+							case 180:
+								heading = event.alpha + 180;
+								break;
+						}
+					}
+
+					// Normalize to 0-360
+					heading = (heading + 360) % 360;
+				}
+
+				console.log('Calculated heading:', heading);
+				setDeviceDirection(heading);
+			}
+		};
+
+		const requestOrientationPermission = async () => {
+			try {
+				// Try absolute orientation first
+				window.addEventListener('deviceorientationabsolute', handleOrientation);
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			} catch (e) {
+				console.log(
+					'Absolute orientation not available, trying regular orientation',
+				);
+				window.addEventListener('deviceorientation', handleOrientation);
+			}
+
+			// For iOS devices
+			const requestPermissionFunc = (
+				DeviceOrientationEvent as unknown as DeviceOrientationEventiOS
+			).requestPermission;
+
+			if (
+				requestPermissionFunc &&
+				typeof requestPermissionFunc === 'function'
+			) {
+				try {
+					const permission = await requestPermissionFunc();
+					if (permission === 'granted') {
+						window.addEventListener('deviceorientation', handleOrientation);
+					}
+				} catch (error) {
+					console.error('Permission denied:', error);
+				}
+			} else {
+				// Non-iOS devices don't need permission
+				window.addEventListener('deviceorientation', handleOrientation);
+			}
+		};
+
+		requestOrientationPermission();
+
+		return () => {
+			window.removeEventListener(
+				'deviceorientationabsolute',
+				handleOrientation,
+			);
+			window.removeEventListener('deviceorientation', handleOrientation);
+		};
+	}, []);
 
 	const updateMarker = useCallback(
 		(lngLat: [number, number]) => {
@@ -19,54 +113,63 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				const wrapper = document.createElement('div');
 				wrapper.className = 'current-location-marker';
 				wrapper.style.position = 'relative';
-				wrapper.style.width = '60px';
-				wrapper.style.height = '60px';
+				wrapper.style.width = '80px';
+				wrapper.style.height = '80px';
+				wrapper.style.display = 'flex';
+				wrapper.style.justifyContent = 'center';
+				wrapper.style.alignItems = 'center';
+
+				// Simple direction pointer
+				const pointer = document.createElement('div');
+				pointer.style.width = '0';
+				pointer.style.height = '0';
+				pointer.style.borderLeft = '8px solid transparent';
+				pointer.style.borderRight = '8px solid transparent';
+				pointer.style.borderBottom = '16px solid red';
+				pointer.style.position = 'absolute';
+				pointer.style.top = '0';
+				pointer.style.transformOrigin = 'bottom center';
+				pointer.style.transition = 'transform 0.3s ease-out';
 
 				const dog = document.createElement('div');
-				dog.style.top = '50%';
-				dog.style.left = '50%';
 				dog.style.width = '30px';
 				dog.style.height = '30px';
 				dog.style.position = 'absolute';
-				dog.style.transform = 'translate(-50%, -50%)';
 				dog.style.backgroundImage = 'url(/icons/dog_character.svg)';
-				dog.style.backgroundSize = 'cover';
+				dog.style.backgroundSize = 'contain';
+				dog.style.backgroundRepeat = 'no-repeat';
+				dog.style.backgroundPosition = 'center';
+				dog.style.zIndex = '1';
 
-				const arrow = document.createElement('div');
-				arrow.style.width = '30px';
-				arrow.style.height = '30px';
-				arrow.style.position = 'absolute';
-				arrow.style.backgroundImage = 'url(/icons/direction_arrow.svg)';
-				arrow.style.backgroundSize = 'cover';
-				// arrow.style.top = '0';
-				// arrow.style.left = '50%';
-				// arrow.style.transform = `translateX(-50%) rotate(${direction}deg)`;
-				arrow.style.transition = 'left 0.2s ease-out, top 0.2s ease-out';
-
-				wrapper.appendChild(arrow);
+				wrapper.appendChild(pointer);
 				wrapper.appendChild(dog);
 
-				locationMarker.current = new mapboxgl.Marker(wrapper)
+				locationMarker.current = new mapboxgl.Marker({
+					element: wrapper,
+					rotationAlignment: 'map',
+					pitchAlignment: 'viewport',
+					anchor: 'center',
+				})
 					.setLngLat(lngLat)
 					.addTo(map);
 			} else {
 				locationMarker.current.setLngLat(lngLat);
+			}
 
-				console.log(direction);
-
-				const arrowElement = locationMarker.current.getElement()
-					.children[0] as HTMLElement;
-				const radius = 40;
-				const radian = (direction * Math.PI) / 180;
-				const xOffset = radius * Math.sin(radian);
-				const yOffset = radius * Math.cos(radian);
-				arrowElement.style.left = `calc(50% + ${xOffset - 15}px)`;
-				arrowElement.style.top = `calc(50% - ${yOffset + 10}px)`;
+			// Update direction pointer
+			if (locationMarker.current) {
+				const pointer = locationMarker.current
+					.getElement()
+					.querySelector('div') as HTMLElement;
+				if (pointer) {
+					pointer.style.transform = `rotate(${deviceDirection}deg)`;
+				}
 			}
 		},
-		[map, direction],
+		[map, deviceDirection],
 	);
 
+	// Rest of your code remains the same
 	useEffect(() => {
 		if (navigator.geolocation && map) {
 			navigator.geolocation.getCurrentPosition(
@@ -83,6 +186,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 
 			watchId.current = navigator.geolocation.watchPosition(
 				position => {
+					console.log('위치 변화 감지:', position.coords);
 					const { latitude, longitude } = position.coords;
 					const newLocation: [number, number] = [longitude, latitude];
 					setCurrentLocation(newLocation);

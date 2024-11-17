@@ -3,9 +3,15 @@ import * as StompJs from '@stomp/stompjs';
 class WebSocketClient {
 	private client: StompJs.Client;
 	private role: 'parent' | 'child';
+	private subscriptionCallbacks: Map<
+		string,
+		(message: StompJs.Message) => void
+	>;
 
 	constructor(role: 'parent' | 'child') {
 		this.role = role;
+		this.subscriptionCallbacks = new Map();
+
 		this.client = new StompJs.Client({
 			brokerURL: 'wss://choki.co.kr/ws/shopping',
 			reconnectDelay: 20000,
@@ -17,6 +23,10 @@ class WebSocketClient {
 				this.sendMessage('/app/check-connection', {
 					message: 'Connected successfully',
 					role: this.role,
+				});
+				// Execute all stored subscriptions
+				this.subscriptionCallbacks.forEach((callback, topic) => {
+					this.subscribeToTopic(topic, callback);
 				});
 			},
 			onWebSocketError: error => {
@@ -39,6 +49,10 @@ class WebSocketClient {
 		return null;
 	}
 
+	isConnected(): boolean {
+		return this.client.connected;
+	}
+
 	connect() {
 		const token = this.getAccessToken() || '';
 		if (token) {
@@ -51,23 +65,33 @@ class WebSocketClient {
 
 	disconnect() {
 		this.client.deactivate();
+		this.subscriptionCallbacks.clear();
 		console.log(`${this.role} disconnected from WebSocket`);
 	}
 
+	private subscribeToTopic(
+		topic: string,
+		callback: (message: StompJs.Message) => void,
+	) {
+		const token = this.getAccessToken() || '';
+		this.client.subscribe(
+			topic,
+			message => {
+				callback(message);
+			},
+			{ access: token },
+		);
+	}
+
 	subscribe(topic: string, callback: (message: StompJs.Message) => void) {
-		this.client.onConnect = () => {
-			const token = this.getAccessToken() || '';
+		// Store the subscription
+		this.subscriptionCallbacks.set(topic, callback);
 
-			this.client.subscribe(
-				topic,
-				message => {
-					callback(message);
-				},
-				{ access: token },
-			);
-		};
-
-		if (!this.client.active) {
+		if (this.client.connected) {
+			// If already connected, subscribe immediately
+			this.subscribeToTopic(topic, callback);
+		} else {
+			// If not connected, connect first
 			this.connect();
 		}
 	}
@@ -82,6 +106,14 @@ class WebSocketClient {
 			console.log(`${this.role} sent message to ${destination}:`, message);
 		} else {
 			console.error(`${this.role} client not connected`);
+			// Attempt to connect and send
+			this.connect();
+			// Wait for connection and retry
+			setTimeout(() => {
+				if (this.client.connected) {
+					this.sendMessage(destination, message);
+				}
+			}, 1000);
 		}
 	}
 }

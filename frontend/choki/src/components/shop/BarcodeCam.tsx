@@ -1,20 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
-// import Image from 'next/image';
 import Button from '../Common/Button';
 import { BrowserMultiFormatReader } from '@zxing/browser';
 import AddModal from './AddModal';
 import { Toast } from '@/components/Toast/Toast';
 import { compareShopping } from '@/lib/api/shopping';
 
-interface CamProps {
-	onCaptureChange: (isCaptured: boolean) => void;
-	originBarcode: string;
-	productName: string;
-	addNewItem: (newItem: ShoppingItem) => void;
-	onClose: () => void;
-}
-
-const Cam: React.FC<CamProps> = ({
+const Cam: React.FC<BarcodeCamProps> = ({
 	onCaptureChange,
 	originBarcode,
 	productName,
@@ -48,13 +39,13 @@ const Cam: React.FC<CamProps> = ({
 				try {
 					const deviceId = await getRearCameraDeviceId();
 					await barcodeReader.decodeFromVideoDevice(
-						deviceId, // deviceId를 문자열로 바로 전달
+						deviceId,
 						videoRef.current,
 						result => {
 							if (result) {
 								const scannedBarcode = result.getText();
 								goCompare(originBarcode, scannedBarcode);
-								videoRef.current?.pause(); // 바코드 인식이 완료되면 스캔 중지
+								videoRef.current?.pause();
 							}
 						},
 					);
@@ -76,7 +67,7 @@ const Cam: React.FC<CamProps> = ({
 
 		startScan();
 		return () => {
-			videoRef.current?.pause(); // 컴포넌트가 언마운트될 때 스캔 중지
+			videoRef.current?.pause();
 		};
 	}, [barcodeReader, originBarcode]);
 
@@ -102,6 +93,16 @@ const Cam: React.FC<CamProps> = ({
 							autoPlay
 							className="w-full h-full object-cover"
 						/>
+						{/* 비디오 배경 어둡게 처리 */}
+						<div className="absolute inset-0 bg-black bg-opacity-50 pointer-events-none"></div>
+						{/* 가이드라인 추가 */}
+						<div className="absolute inset-0 flex justify-center items-center pointer-events-none">
+							<div className="border-2 border-orange-300 w-[80%] h-[20%]">
+								<span className="text-white mt-2 text-sm bg-opacity-50 px-2 py-1 rounded">
+									바코드를 박스 안에 맞춰주세요
+								</span>
+							</div>
+						</div>
 					</div>
 
 					<div className="flex gap-4 mt-4">
