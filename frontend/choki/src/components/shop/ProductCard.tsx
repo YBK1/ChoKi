@@ -72,7 +72,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 								height={96}
 							/>
 						</div>
-						<p className="text-gray-900 font-medium text-lg">
+						<p className="text-gray-900 font-medium text-base">
 							{ParentsShoppingItem.title}
 						</p>
 						<p className="text-gray-500 text-sm">
