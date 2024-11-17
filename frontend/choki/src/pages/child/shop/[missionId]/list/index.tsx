@@ -10,7 +10,7 @@ import {
 	shoppingListAtom,
 	deleteCartItemAndCheckEmptyProductName,
 	shoppingMessageAtom,
-	missionIdAtom,
+	shoppingIdAtom,
 } from '@/atoms/shoppingAtom';
 import { useEffect, useState } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
@@ -24,13 +24,13 @@ export default function ChildShoppingPage() {
 	const [originBarcode, setOriginBarcode] = useState<string | null>(null);
 	const [productName, setProductName] = useState<string | null>(null);
 	const router = useRouter();
-	const [, setMissionId] = useAtom(missionIdAtom);
-	const { missionId } = router.query;
+	const [, setShoppingId] = useAtom(shoppingIdAtom);
+	const { missionId } = router.query; //
 
 	// WebSocket 구독 및 메시지 처리
 	useEffect(() => {
 		if (typeof missionId === 'string') {
-			setMissionId(missionId);
+			setShoppingId(missionId);
 			childWebSocketClient.subscribe(
 				`/user/sub/shopping/${missionId}`,
 				message =>
