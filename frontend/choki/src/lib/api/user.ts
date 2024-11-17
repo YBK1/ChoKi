@@ -30,3 +30,8 @@ export const getUsersNearby = async () => {
 	const response = await axiosInstance.get('/api/user/nearby');
 	return response.data;
 };
+
+export const getSimpleUserInfo = async () => {
+	const response = await axiosInstance.get(`/api/user/simple-info`);
+	return response.data;
+};
