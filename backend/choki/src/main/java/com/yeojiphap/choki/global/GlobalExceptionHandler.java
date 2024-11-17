@@ -11,7 +11,7 @@ import com.yeojiphap.choki.domain.shopping.exception.ShoppingNotFoundException;
 import com.yeojiphap.choki.domain.family.exception.ChildNotExistException;
 import com.yeojiphap.choki.domain.family.exception.FamilyNotFoundException;
 import com.yeojiphap.choki.domain.family.exception.InvalidInviteCodeException;
-import com.yeojiphap.choki.domain.map.exception.GuidedRouteNotFoundException;
+import com.yeojiphap.choki.domain.map.exception.RouteNotFoundException;
 import com.yeojiphap.choki.domain.user.exception.InvalidUserRoleException;
 import com.yeojiphap.choki.domain.user.exception.UserIdDuplicatedException;
 import com.yeojiphap.choki.domain.user.exception.UserNotFoundException;
@@ -69,8 +69,8 @@ public class GlobalExceptionHandler {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 
-    @ExceptionHandler(GuidedRouteNotFoundException.class)
-    public ApiResponse<Void> handleGuidedRouteNotFoundException(GuidedRouteNotFoundException e) {
+    @ExceptionHandler(RouteNotFoundException.class)
+    public ApiResponse<Void> handleGuidedRouteNotFoundException(RouteNotFoundException e) {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 

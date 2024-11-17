@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum MapExceptionMessage {
-    GUIDED_ROUTE_NOT_FOUND("존재하지 않는 가이드 경로입니다.", HttpStatus.NOT_FOUND),
+    ROUTE_NOT_FOUND("요청한 경로가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     ;
 
     private final String message;
