@@ -1,131 +1,136 @@
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useState, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
-import useCompass from './useCompass';
+
+interface CenterButtonProps {
+	map: mapboxgl.Map | null;
+}
 
 const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 	const [currentLocation, setCurrentLocation] = useState<
 		[number, number] | null
 	>(null);
-	const watchId = useRef<number | null>(null);
-	const locationMarker = useRef<mapboxgl.Marker | null>(null);
+	const [deviceDirection, setDeviceDirection] = useState<number>(0);
+	const [isCompassAvailable, setIsCompassAvailable] = useState<boolean>(false);
 
-	const { direction } = useCompass();
+	const handleDeviceOrientation = useCallback(
+		(event: DeviceOrientationEvent) => {
+			const webkitCompassHeading = (event as any).webkitCompassHeading;
+			let compassHeading = 0;
 
-	const updateMarker = useCallback(
-		(lngLat: [number, number]) => {
-			if (!map) return;
-
-			if (!locationMarker.current) {
-				const wrapper = document.createElement('div');
-				wrapper.className = 'current-location-marker';
-				wrapper.style.position = 'relative';
-				wrapper.style.width = '60px';
-				wrapper.style.height = '60px';
-
-				const dog = document.createElement('div');
-				dog.style.top = '50%';
-				dog.style.left = '50%';
-				dog.style.width = '30px';
-				dog.style.height = '30px';
-				dog.style.position = 'absolute';
-				dog.style.transform = 'translate(-50%, -50%)';
-				dog.style.backgroundImage = 'url(/icons/dog_character.svg)';
-				dog.style.backgroundSize = 'cover';
-
-				const arrow = document.createElement('div');
-				arrow.style.width = '30px';
-				arrow.style.height = '30px';
-				arrow.style.position = 'absolute';
-				arrow.style.backgroundImage = 'url(/icons/direction_arrow.svg)';
-				arrow.style.backgroundSize = 'cover';
-				// arrow.style.top = '0';
-				// arrow.style.left = '50%';
-				// arrow.style.transform = `translateX(-50%) rotate(${direction}deg)`;
-				arrow.style.transition = 'left 0.2s ease-out, top 0.2s ease-out';
-
-				wrapper.appendChild(arrow);
-				wrapper.appendChild(dog);
-
-				locationMarker.current = new mapboxgl.Marker(wrapper)
-					.setLngLat(lngLat)
-					.addTo(map);
+			if (webkitCompassHeading !== undefined) {
+				// iOS heading
+				compassHeading = webkitCompassHeading;
+				setIsCompassAvailable(true);
+			} else if (event.alpha !== null) {
+				// General heading
+				compassHeading = (360 - event.alpha + 360) % 360; // Normalize to 0-360
+				setIsCompassAvailable(true);
 			} else {
-				locationMarker.current.setLngLat(lngLat);
-
-				console.log(direction);
-
-				const arrowElement = locationMarker.current.getElement()
-					.children[0] as HTMLElement;
-				const radius = 40;
-				const radian = (direction * Math.PI) / 180;
-				const xOffset = radius * Math.sin(radian);
-				const yOffset = radius * Math.cos(radian);
-				arrowElement.style.left = `calc(50% + ${xOffset - 15}px)`;
-				arrowElement.style.top = `calc(50% - ${yOffset + 10}px)`;
+				setIsCompassAvailable(false);
 			}
+
+			setDeviceDirection(compassHeading);
 		},
-		[map, direction],
+		[],
 	);
 
-	useEffect(() => {
-		if (navigator.geolocation && map) {
-			navigator.geolocation.getCurrentPosition(
-				position => {
-					const { latitude, longitude } = position.coords;
-					const newLocation: [number, number] = [longitude, latitude];
-					setCurrentLocation(newLocation);
-					updateMarker(newLocation);
-				},
-				error => {
-					console.error('현재 위치 받아오는 중 오류 발생:', error);
-				},
-			);
-
-			watchId.current = navigator.geolocation.watchPosition(
-				position => {
-					const { latitude, longitude } = position.coords;
-					const newLocation: [number, number] = [longitude, latitude];
-					setCurrentLocation(newLocation);
-					updateMarker(newLocation);
-				},
-				error => {
-					console.error('위치 변화 감지 중 오류 발생:', error);
-				},
-				{
-					enableHighAccuracy: true,
-					timeout: 5000,
-					maximumAge: 0,
-				},
+	const requestDeviceOrientationPermission = useCallback(async () => {
+		if (
+			typeof DeviceOrientationEvent !== 'undefined' &&
+			typeof (DeviceOrientationEvent as any).requestPermission === 'function'
+		) {
+			try {
+				const permission = await (
+					DeviceOrientationEvent as any
+				).requestPermission();
+				if (permission === 'granted') {
+					window.addEventListener(
+						'deviceorientation',
+						handleDeviceOrientation,
+						true,
+					);
+					setIsCompassAvailable(true);
+				} else {
+					console.error('Compass permission denied');
+					setIsCompassAvailable(false);
+				}
+			} catch (error) {
+				console.error('Error requesting compass permission:', error);
+				setIsCompassAvailable(false);
+			}
+		} else {
+			// Non-iOS devices
+			window.addEventListener(
+				'deviceorientation',
+				handleDeviceOrientation,
+				true,
 			);
 		}
+	}, [handleDeviceOrientation]);
+
+	useEffect(() => {
+		if (!map) return;
+
+		const geolocateControl = new mapboxgl.GeolocateControl({
+			positionOptions: {
+				enableHighAccuracy: true,
+			},
+			trackUserLocation: true,
+			showUserHeading: true, // Enable heading indicator
+			showAccuracyCircle: false, // Hide accuracy circle
+		});
+
+		map.addControl(geolocateControl);
+
+		geolocateControl.on('geolocate', (position: GeolocationPosition) => {
+			const { longitude, latitude } = position.coords;
+			setCurrentLocation([longitude, latitude]);
+		});
+
+		const timeoutId = setTimeout(() => {
+			geolocateControl.trigger();
+		}, 1000);
+
+		requestDeviceOrientationPermission();
 
 		return () => {
-			if (watchId.current !== null) {
-				navigator.geolocation.clearWatch(watchId.current);
-			}
-			if (locationMarker.current) {
-				locationMarker.current.remove();
-			}
+			clearTimeout(timeoutId);
+			map.removeControl(geolocateControl);
+			window.removeEventListener(
+				'deviceorientation',
+				handleDeviceOrientation,
+				true,
+			);
 		};
-	}, [map, updateMarker]);
+	}, [map, requestDeviceOrientationPermission, handleDeviceOrientation]);
 
-	const centerMapOnLocation = () => {
+	const centerMapOnLocation = useCallback(() => {
 		if (map && currentLocation) {
 			map.flyTo({
 				center: currentLocation,
 				zoom: 18,
-				duration: 3000,
+				pitch: 60,
+				bearing: deviceDirection, // Apply device direction
+				duration: 1000,
 			});
 		}
-	};
+	}, [map, currentLocation, deviceDirection]);
 
 	return (
-		<button
-			onClick={centerMapOnLocation}
-			className="absolute bottom-[30%] right-[1px] -translate-x-1/2 z-10 bg-white border-none p-2.5 cursor-pointer rounded-lg"
-		>
-			현재 위치로
-		</button>
+		<>
+			<button
+				onClick={centerMapOnLocation}
+				className="absolute bottom-40 right-4 bg-white border-none p-2.5 cursor-pointer rounded-lg shadow-md z-10 flex items-center justify-center"
+				disabled={!currentLocation}
+			>
+				현재 위치로
+			</button>
+			{!isCompassAvailable && (
+				<div className="absolute bottom-48 right-4 bg-white p-2 rounded-lg shadow-md z-10 text-sm">
+					나침반을 사용할 수 없습니다
+				</div>
+			)}
+		</>
 	);
 };
 

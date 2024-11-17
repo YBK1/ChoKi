@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Button from '@/components/Common/Button';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import { useAtom } from 'jotai';
-import { missionIdAtom } from '@/atoms/shoppingAtom';
+import { shoppingIdAtom } from '@/atoms/shoppingAtom';
 
 interface AddModalProps {
 	conpareResult: string;
@@ -50,7 +50,7 @@ export default function AddModal({
 	const increaseQuantity = () => setQuantity(prevQuantity => prevQuantity + 1);
 	const decreaseQuantity = () =>
 		setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
-	const [missionId] = useAtom(missionIdAtom);
+	const [missionId] = useAtom(shoppingIdAtom);
 	const sendWebSocketData = (reason: string) => {
 		const requestBody = {
 			shoppingId: missionId,
@@ -77,7 +77,7 @@ export default function AddModal({
 					{conpareResult === 'MATCH' && (
 						<div className="flex flex-col items-center">
 							<Image
-								src="/public/icons/success_icon.svg"
+								src="/icons/success_icon.svg"
 								alt="Success"
 								width={80}
 								height={80}
@@ -109,7 +109,7 @@ export default function AddModal({
 					{conpareResult === 'NOT_MATCH' && (
 						<div className="flex flex-col items-center">
 							<Image
-								src="/public/icons/fail_icon.svg"
+								src="/icons/fail_icon.svg"
 								alt="Fail"
 								width={80}
 								height={80}
@@ -132,7 +132,7 @@ export default function AddModal({
 					{conpareResult === 'SIMILAR' && (
 						<div className="flex flex-col items-center">
 							<Image
-								src="/public/icons/warning_icon.svg"
+								src="/icons/warning_icon.svg"
 								alt="Warning"
 								width={80}
 								height={80}

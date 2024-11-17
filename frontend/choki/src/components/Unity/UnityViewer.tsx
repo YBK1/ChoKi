@@ -30,7 +30,7 @@ const UnityViewer: React.FC<UnityViewerProps> = ({ onUnityLoaded }) => {
 		<div className="w-full h-screen overflow-hidden">
 			<iframe
 				ref={iframeRef}
-				src="/unity/index.html"
+				src="/unity/index.html" // Unity 정적 파일 경로
 				className="w-full h-full border-none"
 				id="unity-iframe"
 				allowFullScreen

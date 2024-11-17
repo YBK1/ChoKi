@@ -1,10 +1,9 @@
 import axiosInstance from '@/lib/api/axiosInstance';
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 // 가족 자녀 조회
 export const getFamily = async () => {
 	try {
-		const response = await axiosInstance.get(`${baseURL}/api/family/info`);
+		const response = await axiosInstance.get(`/api/family/info`);
 		return response.data;
 	} catch (error) {
 		console.error('Error in family:', error);
@@ -29,5 +28,10 @@ export const getMissionList = async (userId: number) => {
 
 export const getUsersNearby = async () => {
 	const response = await axiosInstance.get('/api/user/nearby');
+	return response.data;
+};
+
+export const getSimpleUserInfo = async () => {
+	const response = await axiosInstance.get(`/api/user/simple-info`);
 	return response.data;
 };

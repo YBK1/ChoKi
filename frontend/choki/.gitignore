@@ -44,5 +44,4 @@ public/sw.js
 public/workbox-*.js
 
 # Unity
-frontend/choki/public/Unity/Build/
-frontend/choki/public/Unity/
+public/unity/*
