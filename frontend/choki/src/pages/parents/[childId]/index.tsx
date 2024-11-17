@@ -5,9 +5,14 @@ import Link from 'next/link';
 // import level_icon from '@/assets/icons/level.svg';
 // import mission_plus from '@/assets/icons/mission_plus.svg';
 import CommonModal from '@/components/Common/Modal';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { searchItem, createShopping } from '@/lib/api/shopping';
-import { getRouteList, getRouteDetails } from '@/lib/api/navigation';
+import {
+	getDestinationList,
+	getGuidedRoute,
+	getSafestRoute,
+	getShortestRoute,
+} from '@/lib/api/navigation';
 import {
 	getKidDataFromParent,
 	getInProgressMissionList,
@@ -140,28 +145,66 @@ export default function Index() {
 	);
 
 	const StepTwo = () => {
-		const [selectedDestination, setSelectedDestination] = useState('');
+		const [selectedDestination, setSelectedDestination] = useState<{
+			buildingName: string;
+			latitude: number;
+			longitude: number;
+		} | null>(null);
 		const [destinations, setDestinations] = useState<
-			{ objectId: string; buildingName: string }[]
+			{ buildingName: string; latitude: number; longitude: number }[]
 		>([]);
 		const [routeDetails, setRouteDetails] = useState<any>(null);
 		const mapRef = useRef<any>(null);
 		const polylineRef = useRef<any>(null);
 		const markersRef = useRef<any[]>([]);
+		const [selectedRouteType, setSelectedRouteType] = useState<number>(0);
+		const [touchStart, setTouchStart] = useState<number | null>(null);
+		const [touchEnd, setTouchEnd] = useState<number | null>(null);
+		const carouselRef = useRef<HTMLDivElement>(null);
+		const [visibleRouteIndex, setVisibleRouteIndex] = useState(0);
+
+		const minSwipeDistance = 50;
+
+		const nextRoute = () => {
+			setVisibleRouteIndex(prev => (prev === 2 ? 0 : prev + 1));
+		};
+
+		const prevRoute = () => {
+			setVisibleRouteIndex(prev => (prev === 0 ? 2 : prev - 1));
+		};
+
+		const onTouchStart = (e: React.TouchEvent) => {
+			setTouchEnd(null);
+			setTouchStart(e.targetTouches[0].clientX);
+		};
+
+		const onTouchMove = (e: React.TouchEvent) => {
+			setTouchEnd(e.targetTouches[0].clientX);
+		};
+
+		const onTouchEnd = () => {
+			if (!touchStart || !touchEnd) return;
+
+			const distance = touchStart - touchEnd;
+			const isLeftSwipe = distance > minSwipeDistance;
+			const isRightSwipe = distance < -minSwipeDistance;
+
+			if (isLeftSwipe) {
+				nextRoute();
+			}
+			if (isRightSwipe) {
+				prevRoute();
+			}
+		};
 
 		useEffect(() => {
-			// 목적지 목록 가져오기
 			const fetchDestinations = async () => {
 				try {
-					const routeList = await getRouteList();
-					// 형식 변경
-					const formattedDestinations = routeList.map((route: any) => ({
-						objectId: route.objectId,
-						buildingName: route.destination.buildingName,
-					}));
-					setDestinations(formattedDestinations);
+					const destinationList = await getDestinationList();
+					setDestinations(destinationList);
+					console.log('목적지 목록:', destinationList);
 				} catch (error) {
-					console.error('목적지 정보 가져오기 실패핑:', error);
+					console.error('목적지 정보 가져오기 실패:', error);
 				}
 			};
 
@@ -169,8 +212,8 @@ export default function Index() {
 		}, []);
 
 		useEffect(() => {
-			// 카카오맵 화면 띄우기
 			const kakao = (window as any).kakao;
+
 			const initializeMap = (latitude: number, longitude: number) => {
 				if (kakao && kakao.maps) {
 					kakao.maps.load(() => {
@@ -183,9 +226,7 @@ export default function Index() {
 						mapRef.current = mapInstance;
 
 						const markerPosition = new kakao.maps.LatLng(latitude, longitude);
-						const marker = new kakao.maps.Marker({
-							position: markerPosition,
-						});
+						const marker = new kakao.maps.Marker({ position: markerPosition });
 						marker.setMap(mapInstance);
 					});
 				}
@@ -193,41 +234,49 @@ export default function Index() {
 
 			if (navigator.geolocation) {
 				navigator.geolocation.getCurrentPosition(
-					position => {
-						const { latitude, longitude } = position.coords;
-						initializeMap(latitude, longitude);
-					},
-					error => {
-						console.error('현재 위치 가져오기 실패핑:', error);
-						initializeMap(37.5665, 126.978);
-					},
+					({ coords: { latitude, longitude } }) =>
+						initializeMap(latitude, longitude),
+					() => initializeMap(37.5665, 126.978),
 					{ enableHighAccuracy: true },
 				);
 			} else {
-				// 현재 위치 못가져오면 중심 서울로
 				initializeMap(37.5665, 126.978);
 			}
 		}, []);
 
-		// 목적지 선택 함수
-		const handleDestinationChange = async (
-			e: React.ChangeEvent<HTMLSelectElement>,
-		) => {
-			const destinationId = e.target.value;
-			setSelectedDestination(destinationId);
+		const handleRouteTypeChange = useCallback(
+			async (routeType: number) => {
+				if (!selectedDestination) return;
 
-			try {
-				const details = await getRouteDetails(destinationId);
-				setRouteDetails(details);
-				if ((window as any).kakao && (window as any).kakao.maps) {
-					drawRoute(details);
+				try {
+					let details;
+					if (routeType === 0) {
+						details = await getGuidedRoute(selectedDestination);
+					} else if (routeType === 1) {
+						details = await getShortestRoute(selectedDestination);
+					} else if (routeType === 2) {
+						details = await getSafestRoute(selectedDestination);
+					}
+
+					setRouteDetails(details);
+
+					if ((window as any).kakao && (window as any).kakao.maps) {
+						drawRoute(details);
+					}
+				} catch (error) {
+					console.error('경로 정보 가져오기 실패:', error);
 				}
-			} catch (error) {
-				console.error('경로 상세정보 가져오기 실패핑:', error);
-			}
-		};
+			},
+			[selectedDestination],
+		);
 
-		// 경로 그리는 함수
+		useEffect(() => {
+			if (selectedDestination) {
+				setSelectedRouteType(0);
+				handleRouteTypeChange(0);
+			}
+		}, [selectedDestination, handleRouteTypeChange]);
+
 		const drawRoute = (details: any) => {
 			const kakao = (window as any).kakao;
 
@@ -252,8 +301,6 @@ export default function Index() {
 				),
 				new kakao.maps.LatLng(destination.latitude, destination.longitude),
 			];
-
-			console.log(routePoints);
 
 			const startMarkerImage = new kakao.maps.MarkerImage(
 				'/icons/map_home_icon.svg',
@@ -290,15 +337,17 @@ export default function Index() {
 			});
 			polylineRef.current = polyline;
 
-			// 지도 축척
 			const bounds = new kakao.maps.LatLngBounds();
 			routePoints.forEach(point => bounds.extend(point));
-			mapRef.current.setBounds(bounds);
 
 			const sw = bounds.getSouthWest();
 			const ne = bounds.getNorthEast();
-			console.log('Bounds Southwest:', { lat: sw.getLat(), lng: sw.getLng() });
-			console.log('Bounds Northeast:', { lat: ne.getLat(), lng: ne.getLng() });
+			const adjustedBounds = new kakao.maps.LatLngBounds(
+				new kakao.maps.LatLng(sw.getLat() - 0.001, sw.getLng()),
+				new kakao.maps.LatLng(ne.getLat() + 0.001, ne.getLng()),
+			);
+
+			mapRef.current.setBounds(adjustedBounds);
 		};
 
 		return (
@@ -307,12 +356,29 @@ export default function Index() {
 				<div className="flex-1">
 					<select
 						className="w-full p-2 border rounded"
-						onChange={handleDestinationChange}
-						value={selectedDestination}
+						onChange={e => {
+							const selectedIndex = Number(e.target.value);
+							if (!isNaN(selectedIndex) && destinations[selectedIndex]) {
+								const destination = destinations[selectedIndex];
+								setSelectedDestination(destination);
+								setSelectedRouteType(0);
+								handleRouteTypeChange(0);
+							}
+						}}
+						value={
+							selectedDestination
+								? destinations.findIndex(
+										d =>
+											d.buildingName === selectedDestination.buildingName &&
+											d.latitude === selectedDestination.latitude &&
+											d.longitude === selectedDestination.longitude,
+									)
+								: ''
+						}
 					>
 						<option value="">목적지를 선택하세요</option>
-						{destinations.map(destination => (
-							<option key={destination.objectId} value={destination.objectId}>
+						{destinations.map((destination, index) => (
+							<option key={index} value={index}>
 								{destination.buildingName}
 							</option>
 						))}
@@ -325,6 +391,84 @@ export default function Index() {
 					style={{ width: '100%', height: '400px' }}
 					ref={mapRef}
 				></div>
+
+				{selectedDestination && (
+					<div className="mt-0">
+						<div className="relative overflow-hidden" ref={carouselRef}>
+							<div
+								className="flex transition-transform duration-300 ease-in-out"
+								style={{
+									transform: `translateX(-${visibleRouteIndex * 100}%)`,
+								}}
+								onTouchStart={onTouchStart}
+								onTouchMove={onTouchMove}
+								onTouchEnd={onTouchEnd}
+							>
+								{['내 경로', '최단 경로', '안전 경로'].map(
+									(routeType, index) => (
+										<div key={index} className="w-full flex-shrink-0">
+											<div
+												className={`p-4 border rounded-lg ${
+													selectedRouteType === index
+														? 'border-orange-400 bg-orange-50'
+														: 'border-gray-300'
+												}`}
+											>
+												<div className="flex items-center justify-between">
+													<div className="flex flex-col gap-0.5">
+														<h4 className="text-base font-medium">
+															{routeType}
+														</h4>
+														<p className="text-xs text-gray-500">
+															{index === 0 && '아이와 함께 등록했던 길이에요!'}
+															{index === 1 &&
+																'목적지까지 가장 가까운 길이에요!'}
+															{index === 2 && (
+																<>
+																	<span>CCTV가 많은 지점을</span>
+																	<br />
+																	<span>지나는 길이에요!</span>
+																</>
+															)}
+														</p>
+													</div>
+													<button
+														className={`px-3 py-1 rounded text-sm ${
+															selectedRouteType === index
+																? 'bg-orange-400 text-white'
+																: 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+														}`}
+														onClick={() => {
+															setSelectedRouteType(index);
+															handleRouteTypeChange(index);
+														}}
+													>
+														{selectedRouteType === index ? '선택됨' : '선택'}
+													</button>
+												</div>
+											</div>
+										</div>
+									),
+								)}
+							</div>
+
+							<div className="flex justify-center gap-1.5 mt-2">
+								{[0, 1, 2].map(index => (
+									<button
+										key={index}
+										onClick={() => setVisibleRouteIndex(index)}
+										className={`w-1.5 h-1.5 rounded-full ${
+											visibleRouteIndex === index
+												? 'bg-orange-400'
+												: 'bg-gray-300'
+										}`}
+										aria-label={`Go to route option ${index + 1}`}
+									/>
+								))}
+							</div>
+						</div>
+					</div>
+				)}
 				<div className="flex justify-between mt-auto">
 					<button
 						className="px-4 py-2 rounded bg-gray-100 text-gray-500"
