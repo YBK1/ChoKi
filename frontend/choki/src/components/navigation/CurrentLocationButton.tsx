@@ -9,6 +9,38 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 	const [currentLocation, setCurrentLocation] = useState<
 		[number, number] | null
 	>(null);
+	const [deviceDirection, setDeviceDirection] = useState<number>(0);
+
+	const handleDeviceOrientation = useCallback(
+		(event: DeviceOrientationEvent) => {
+			const compassHeading =
+				event.alpha !== null ? (event.alpha + 360) % 360 : 0;
+			setDeviceDirection(compassHeading);
+		},
+		[],
+	);
+
+	const requestDeviceOrientationPermission = useCallback(async () => {
+		if (
+			typeof DeviceOrientationEvent !== 'undefined' &&
+			typeof (DeviceOrientationEvent as any).requestPermission === 'function'
+		) {
+			try {
+				const permission = await (
+					DeviceOrientationEvent as any
+				).requestPermission();
+				if (permission === 'granted') {
+					window.addEventListener('deviceorientation', handleDeviceOrientation);
+				} else {
+					console.error('Device orientation permission denied.');
+				}
+			} catch (error) {
+				console.error('Error requesting device orientation permission:', error);
+			}
+		} else {
+			window.addEventListener('deviceorientation', handleDeviceOrientation);
+		}
+	}, [handleDeviceOrientation]);
 
 	const add3DMarker = useCallback(
 		(lngLat: [number, number]) => {
@@ -47,10 +79,11 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 					'icon-size': 1.5,
 					'icon-pitch-alignment': 'map',
 					'icon-rotation-alignment': 'map',
+					'icon-rotate': deviceDirection,
 				},
 			});
 		},
-		[map],
+		[map, deviceDirection],
 	);
 
 	useEffect(() => {
@@ -94,10 +127,18 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 			geolocateControl.trigger();
 		}, 1000);
 
+		requestDeviceOrientationPermission();
+
 		return () => {
 			map.removeControl(geolocateControl);
+			window.removeEventListener('deviceorientation', handleDeviceOrientation);
 		};
-	}, [map, add3DMarker]);
+	}, [
+		map,
+		add3DMarker,
+		requestDeviceOrientationPermission,
+		handleDeviceOrientation,
+	]);
 
 	const centerMapOnLocation = () => {
 		if (map && currentLocation) {
