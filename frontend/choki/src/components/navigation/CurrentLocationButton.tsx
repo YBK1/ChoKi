@@ -10,19 +10,23 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 		[number, number] | null
 	>(null);
 	const [deviceDirection, setDeviceDirection] = useState<number>(0);
+	const [isCompassAvailable, setIsCompassAvailable] = useState<boolean>(false);
 
-	// Handle device orientation changes
 	const handleDeviceOrientation = useCallback(
 		(event: DeviceOrientationEvent) => {
 			const webkitCompassHeading = (event as any).webkitCompassHeading;
 			let compassHeading = 0;
 
 			if (webkitCompassHeading !== undefined) {
-				// Use iOS-specific compass heading
+				// iOS heading
 				compassHeading = webkitCompassHeading;
+				setIsCompassAvailable(true);
 			} else if (event.alpha !== null) {
-				// Use alpha for other devices
-				compassHeading = (event.alpha + 360) % 360; // Normalize to 0-360 degrees
+				// General heading
+				compassHeading = (360 - event.alpha + 360) % 360; // Normalize to 0-360
+				setIsCompassAvailable(true);
+			} else {
+				setIsCompassAvailable(false);
 			}
 
 			setDeviceDirection(compassHeading);
@@ -30,7 +34,6 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 		[],
 	);
 
-	// Request permission for device orientation on iOS
 	const requestDeviceOrientationPermission = useCallback(async () => {
 		if (
 			typeof DeviceOrientationEvent !== 'undefined' &&
@@ -41,62 +44,29 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 					DeviceOrientationEvent as any
 				).requestPermission();
 				if (permission === 'granted') {
-					window.addEventListener('deviceorientation', handleDeviceOrientation);
+					window.addEventListener(
+						'deviceorientation',
+						handleDeviceOrientation,
+						true,
+					);
+					setIsCompassAvailable(true);
 				} else {
-					console.error('Device orientation permission denied.');
+					console.error('Compass permission denied');
+					setIsCompassAvailable(false);
 				}
 			} catch (error) {
-				console.error('Error requesting device orientation permission:', error);
+				console.error('Error requesting compass permission:', error);
+				setIsCompassAvailable(false);
 			}
 		} else {
-			// Non-iOS devices or devices that don't require explicit permission
-			window.addEventListener('deviceorientation', handleDeviceOrientation);
+			// Non-iOS devices
+			window.addEventListener(
+				'deviceorientation',
+				handleDeviceOrientation,
+				true,
+			);
 		}
 	}, [handleDeviceOrientation]);
-
-	const add3DMarker = useCallback(
-		(lngLat: [number, number]) => {
-			if (!map) return;
-
-			if (map.getLayer('current-location-marker')) {
-				map.removeLayer('current-location-marker');
-			}
-			if (map.getSource('current-location-marker')) {
-				map.removeSource('current-location-marker');
-			}
-
-			map.addSource('current-location-marker', {
-				type: 'geojson',
-				data: {
-					type: 'FeatureCollection',
-					features: [
-						{
-							type: 'Feature',
-							geometry: {
-								type: 'Point',
-								coordinates: lngLat,
-							},
-							properties: {},
-						},
-					],
-				},
-			});
-
-			map.addLayer({
-				id: 'current-location-marker',
-				type: 'symbol',
-				source: 'current-location-marker',
-				layout: {
-					'icon-image': 'custom-marker',
-					'icon-size': 1.5,
-					'icon-pitch-alignment': 'map',
-					'icon-rotation-alignment': 'map',
-					'icon-rotate': deviceDirection, // Rotate marker based on device heading
-				},
-			});
-		},
-		[map, deviceDirection],
-	);
 
 	useEffect(() => {
 		if (!map) return;
@@ -106,71 +76,61 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				enableHighAccuracy: true,
 			},
 			trackUserLocation: true,
-			showUserHeading: true,
+			showUserHeading: true, // Enable heading indicator
+			showAccuracyCircle: false, // Hide accuracy circle
 		});
 
 		map.addControl(geolocateControl);
 
-		geolocateControl.on('geolocate', () => {
-			const accuracyCircle = document.querySelector(
-				'.mapboxgl-user-location-accuracy-circle',
-			);
-			if (accuracyCircle) {
-				accuracyCircle.remove();
-			}
-		});
-
-		geolocateControl.on('geolocate', position => {
-			const { latitude, longitude } = position.coords;
+		geolocateControl.on('geolocate', (position: GeolocationPosition) => {
+			const { longitude, latitude } = position.coords;
 			setCurrentLocation([longitude, latitude]);
-
-			map.flyTo({
-				center: [longitude, latitude],
-				zoom: 18,
-				pitch: 60,
-				bearing: 0,
-				speed: 1.5,
-			});
-
-			add3DMarker([longitude, latitude]);
 		});
 
-		setTimeout(() => {
+		const timeoutId = setTimeout(() => {
 			geolocateControl.trigger();
 		}, 1000);
 
 		requestDeviceOrientationPermission();
 
 		return () => {
+			clearTimeout(timeoutId);
 			map.removeControl(geolocateControl);
-			window.removeEventListener('deviceorientation', handleDeviceOrientation);
+			window.removeEventListener(
+				'deviceorientation',
+				handleDeviceOrientation,
+				true,
+			);
 		};
-	}, [
-		map,
-		add3DMarker,
-		requestDeviceOrientationPermission,
-		handleDeviceOrientation,
-	]);
+	}, [map, requestDeviceOrientationPermission, handleDeviceOrientation]);
 
-	const centerMapOnLocation = () => {
+	const centerMapOnLocation = useCallback(() => {
 		if (map && currentLocation) {
 			map.flyTo({
 				center: currentLocation,
 				zoom: 18,
 				pitch: 60,
-				bearing: 0,
-				duration: 3000,
+				bearing: deviceDirection, // Apply device direction
+				duration: 1000,
 			});
 		}
-	};
+	}, [map, currentLocation, deviceDirection]);
 
 	return (
-		<button
-			onClick={centerMapOnLocation}
-			className="absolute bottom-40 right-4 bg-white border-none p-2.5 cursor-pointer rounded-lg shadow-md z-10"
-		>
-			현재 위치로
-		</button>
+		<>
+			<button
+				onClick={centerMapOnLocation}
+				className="absolute bottom-40 right-4 bg-white border-none p-2.5 cursor-pointer rounded-lg shadow-md z-10 flex items-center justify-center"
+				disabled={!currentLocation}
+			>
+				현재 위치로
+			</button>
+			{!isCompassAvailable && (
+				<div className="absolute bottom-48 right-4 bg-white p-2 rounded-lg shadow-md z-10 text-sm">
+					나침반을 사용할 수 없습니다
+				</div>
+			)}
+		</>
 	);
 };
 

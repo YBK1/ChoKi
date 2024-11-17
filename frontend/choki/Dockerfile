@@ -14,10 +14,10 @@ COPY . .
 
 # 퍼블릭 S3 URL에서 Unity 빌드 파일 다운로드
 RUN wget -q -P ./public/unity https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/index.html && \
-    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unitybuild.loader.js && \
-    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unitybuild.framework.js && \
-    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unitybuild.data && \
-    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unitybuild.wasm && \
+    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unity.loader.js && \
+    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unity.framework.js && \
+    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unity.data && \
+    wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unity.wasm && \
     wget -q -P ./public/unity/TemplateData https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/TemplateData/favicon.ico && \
     wget -q -P ./public/unity/TemplateData https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/TemplateData/fullscreen-button.png && \
     wget -q -P ./public/unity/TemplateData https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/TemplateData/MemoryProfiler.png && \
