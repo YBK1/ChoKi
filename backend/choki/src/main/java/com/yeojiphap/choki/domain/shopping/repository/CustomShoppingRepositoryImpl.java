@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.yeojiphap.choki.domain.shopping.domain.CartItem;
 import com.yeojiphap.choki.domain.shopping.domain.Product;
 import com.yeojiphap.choki.domain.shopping.domain.Shopping;
+import com.yeojiphap.choki.domain.shopping.exception.CartItemAlreadyExistException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,23 @@ public class CustomShoppingRepositoryImpl implements CustomShoppingRepository {
 
 	@Override
 	public void insertCartItemNotInList(ObjectId shoppingId, Product product) {
+		Shopping shopping = mongoTemplate.findById(shoppingId, Shopping.class);
+
+		// 이미 추가 했던 상품인 경우
+		if (shopping.getShoppingList() != null) {
+			boolean hasInvalidProduct = shopping.getShoppingList().stream()
+				.anyMatch(existingProduct ->
+					(existingProduct.getBarcode() == null || existingProduct.getBarcode().isEmpty()) &&
+						existingProduct.getCartItem() != null &&
+						product.getCartItem() != null &&
+						product.getCartItem().getBarcode().equals(existingProduct.getCartItem().getBarcode())
+				);
+
+			if (hasInvalidProduct) {
+				throw new CartItemAlreadyExistException();
+			}
+		}
+
 		Query query = new Query(Criteria.where("_id").is(shoppingId));
 		Update update = new Update().push("shoppingList", product);
 
@@ -71,12 +89,23 @@ public class CustomShoppingRepositoryImpl implements CustomShoppingRepository {
 	@Override
 	public void deleteCartItemById(ObjectId shoppingId, String listBarcode, String barcode) {
 		Query query = new Query();
-		query.addCriteria(Criteria.where("_id").is(shoppingId)
-			.and("shoppingList.barcode").is(listBarcode));
+		query.addCriteria(Criteria.where("_id").is(shoppingId));
+
+		if (listBarcode == null || listBarcode.isEmpty()) {
+			// Product의 barcode가 비어있지 않고, cartItem의 barcode가 일치하는 항목 찾기
+			query.addCriteria(
+				new Criteria().andOperator(
+					Criteria.where("shoppingList.barcode").ne(null).ne(""),
+					Criteria.where("shoppingList.cartItem.barcode").is(barcode)
+				)
+			);
+		} else {
+			// listBarcode로 직접 찾기
+			query.addCriteria(Criteria.where("shoppingList.barcode").is(listBarcode));
+		}
 
 		Update update = new Update();
 		update.unset("shoppingList.$.cartItem");
-
 		mongoTemplate.updateFirst(query, update, Shopping.class);
 	}
 
