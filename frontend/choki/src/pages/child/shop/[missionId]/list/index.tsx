@@ -92,9 +92,9 @@ export default function ChildShoppingPage() {
 							}}
 						>
 							<h1 className="text-2xl font-bold mb-6">장바구니</h1>
-							{shoppingList.map(item => (
+							{shoppingList.map((item, index) => (
 								<ProductCard
-									key={item.barcode}
+									key={`${item.barcode}-${index}`} // barcode와 index를 조합해 고유 키 생성
 									role="CHILD"
 									ParentsShoppingItem={{
 										title: item.productName,
