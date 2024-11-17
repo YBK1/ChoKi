@@ -117,7 +117,9 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				onClick={centerMapOnLocation}
 				className="absolute bottom-40 right-4 bg-white border-none p-2.5 cursor-pointer rounded-lg shadow-md z-10 flex items-center justify-center"
 				disabled={!currentLocation}
-			></button>
+			>
+				현재 위치로
+			</button>
 			{!isCompassAvailable && (
 				<div className="absolute bottom-48 right-4 bg-white p-2 rounded-lg shadow-md z-10 text-sm">
 					나침반을 사용할 수 없습니다
