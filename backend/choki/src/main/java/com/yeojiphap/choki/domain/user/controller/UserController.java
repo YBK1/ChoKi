@@ -57,4 +57,9 @@ public class UserController implements SpringDocUserController {
     public ApiResponse getChildInfo() {
         return ApiResponse.success(HttpStatus.OK, userService.getChildInfo(), GET_CHILD_INFO_SUCCESS.getMessage());
     }
+
+    @GetMapping("/role")
+    public ApiResponse getUserRole() {
+        return ApiResponse.success(HttpStatus.OK, userService.getUserRole(), USER_ROLE_SEARCH_SUCCESS.getMessage());
+    }
 }
