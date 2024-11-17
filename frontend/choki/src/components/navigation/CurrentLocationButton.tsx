@@ -18,11 +18,15 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 			let compassHeading = 0;
 
 			if (webkitCompassHeading !== undefined) {
+				// iOS heading
 				compassHeading = webkitCompassHeading;
 				setIsCompassAvailable(true);
 			} else if (event.alpha !== null) {
-				compassHeading = 360 - event.alpha!;
+				// General heading
+				compassHeading = (360 - event.alpha + 360) % 360; // Normalize to 0-360
 				setIsCompassAvailable(true);
+			} else {
+				setIsCompassAvailable(false);
 			}
 
 			setDeviceDirection(compassHeading);
@@ -55,6 +59,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				setIsCompassAvailable(false);
 			}
 		} else {
+			// Non-iOS devices
 			window.addEventListener(
 				'deviceorientation',
 				handleDeviceOrientation,
@@ -71,13 +76,11 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				enableHighAccuracy: true,
 			},
 			trackUserLocation: true,
-			showUserHeading: true, // This will show the direction indicator
-			showAccuracyCircle: false, // Optional: hide accuracy circle
+			showUserHeading: true, // Enable heading indicator
+			showAccuracyCircle: false, // Hide accuracy circle
 		});
 
 		map.addControl(geolocateControl);
-
-		requestDeviceOrientationPermission();
 
 		geolocateControl.on('geolocate', (position: GeolocationPosition) => {
 			const { longitude, latitude } = position.coords;
@@ -87,6 +90,8 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 		const timeoutId = setTimeout(() => {
 			geolocateControl.trigger();
 		}, 1000);
+
+		requestDeviceOrientationPermission();
 
 		return () => {
 			clearTimeout(timeoutId);
@@ -105,7 +110,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				center: currentLocation,
 				zoom: 18,
 				pitch: 60,
-				bearing: deviceDirection,
+				bearing: deviceDirection, // Apply device direction
 				duration: 1000,
 			});
 		}
