@@ -95,7 +95,7 @@ public class CustomShoppingRepositoryImpl implements CustomShoppingRepository {
 			// Product의 barcode가 비어있지 않고, cartItem의 barcode가 일치하는 항목 찾기
 			query.addCriteria(
 				new Criteria().andOperator(
-					Criteria.where("shoppingList.barcode").ne(null).ne(""),
+					Criteria.where("shoppingList.barcode").in(null, ""),
 					Criteria.where("shoppingList.cartItem.barcode").is(barcode)
 				)
 			);
