@@ -214,7 +214,7 @@ export default function MainPage() {
 		if (kidData) {
 			sendDataToUnity(kidData);
 		}
-	}, [sendDataToUnity]);
+	}, []);
 
 	return (
 		<div className="relative">

@@ -10,7 +10,7 @@ import {
 	shoppingListAtom,
 	deleteCartItemAndCheckEmptyProductName,
 	shoppingMessageAtom,
-	missionIdAtom,
+	shoppingIdAtom,
 } from '@/atoms/shoppingAtom';
 import { useEffect, useState } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
@@ -24,13 +24,13 @@ export default function ChildShoppingPage() {
 	const [originBarcode, setOriginBarcode] = useState<string | null>(null);
 	const [productName, setProductName] = useState<string | null>(null);
 	const router = useRouter();
-	const [, setMissionId] = useAtom(missionIdAtom);
-	const { missionId } = router.query;
+	const [, setShoppingId] = useAtom(shoppingIdAtom);
+	const { missionId } = router.query; //
 
 	// WebSocket 구독 및 메시지 처리
 	useEffect(() => {
 		if (typeof missionId === 'string') {
-			setMissionId(missionId);
+			setShoppingId(missionId);
 			childWebSocketClient.subscribe(
 				`/user/sub/shopping/${missionId}`,
 				message =>
@@ -84,11 +84,17 @@ export default function ChildShoppingPage() {
 					/>
 				) : (
 					<Modal>
-						<div className="flex flex-col items-center">
+						<div
+							className="flex flex-col items-center"
+							style={{
+								maxHeight: '70vh', // 모달 높이를 70% 뷰포트 높이로 제한
+								overflowY: 'auto', // 내용이 넘칠 경우 스크롤 가능
+							}}
+						>
 							<h1 className="text-2xl font-bold mb-6">장바구니</h1>
-							{shoppingList.map(item => (
+							{shoppingList.map((item, index) => (
 								<ProductCard
-									key={item.barcode}
+									key={`${item.barcode}-${index}`} // barcode와 index를 조합해 고유 키 생성
 									role="CHILD"
 									ParentsShoppingItem={{
 										title: item.productName,
@@ -127,7 +133,7 @@ export default function ChildShoppingPage() {
 			<Image
 				src="/icons/shopping_character.svg"
 				alt="장보기 캐릭터"
-				className="absolute bottom-16 right-4"
+				className="absolute bottom-4 right-4 z-50" // bottom 값을 줄여 캐릭터가 화면 안에 잘 표시되도록 설정
 				width={100}
 				height={100}
 			/>

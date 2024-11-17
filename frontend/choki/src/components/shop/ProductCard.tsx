@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
-import { missionIdAtom } from '@/atoms/shoppingAtom';
+import { shoppingIdAtom } from '@/atoms/shoppingAtom';
 import { useAtom } from 'jotai';
 
 interface CartItem {
@@ -32,12 +32,12 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 	onCameraClick,
 	onDelete,
 }) => {
-	const [missionId] = useAtom(missionIdAtom);
+	const [shoppingId] = useAtom(shoppingIdAtom);
 
 	const handleDelete = () => {
 		if (ChildrenShoppingItem) {
 			const requestBody = {
-				shoppingId: missionId,
+				shoppingId: shoppingId,
 				listBarcode: ParentsShoppingItem.barcode,
 				barcode: ChildrenShoppingItem.barcode,
 			};
@@ -72,7 +72,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 								height={96}
 							/>
 						</div>
-						<p className="text-gray-900 font-medium text-lg">
+						<p className="text-gray-900 font-medium text-base">
 							{ParentsShoppingItem.title}
 						</p>
 						<p className="text-gray-500 text-sm">
