@@ -73,7 +73,7 @@ const ShoppingListPage = () => {
 		};
 
 		childWebSocketClient.subscribe(
-			'/user/sub/shopping/672df1def4c5cb7ca5d36532',
+			`/user/sub/shopping/${missionId}`,
 			handleWebSocketMessage,
 		);
 
