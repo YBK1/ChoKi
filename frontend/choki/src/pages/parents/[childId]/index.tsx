@@ -393,7 +393,7 @@ export default function Index() {
 				></div>
 
 				{selectedDestination && (
-					<div className="mt-0">
+					<div className="mt-2">
 						<div className="relative overflow-hidden" ref={carouselRef}>
 							<div
 								className="flex transition-transform duration-300 ease-in-out"
@@ -408,7 +408,7 @@ export default function Index() {
 									(routeType, index) => (
 										<div key={index} className="w-full flex-shrink-0">
 											<div
-												className={`p-4 border rounded-lg ${
+												className={`p-2 border rounded-lg ${
 													selectedRouteType === index
 														? 'border-orange-400 bg-orange-50'
 														: 'border-gray-300'
@@ -420,9 +420,20 @@ export default function Index() {
 															{routeType}
 														</h4>
 														<p className="text-xs text-gray-500">
-															{index === 0 && '아이와 함께 등록했던 길이에요!'}
-															{index === 1 &&
-																'목적지까지 가장 가까운 길이에요!'}
+															{index === 0 && (
+																<>
+																	<span>아이와 함께</span>
+																	<br />
+																	<span>등록했던 길이에요!</span>
+																</>
+															)}
+															{index === 1 && (
+																<>
+																	<span>목적지까지</span>
+																	<br />
+																	<span>가장 가까운 길이에요!</span>
+																</>
+															)}
 															{index === 2 && (
 																<>
 																	<span>CCTV가 많은 지점을</span>
