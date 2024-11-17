@@ -12,5 +12,5 @@ public class MissionAddRequestDto {
 	public Long childId;
 	public MissionType missionType;
 	public String content;
-	public Long exp;
+	public int exp;
 }
