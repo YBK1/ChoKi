@@ -158,9 +158,9 @@ public class UserService {
         return ChildResponseDto.from(user);
     }
 
-    public UserRoleDto getUserRole() {
+    public UserSimpleDto getUserSimpleInfo() {
         User user = findCurrentUser();
-        return UserRoleDto.from(user);
+        return UserSimpleDto.from(user);
     }
 
     private TokenResponse createToken(String username, Role role) {
