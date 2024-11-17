@@ -1,11 +1,13 @@
 // import { getMissionList } from '@/lib/api/user';
-import { getUserData } from '@/lib/api/user';
+import { getMissionList, getUserData } from '@/lib/api/user';
 import { useCallback, useEffect, useState } from 'react';
 import UnityViewer from '@/components/Unity/UnityViewer';
 // import { userAtom } from '@/atoms';
 // import { useAtom } from 'jotai';
 import router from 'next/router';
 import { changeMainAnimal } from '@/lib/api/unity';
+import { userAtom } from '@/atoms';
+import { useAtom } from 'jotai';
 
 declare global {
 	interface Window {
@@ -37,7 +39,7 @@ export default function MainPage() {
 	const [, setIsUnityLoaded] = useState(false); // Unity 로드 상태
 	// const [user] = useAtom(userAtom); // Jotai의 유저 상태
 	const [userData, setUserData] = useState<userDataResponse | null>(null); // 사용자 데이터 상태
-
+	const [user] = useAtom(userAtom);
 	// spring에서 데이터를 가져와서 set하는 함수
 	function getData() {
 		console.log('Unity가 로드된 후 getUserData 호출 시작');
@@ -61,6 +63,28 @@ export default function MainPage() {
 			console.error('getUserData 호출 중 오류:', error);
 		}
 	}, []);
+
+	function sendMissionDataToUnity(missions: InProgressMissionResponse) {
+		console.log('일단 여기까지 왔고??222222');
+		const jsonData = JSON.stringify({ missions });
+
+		// unityInstance를 iframe을 통해 가져오도록 변경
+		const iframe = document.getElementById('unity-iframe') as HTMLIFrameElement;
+		if (iframe && iframe.contentWindow && iframe.contentWindow.unityInstance) {
+			try {
+				iframe.contentWindow.unityInstance.SendMessage(
+					'DataReceiver',
+					'receiveMissionDataFromUnity',
+					jsonData,
+				);
+				console.log('Mission data sent to Unity:', missions);
+			} catch (error) {
+				console.error('Error sending mission data to Unity:', error);
+			}
+		} else {
+			console.error('iframe 또는 unityInstance가 정의되지 않았습니다.');
+		}
+	}
 
 	const sendDataToUnity = useCallback((data: userDataResponse) => {
 		const iframe = document.getElementById('unity-iframe') as HTMLIFrameElement;
@@ -139,6 +163,27 @@ export default function MainPage() {
 			delete window.changeRepresentativeAnimal;
 		};
 	}, [fetchAndSendUserData, userData, sendDataToUnity]);
+
+	useEffect(() => {
+		window.handleUnityShowPanel = async () => {
+			console.log(user.userId);
+			if (user.userId !== 0) {
+				console.log('Unity에서 ShowPanel 호출됨, 미션 데이터를 가져옵니다.');
+				try {
+					const missionData = await getMissionList(user.userId);
+					console.log('미션 데이터:', missionData);
+					sendMissionDataToUnity(missionData); // Unity로 미션 데이터를 전송
+				} catch (error) {
+					console.error('미션 데이터 가져오기 실패:', error);
+				}
+			} else {
+				console.warn('userId가 설정되지 않았습니다.');
+			}
+		};
+		return () => {
+			delete window.handleUnityShowPanel;
+		};
+	}, []);
 
 	return (
 		<div className="relative">
