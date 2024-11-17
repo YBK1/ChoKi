@@ -17,14 +17,37 @@ const Cam: React.FC<BarcodeCamProps> = ({
 	const [showToast, setShowToast] = useState<boolean>(false);
 	const [barcodeReader] = useState(new BrowserMultiFormatReader());
 
-	// 후면 카메라 ID 가져오기
-	const getRearCameraDeviceId = async () => {
-		const devices = await navigator.mediaDevices.enumerateDevices();
-		const videoDevices = devices.filter(device => device.kind === 'videoinput');
-		const rearCamera = videoDevices.find(device =>
-			device.label.toLowerCase().includes('back'),
-		);
-		return rearCamera?.deviceId || videoDevices[0]?.deviceId || null;
+	// 후면 카메라 스트림 가져오기
+	const getRearCameraStream = async () => {
+		try {
+			// 디바이스 목록 가져오기
+			const devices = await navigator.mediaDevices.enumerateDevices();
+			const videoDevices = devices.filter(
+				device => device.kind === 'videoinput',
+			);
+
+			// 후면 카메라 탐지 (label을 통해 탐색)
+			const rearCamera = videoDevices.find(
+				device =>
+					device.label.toLowerCase().includes('back') || // 후면 카메라 포함
+					device.label.toLowerCase().includes('rear'),
+			);
+
+			if (rearCamera) {
+				// deviceId를 이용하여 후면 카메라 스트림 가져오기
+				return await navigator.mediaDevices.getUserMedia({
+					video: { deviceId: rearCamera.deviceId },
+				});
+			} else {
+				// fallback: facingMode로 후면 카메라 요청
+				return await navigator.mediaDevices.getUserMedia({
+					video: { facingMode: { exact: 'environment' } },
+				});
+			}
+		} catch (error) {
+			console.error('후면 카메라 탐지 실패:', error);
+			throw error;
+		}
 	};
 
 	// 바코드 비교 함수
@@ -44,28 +67,24 @@ const Cam: React.FC<BarcodeCamProps> = ({
 		}
 	};
 
-	// 카메라 및 스캔 시작
+	// 스캔 시작
 	const startScan = async () => {
 		if (videoRef.current) {
 			try {
-				const deviceId = await getRearCameraDeviceId();
-				if (!deviceId) {
-					throw new Error('카메라 장치를 찾을 수 없습니다.');
-				}
-				await barcodeReader.decodeFromVideoDevice(
-					deviceId,
-					videoRef.current,
-					result => {
-						if (result) {
-							const scannedBarcode = result.getText();
-							goCompare(originBarcode, scannedBarcode);
-							videoRef.current?.pause();
-						}
-					},
-				);
+				const stream = await getRearCameraStream();
+				videoRef.current.srcObject = stream;
+
+				// 바코드 리더로 스캔 시작
+				barcodeReader.decodeFromVideoElement(videoRef.current, result => {
+					if (result) {
+						const scannedBarcode = result.getText();
+						goCompare(originBarcode, scannedBarcode);
+						videoRef.current?.pause();
+					}
+				});
 			} catch (error) {
 				console.error('카메라 접근 실패:', error);
-				setShowToast(true); // 사용자에게 에러 알림
+				setShowToast(true); // 사용자에게 알림
 			}
 		}
 	};
@@ -80,10 +99,11 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				stream.getTracks().forEach(track => track.stop()); // 스트림 해제
 				await startScan();
 			} catch (error) {
-				console.error('카메라 권한 부족:', error);
-				setShowToast(true); // 권한 문제 알림
+				console.error('카메라 권한 부족 또는 접근 실패:', error);
+				setShowToast(true); // 사용자 알림
 			}
 		};
+
 		checkPermissionsAndStart();
 
 		return () => {
