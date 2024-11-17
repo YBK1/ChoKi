@@ -16,6 +16,7 @@ declare global {
 		navigateToShopping?: (missionId: string) => void;
 		navigateToRecycling?: (missionId: string) => void;
 		changeRepresentativeAnimal?: (animalId: number) => void;
+		getData: () => void;
 		createUnityInstance?: (
 			canvas: HTMLCanvasElement,
 			config: {
@@ -38,13 +39,21 @@ export default function MainPage() {
 	const [userData, setUserData] = useState<userDataResponse | null>(null); // 사용자 데이터 상태
 
 	// spring에서 데이터를 가져와서 set하는 함수
-	const getData = async () => {
+	function getData() {
 		console.log('Unity가 로드된 후 getUserData 호출 시작');
-		const kidData = await getUserData(); // 사용자 데이터 가져오기
-		console.log('getUserData 완료:', kidData);
-		setUserData(kidData); // 상태에 저장
-		sendDataToUnity(kidData); // Unity로 데이터 전달
-	};
+
+		getUserData() // 사용자 데이터 가져오기
+			.then(kidData => {
+				console.log('getUserData 완료:', kidData);
+				setUserData(kidData); // 상태에 저장
+				sendDataToUnity(kidData); // Unity로 데이터 전달
+			})
+			.catch(error => {
+				console.error('getUserData 호출 중 오류:', error);
+			});
+	}
+
+	window.getData = getData;
 
 	// Unity가 완전히 로드된 후 사용자 데이터를 가져오고 Unity로 전달
 	const fetchAndSendUserData = useCallback(async () => {
