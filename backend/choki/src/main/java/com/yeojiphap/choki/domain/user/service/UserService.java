@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -67,25 +68,29 @@ public class UserService {
     @Transactional
     public UserResponseDto getUserDetailInfo() {
         User currentUser = findByUsername(SecurityUtil.getCurrentUsername());
-        UserLevelDto dto = getLevel(currentUser);
-        Long drawAnimalId = 0L;
 
-        if (dto.isLevelUp()) {
-            drawAnimalId = collectedService.drawRandomAnimal().animalId();
+        int pastLevel = currentUser.getPastLevel();
+        int currentLevel = currentUser.getLevel();
+
+        UserLevelDto levelInfo = UserLevelDto.of(currentLevel, pastLevel);
+        log.info("현재 레벨 : {}, 이전 레벨 : {}, isLevelUp : {}", currentLevel, pastLevel, levelInfo.isLevelUp());
+
+        // 동물 뽑기 처리
+        AnimalDto drawnAnimal = null;
+        if (levelInfo.isLevelUp()) {
+            drawnAnimal = collectedService.drawRandomAnimal();
+            levelInfo = levelInfo.withDrawnAnimal(drawnAnimal.animalId());
+            updatePastLevelInNewTransaction(currentUser.getId(), currentLevel);
         }
-
         List<Collected> collected = collectedRepository.findByUser(currentUser.getId());
-        return UserResponseDto.from(currentUser, collected, dto.isLevelUp(), drawAnimalId);
+        return UserResponseDto.from(currentUser, collected, levelInfo);
     }
 
-    @Transactional
-    public UserLevelDto getLevel(User user) {
-        log.info("Before update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
-        boolean isLevelUp = user.getLevel() != user.getPastLevel();
-        user.updatePastLevel(user.getLevel());
-        em.flush(); // 영속성 컨텍스트 강제 동기화
-        log.info("After update: pastLevel={}, level={}", user.getPastLevel(), user.getLevel());
-        return new UserLevelDto(user.getLevel(), user.getExp(), isLevelUp);
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void updatePastLevelInNewTransaction(Long userId, int currentLevel) {
+        // 별도의 트랜잭션으로 사용자 조회 및 pastLevel 업데이트
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        user.updatePastLevel(currentLevel);
     }
 
     @Transactional(readOnly = true)
