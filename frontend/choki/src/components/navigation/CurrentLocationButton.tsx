@@ -11,15 +11,26 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 	>(null);
 	const [deviceDirection, setDeviceDirection] = useState<number>(0);
 
+	// Handle device orientation changes
 	const handleDeviceOrientation = useCallback(
 		(event: DeviceOrientationEvent) => {
-			const compassHeading =
-				event.alpha !== null ? (event.alpha + 360) % 360 : 0;
+			const webkitCompassHeading = (event as any).webkitCompassHeading;
+			let compassHeading = 0;
+
+			if (webkitCompassHeading !== undefined) {
+				// Use iOS-specific compass heading
+				compassHeading = webkitCompassHeading;
+			} else if (event.alpha !== null) {
+				// Use alpha for other devices
+				compassHeading = (event.alpha + 360) % 360; // Normalize to 0-360 degrees
+			}
+
 			setDeviceDirection(compassHeading);
 		},
 		[],
 	);
 
+	// Request permission for device orientation on iOS
 	const requestDeviceOrientationPermission = useCallback(async () => {
 		if (
 			typeof DeviceOrientationEvent !== 'undefined' &&
@@ -38,6 +49,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				console.error('Error requesting device orientation permission:', error);
 			}
 		} else {
+			// Non-iOS devices or devices that don't require explicit permission
 			window.addEventListener('deviceorientation', handleDeviceOrientation);
 		}
 	}, [handleDeviceOrientation]);
@@ -79,7 +91,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 					'icon-size': 1.5,
 					'icon-pitch-alignment': 'map',
 					'icon-rotation-alignment': 'map',
-					'icon-rotate': deviceDirection,
+					'icon-rotate': deviceDirection, // Rotate marker based on device heading
 				},
 			});
 		},
