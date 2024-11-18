@@ -34,7 +34,9 @@ export const deleteCartItemAndCheckEmptyProductName = (
 	set((prevList: ShoppingItem[]) =>
 		prevList
 			.map((item: ShoppingItem) =>
-				item.barcode === barcode ? { ...item, cartItem: undefined } : item,
+				item.barcode === barcode && item.barcode.trim() !== ''
+					? { ...item, cartItem: undefined }
+					: item,
 			)
 			.filter(
 				(item: ShoppingItem) =>

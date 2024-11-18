@@ -45,6 +45,10 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				'/pub/shopping/product/delete',
 				requestBody,
 			);
+			console.log(
+				'아이 장바구니 물품 삭제할 바코드',
+				ParentsShoppingItem.barcode,
+			);
 			onDelete(ParentsShoppingItem.barcode);
 		}
 	};
