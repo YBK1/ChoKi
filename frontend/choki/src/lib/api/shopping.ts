@@ -1,7 +1,7 @@
 import axiosInstance from '@/lib/api/axiosInstance';
 // const baseURL = process.env.NEXT_PUBLIC_API_URL;
 const baseURL = 'https://choki.co.kr';
-import Compressor from 'compressorjs';
+
 // 상품 검색 API
 export const searchItem = async (
 	itemName: string,
@@ -36,18 +36,6 @@ export const createShopping = async (
 		return response.data;
 	} catch (error) {
 		console.error('장보기 미션 생성 실패:', error);
-		throw error;
-	}
-};
-
-export const createMission = async (
-	requestBody: MissionRequest,
-): Promise<any> => {
-	try {
-		const response = await axiosInstance.post(`/api/mission`, requestBody);
-		return response.data;
-	} catch (error) {
-		console.error('미션 생성 실패:', error);
 		throw error;
 	}
 };
@@ -120,31 +108,61 @@ export const uploadMissionImage = async (missionId: string, image: File) => {
 // 		throw error;
 // 	}
 // };
-export const uploadShoppingImage = async (
-	shoppingId: string,
-	image: File,
-): Promise<any> => {
-	// 이미지 압축 함수
-	const compressImage = (file: File): Promise<File> => {
+export const uploadShoppingImage = async (shoppingId: string, image: File) => {
+	// 이미지 리사이즈 함수
+	const resizeImage = (file: File): Promise<Blob> => {
 		return new Promise((resolve, reject) => {
-			new Compressor(file, {
-				quality: 0.6, // 이미지 품질 (0.1~1)
-				success(result: File | Blob) {
-					resolve(result as File); // Blob을 File로 캐스팅
-				},
-				error(err: Error) {
-					reject(err);
-				},
-			});
+			const reader = new FileReader();
+
+			reader.onload = e => {
+				const img = new Image();
+				img.onload = () => {
+					const canvas = document.createElement('canvas');
+					const ctx = canvas.getContext('2d');
+
+					if (ctx) {
+						// 이미지 크기 조정
+						const scaleFactor = 0.3; // 축소 비율
+						canvas.width = img.width * scaleFactor;
+						canvas.height = img.height * scaleFactor;
+
+						// canvas에 이미지를 그리기
+						ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+						// canvas를 Blob으로 변환
+						canvas.toBlob(
+							blob => {
+								if (blob) {
+									resolve(blob);
+								} else {
+									reject(new Error('Blob 변환 실패'));
+								}
+							},
+							file.type, // 원본 파일의 포맷 유지
+							0.7, // 이미지 품질 (0.1 ~ 1.0)
+						);
+					} else {
+						reject(new Error('Canvas context를 가져올 수 없음'));
+					}
+				};
+				img.src = e.target?.result as string; // FileReader의 결과를 이미지 소스로 설정
+			};
+
+			reader.onerror = error => reject(error);
+			reader.readAsDataURL(file); // File을 Data URL로 읽기
 		});
 	};
 
 	try {
-		// 이미지 압축
-		const compressedImage: File = await compressImage(image);
+		// 이미지 크기 조정
+		const resizedBlob = await resizeImage(image);
+		const resizedFile = new File([resizedBlob], image.name, {
+			type: image.type,
+		});
 
+		// FormData 생성 (기존 규격 유지)
 		const formData = new FormData();
-		formData.append('image', compressedImage);
+		formData.append('image', resizedFile);
 
 		const dataObject = { shoppingId: shoppingId };
 		formData.append(
@@ -152,13 +170,12 @@ export const uploadShoppingImage = async (
 			new Blob([JSON.stringify(dataObject)], { type: 'application/json' }),
 		);
 
-		// 서버에 업로드 요청
+		// 서버로 전송
 		const response = await axiosInstance.post(`/api/shopping/image`, formData, {
 			headers: {
 				'Content-Type': 'multipart/form-data',
 			},
 		});
-
 		return response.data;
 	} catch (error) {
 		console.error('이미지 업로드 실패:', error);
