@@ -2,11 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import * as StompJs from '@stomp/stompjs';
 import { useAtom } from 'jotai';
-import {
-	shoppingListAtom,
-	addShoppingItem,
-	deletePlusItem,
-} from '@/atoms/shoppingAtom';
+import { shoppingListAtom, deletePlusItem } from '@/atoms/shoppingAtom';
 import ParentProductCard from '@/components/shop/ParentProductCard';
 import { useRouter } from 'next/router';
 import ParentsShoppingNavbar from '@/components/Common/Navbar/ParentsShoppingNavbar';
