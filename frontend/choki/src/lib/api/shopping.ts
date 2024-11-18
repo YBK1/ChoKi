@@ -1,7 +1,7 @@
 import axiosInstance from '@/lib/api/axiosInstance';
 // const baseURL = process.env.NEXT_PUBLIC_API_URL;
 const baseURL = 'https://choki.co.kr';
-
+import Compressor from 'compressorjs';
 // 상품 검색 API
 export const searchItem = async (
 	itemName: string,
@@ -85,23 +85,68 @@ export const uploadMissionImage = async (missionId: string, image: File) => {
 };
 
 // 장보기 완료 이미지 전송
-export const uploadShoppingImage = async (shoppingId: string, image: File) => {
-	const formData = new FormData();
+// export const uploadShoppingImage = async (shoppingId: string, image: File) => {
+// 	const formData = new FormData();
 
-	formData.append('image', image);
+// 	formData.append('image', image);
 
-	const dataObject = { shoppingId: shoppingId };
-	formData.append(
-		'data',
-		new Blob([JSON.stringify(dataObject)], { type: 'application/json' }),
-	);
+// 	const dataObject = { shoppingId: shoppingId };
+// 	formData.append(
+// 		'data',
+// 		new Blob([JSON.stringify(dataObject)], { type: 'application/json' }),
+// 	);
+
+// 	try {
+// 		const response = await axiosInstance.post(`/api/shopping/image`, formData, {
+// 			headers: {
+// 				'Content-Type': 'multipart/form-data',
+// 			},
+// 		});
+// 		return response.data;
+// 	} catch (error) {
+// 		console.error('이미지 업로드 실패:', error);
+// 		throw error;
+// 	}
+// };
+export const uploadShoppingImage = async (
+	shoppingId: string,
+	image: File,
+): Promise<any> => {
+	// 이미지 압축 함수
+	const compressImage = (file: File): Promise<File> => {
+		return new Promise((resolve, reject) => {
+			new Compressor(file, {
+				quality: 0.6, // 이미지 품질 (0.1~1)
+				success(result: File | Blob) {
+					resolve(result as File); // Blob을 File로 캐스팅
+				},
+				error(err: Error) {
+					reject(err);
+				},
+			});
+		});
+	};
 
 	try {
+		// 이미지 압축
+		const compressedImage: File = await compressImage(image);
+
+		const formData = new FormData();
+		formData.append('image', compressedImage);
+
+		const dataObject = { shoppingId: shoppingId };
+		formData.append(
+			'data',
+			new Blob([JSON.stringify(dataObject)], { type: 'application/json' }),
+		);
+
+		// 서버에 업로드 요청
 		const response = await axiosInstance.post(`/api/shopping/image`, formData, {
 			headers: {
 				'Content-Type': 'multipart/form-data',
 			},
 		});
+
 		return response.data;
 	} catch (error) {
 		console.error('이미지 업로드 실패:', error);
