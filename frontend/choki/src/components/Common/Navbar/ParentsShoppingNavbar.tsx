@@ -12,7 +12,7 @@ const ParentsShoppingNavbar: React.FC<ParentsShoppingrNavbarProps> = ({
 }) => {
 	return (
 		<>
-			<nav className="fixed top-6 z-100 w-full left-[43%] transform -translate-x-1/2">
+			<nav className="fixed top-6 z-100 w-full left-[50%] transform -translate-x-1/2">
 				<div className="h-full flex justify-center items-center gap-8">
 					{/* 나가기 버튼 */}
 					<Link href={`/parents/${childId}`}>
