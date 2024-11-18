@@ -80,9 +80,9 @@ export default function ChildIsShoppingPage() {
 			<div
 				className="w-full max-w-3xl overflow-hidden shadow-lg rounded-lg p-2"
 				style={{
-					height: '550px',
+					height: '750px',
 					position: 'relative',
-					marginTop: '230px',
+					marginTop: '120px',
 				}}
 			>
 				<div
