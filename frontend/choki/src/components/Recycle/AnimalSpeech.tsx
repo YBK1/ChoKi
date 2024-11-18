@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 
-const AnimalSpeech: React.FC<AnimalSpeechProps> = ({ isImageCaptured }) => {
+const AnimalSpeech: React.FC<AnimalSpeechProps> = ({ animalMessage }) => {
 	return (
 		<div className="flex justify-center w-full p-2 mt-10">
 			{/* 말풍선 */}
@@ -19,9 +19,10 @@ const AnimalSpeech: React.FC<AnimalSpeechProps> = ({ isImageCaptured }) => {
 				}}
 			>
 				{/* 텍스트 */}
-				{isImageCaptured
-					? '이것도 몰라? 잘 생각해봐!'
-					: '헷갈리는 쓰레기는 사진을 찍어봐!'}
+				{/* {animalMessage !== undefined
+					? animalMessage
+					: '헷갈리는 쓰레기는 사진을 찍어봐!'} */}
+				{animalMessage}
 			</div>
 
 			{/* 동물 */}
