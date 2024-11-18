@@ -1,4 +1,4 @@
-import { FC, useEffect, useState, useCallback } from 'react';
+import { FC, useEffect, useState, useCallback, useRef } from 'react';
 import mapboxgl from 'mapbox-gl';
 
 interface CenterButtonProps {
@@ -10,7 +10,8 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 		[number, number] | null
 	>(null);
 	const [deviceDirection, setDeviceDirection] = useState<number>(0);
-	// const [isCompassAvailable, setIsCompassAvailable] = useState<boolean>(false);
+	const geolocateControlRef = useRef<mapboxgl.GeolocateControl | null>(null);
+	const cleanupRef = useRef(false);
 
 	const handleDeviceOrientation = useCallback(
 		(event: DeviceOrientationEvent) => {
@@ -19,12 +20,8 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 
 			if (webkitCompassHeading !== undefined) {
 				compassHeading = webkitCompassHeading;
-				// setIsCompassAvailable(true);
 			} else if (event.alpha !== null) {
 				compassHeading = (360 - event.alpha + 360) % 360;
-				// setIsCompassAvailable(true);
-			} else {
-				// setIsCompassAvailable(false);
 			}
 
 			setDeviceDirection(compassHeading);
@@ -42,62 +39,61 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 					DeviceOrientationEvent as any
 				).requestPermission();
 				if (permission === 'granted') {
-					window.addEventListener(
-						'deviceorientation',
-						handleDeviceOrientation,
-						true,
-					);
-					// setIsCompassAvailable(true);
+					window.addEventListener('deviceorientation', handleDeviceOrientation);
 				} else {
 					console.error('Compass permission denied');
-					// setIsCompassAvailable(false);
 				}
 			} catch (error) {
 				console.error('Error requesting compass permission:', error);
-				// setIsCompassAvailable(false);
 			}
 		} else {
-			window.addEventListener(
-				'deviceorientation',
-				handleDeviceOrientation,
-				true,
-			);
+			window.addEventListener('deviceorientation', handleDeviceOrientation);
 		}
 	}, [handleDeviceOrientation]);
 
 	useEffect(() => {
-		if (!map) return;
+		if (!map || cleanupRef.current) return;
 
-		const geolocateControl = new mapboxgl.GeolocateControl({
-			positionOptions: {
-				enableHighAccuracy: true,
-			},
-			trackUserLocation: true,
-			showUserHeading: true,
-			showAccuracyCircle: false,
-		});
+		if (!geolocateControlRef.current) {
+			const geolocateControl = new mapboxgl.GeolocateControl({
+				positionOptions: {
+					enableHighAccuracy: true,
+				},
+				trackUserLocation: true,
+				showUserHeading: true,
+				showAccuracyCircle: false,
+			});
 
-		map.addControl(geolocateControl);
+			geolocateControlRef.current = geolocateControl;
+			map.addControl(geolocateControl);
 
-		geolocateControl.on('geolocate', (position: GeolocationPosition) => {
-			const { longitude, latitude } = position.coords;
-			setCurrentLocation([longitude, latitude]);
-		});
+			geolocateControl.on('geolocate', (position: GeolocationPosition) => {
+				const { longitude, latitude } = position.coords;
+				setCurrentLocation([longitude, latitude]);
+			});
 
-		const timeoutId = setTimeout(() => {
-			geolocateControl.trigger();
-		}, 1000);
+			requestDeviceOrientationPermission();
 
-		requestDeviceOrientationPermission();
+			setTimeout(() => {
+				geolocateControl.trigger();
+			}, 1000);
+		}
 
+		// Cleanup
 		return () => {
-			clearTimeout(timeoutId);
-			map.removeControl(geolocateControl);
-			window.removeEventListener(
-				'deviceorientation',
-				handleDeviceOrientation,
-				true,
-			);
+			if (!cleanupRef.current && geolocateControlRef.current && map) {
+				cleanupRef.current = true;
+				try {
+					map.removeControl(geolocateControlRef.current);
+				} catch (error) {
+					console.warn('Error removing geolocate control:', error);
+				}
+				geolocateControlRef.current = null;
+				window.removeEventListener(
+					'deviceorientation',
+					handleDeviceOrientation,
+				);
+			}
 		};
 	}, [map, requestDeviceOrientationPermission, handleDeviceOrientation]);
 
@@ -114,20 +110,13 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 	}, [map, currentLocation, deviceDirection]);
 
 	return (
-		<>
-			<button
-				onClick={centerMapOnLocation}
-				className="absolute bottom-40 right-4 bg-white border-none p-2.5 cursor-pointer rounded-lg shadow-md z-10 flex items-center justify-center"
-				disabled={!currentLocation}
-			>
-				현재 위치로
-			</button>
-			{/* {!isCompassAvailable && (
-				<div className="absolute bottom-48 right-4 bg-white p-2 rounded-lg shadow-md z-10 text-sm">
-					나침반을 사용할 수 없습니다
-				</div>
-			)} */}
-		</>
+		<button
+			onClick={centerMapOnLocation}
+			className="absolute bottom-40 right-4 bg-white border-none p-2.5 cursor-pointer rounded-lg shadow-md z-10 flex items-center justify-center"
+			disabled={!currentLocation}
+		>
+			현재 위치로
+		</button>
 	);
 };
 
