@@ -50,9 +50,10 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				requestBody,
 			);
 
-			onDelete(ParentsShoppingItem.barcode); // 부모가 추가한 물품 삭제
 			if ((ParentsShoppingItem.barcode = '')) {
 				deletePlusItem(setShoppingList, ChildrenShoppingItem.barcode); // 아이가 추가한 물품 삭제
+			} else {
+				onDelete(ParentsShoppingItem.barcode); // 부모가 추가한 물품 삭제
 			}
 		}
 	};
