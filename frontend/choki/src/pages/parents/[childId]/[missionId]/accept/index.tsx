@@ -78,7 +78,6 @@ export default function MissionAcceptPage() {
 									alt="Mission completed"
 									width={330}
 									height={330}
-									fill
 									className="rounded-lg object-cover"
 									sizes="330px"
 								/>
