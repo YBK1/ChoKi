@@ -40,6 +40,18 @@ export const createShopping = async (
 	}
 };
 
+export const createMission = async (
+	requestBody: MissionRequest,
+): Promise<any> => {
+	try {
+		const response = await axiosInstance.post(`/api/mission`, requestBody);
+		return response.data;
+	} catch (error) {
+		console.error('미션 생성 실패:', error);
+		throw error;
+	}
+};
+
 // 장보기 비교
 export const compareShopping = async ({
 	originBarcode,
