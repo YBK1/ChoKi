@@ -91,17 +91,19 @@ public class CustomShoppingRepositoryImpl implements CustomShoppingRepository {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("_id").is(shoppingId));
 
+		Update update = new Update();
 		if (listBarcode == null || listBarcode.isEmpty()) {
-			query.addCriteria(Criteria.where("shoppingList")
-				.elemMatch(Criteria.where("barcode").in(null, "")
-					.and("cartItem.barcode").is(barcode)));
+			update.pull("shoppingList",
+				Query.query(
+					Criteria.where("barcode").in(null, "")
+						.and("cartItem.barcode").is(barcode)
+				).getQueryObject());
 		} else {
 			query.addCriteria(Criteria.where("shoppingList")
 				.elemMatch(Criteria.where("barcode").is(listBarcode)));
+			update.unset("shoppingList.$.cartItem");
 		}
 
-		Update update = new Update();
-		update.unset("shoppingList.$.cartItem");
 
 		mongoTemplate.updateFirst(query, update, Shopping.class);
 	}
