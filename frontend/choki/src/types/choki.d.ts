@@ -198,7 +198,8 @@ interface Speech {
 }
 // 카메라 인터페이스
 interface CamProps {
-	onCaptureChange: (captured: boolean) => void;
+	onCaptureChange: (captured: RecycleResponse | undefined) => void;
+	completeFlag: boolean;
 }
 interface BarcodeCamProps {
 	onCaptureChange: (isCaptured: boolean) => void;
@@ -209,7 +210,7 @@ interface BarcodeCamProps {
 }
 // 재활용 동물 대화 인터페이스
 interface AnimalSpeechProps {
-	isImageCaptured: boolean;
+	animalMessage?: string;
 }
 
 // 장보기 미션 부여를 위한 위치 정보

@@ -1,21 +1,53 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Button from '../Common/Button';
+import { classifyRecycle, finishRecycle } from '@/lib/api/recycle';
+import { useParams } from 'next/navigation';
 
-const Cam: React.FC<CamProps> = ({ onCaptureChange }) => {
+const Cam: React.FC<CamProps> = ({ onCaptureChange, completeFlag }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [capturedImage, setCapturedImage] = useState<string | null>(null);
+	const { missionId } = useParams();
 
 	const startCamera = async () => {
 		try {
 			const stream = await navigator.mediaDevices.getUserMedia({
-				video: { facingMode: 'environment' },
+				video: true,
 			});
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream;
 			}
 		} catch (error) {
 			console.error('카메라 권한 요청 실패:', error);
+		}
+	};
+
+	const classify = async (image: File) => {
+		try {
+			const formData = new FormData();
+			formData.append('image', image);
+
+			const result = await classifyRecycle(formData);
+			onCaptureChange(result.data);
+			setCapturedImage(result.data.image.data);
+		} catch (error) {
+			console.error('분류 실패', error);
+		}
+	};
+
+	const captureFinish = async (
+		image: File,
+		id: string | string[] | undefined,
+	) => {
+		try {
+			const formData = new FormData();
+			formData.append('data', JSON.stringify({ missionId: id }));
+			formData.append('file', image);
+
+			const result = await finishRecycle(formData);
+			onCaptureChange(result.data);
+		} catch (error) {
+			console.error('분류 실패', error);
 		}
 	};
 
@@ -33,6 +65,11 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange }) => {
 		};
 	}, []);
 
+	useEffect(() => {
+		setCapturedImage(null);
+		startCamera();
+	}, [completeFlag]);
+
 	const captureImage = () => {
 		if (videoRef.current) {
 			const canvas = document.createElement('canvas');
@@ -41,9 +78,27 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange }) => {
 			const ctx = canvas.getContext('2d');
 			if (ctx) {
 				ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-				const imageDataUrl = canvas.toDataURL('image/png');
-				setCapturedImage(imageDataUrl);
-				onCaptureChange(true);
+
+				canvas.toBlob(
+					blob => {
+						if (blob) {
+							const file = new File([blob], 'captured-image.png', {
+								type: 'image/png',
+								lastModified: new Date().getTime(),
+							});
+							if (completeFlag) {
+								handleRetake();
+								captureFinish(file, missionId);
+							} else {
+								// const imageDataUrl = canvas.toDataURL('image/png');
+								// setCapturedImage(imageDataUrl);
+								classify(file);
+							}
+						}
+					},
+					'image/png',
+					0.9,
+				); // 0.9는 품질 설정 (0~1)
 			}
 		}
 	};
@@ -51,7 +106,7 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange }) => {
 	const handleRetake = () => {
 		setCapturedImage(null);
 		startCamera();
-		onCaptureChange(false);
+		onCaptureChange(undefined);
 	};
 
 	return (

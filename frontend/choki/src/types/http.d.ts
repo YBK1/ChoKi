@@ -224,3 +224,24 @@ interface DoneMissionResponse {
 	shoppingId: string;
 	missionId: string;
 }
+
+interface RecycleResponse {
+	image: DetectionImage; // 처리된 이미지
+	predictions: DetectionResult[]; // 객체 탐지 결과
+}
+
+interface DetectionImage {
+	data: string;
+	height: number;
+	width: number;
+}
+
+interface DetectionResult {
+	xmin: number;
+	ymin: number;
+	xmax: number;
+	ymax: number;
+	confidence: number;
+	class: number;
+	name: string;
+}
