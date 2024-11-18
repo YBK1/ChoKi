@@ -24,6 +24,7 @@ const RecyclePage = () => {
 	const handleComplete = () => {
 		setAnimalMessage(`재활용을 마무리 할래? 인증 사진 찰칵~`);
 		setCompleteFlag(true);
+		setIsModalOpen(true);
 	};
 
 	useEffect(() => {
