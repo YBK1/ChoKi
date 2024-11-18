@@ -96,12 +96,22 @@ interface userDataResponse {
 	familyId: number;
 	level: number;
 	exp: number;
-	pastLevel: number;
-	mainAnimal: number;
+	isLevelUp: boolean;
+	mainAnimalId: number;
 	animals: number[];
 	drawAnimalId: number;
 }
 
+interface ToUnityData {
+	userId: number;
+	nickname: string;
+	level: number;
+	exp: number;
+	isLevelUp: boolean;
+	mainAnimalId: number;
+	animals: number[];
+	drawAnimalId: number;
+}
 // 웹 소켓 연결 관련 타입
 // 쇼핑 아이템의 구조
 interface CartItem {
@@ -152,17 +162,6 @@ interface ShoppingItem {
 	image: string;
 	quantity: number;
 	cartItem?: CartItem;
-}
-
-interface UnityMainResponse {
-	userId: number;
-	nickname: string;
-	level: number;
-	exp: number;
-	isLevelUp: number; // Unity expects 0 or 1
-	mainAnimalId: number;
-	animals: number[];
-	drawAnimalId: number;
 }
 
 interface KidDataResponseFromParent {

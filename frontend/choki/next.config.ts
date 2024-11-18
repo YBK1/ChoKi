@@ -8,7 +8,7 @@ const withPWA = require('next-pwa')({
 });
 
 const nextConfig: NextConfig = {
-	reactStrictMode: true,
+	reactStrictMode: false,
 	// 이미지 도메인 설정 추가
 	images: {
 		domains: [

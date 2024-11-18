@@ -1,11 +1,13 @@
-import { getMissionList } from '@/lib/api/user';
-import { getUserData } from '@/lib/api/user';
+// import { getMissionList } from '@/lib/api/user';
+import { getMissionList, getUserData } from '@/lib/api/user';
 import { useCallback, useEffect, useState } from 'react';
 import UnityViewer from '@/components/Unity/UnityViewer';
-import { userAtom } from '@/atoms';
-import { useAtom } from 'jotai';
+// import { userAtom } from '@/atoms';
+// import { useAtom } from 'jotai';
 import router from 'next/router';
 import { changeMainAnimal } from '@/lib/api/unity';
+import { userAtom } from '@/atoms';
+import { useAtom } from 'jotai';
 
 declare global {
 	interface Window {
@@ -16,6 +18,7 @@ declare global {
 		navigateToShopping?: (missionId: string) => void;
 		navigateToRecycling?: (missionId: string) => void;
 		changeRepresentativeAnimal?: (animalId: number) => void;
+		getData?: () => void;
 		createUnityInstance?: (
 			canvas: HTMLCanvasElement,
 			config: {
@@ -28,103 +31,38 @@ declare global {
 				productVersion: string;
 			},
 			onProgress: (progress: number) => void,
-		) => Promise<any>; // Replace 'any' with a specific Unity instance type if available
+		) => Promise<any>;
 	}
 }
 
 export default function MainPage() {
-	const [isUnityLoaded, setIsUnityLoaded] = useState(false);
-	const [pendingData, setPendingData] = useState<any>(null);
+	const [, setIsUnityLoaded] = useState(false); // Unity 로드 상태
+	// const [user] = useAtom(userAtom); // Jotai의 유저 상태
+	const [userData, setUserData] = useState<userDataResponse | null>(null); // 사용자 데이터 상태
 	const [user] = useAtom(userAtom);
+	// spring에서 데이터를 가져와서 set하는 함수
+	function getData() {
+		console.log('Unity가 로드된 후 getUserData 호출 시작');
 
-	console.log('나오나보자.', user.userId);
-	console.log('너도 봐보자.', isUnityLoaded);
+		getUserData() // 사용자 데이터 가져오기
+			.then(kidData => {
+				console.log('getUserData 완료:', kidData);
+				setUserData(kidData); // 상태에 저장
+				sendDataToUnity(kidData); // Unity로 데이터 전달
+			})
+			.catch(error => {
+				console.error('getUserData 호출 중 오류:', error);
+			});
+	}
 
-	useEffect(() => {
-		window.UnityReadyCallback = () => {
-			console.log('Unity is fully loaded and ready.');
-			setIsUnityLoaded(true);
-		};
-
-		window.RequestUserData = async () => {
-			console.log('Unity에서 데이터 갱신 요청됨');
-			try {
-				const kidData = await getUserData();
-				if (kidData) {
-					sendDataToUnity(kidData);
-					console.log('Unity로 새로운 데이터 전송 완료');
-				}
-			} catch (error) {
-				console.error('데이터 갱신 중 오류 발생:', error);
-			}
-		};
-
-		window.navigateToMap = () => {
-			router.push('/child/map');
-		};
-
-		window.navigateToShopping = (missionId: string) => {
-			console.log('장보기 missionId : ', missionId);
-			router.push(`/child/shop/${missionId}/route`);
-		};
-
-		window.navigateToRecycling = (missionId: string) => {
-			console.log('재활용 missionId : ', missionId);
-			router.push(`/child/mission/${missionId}/recycle`);
-		};
-
-		window.changeRepresentativeAnimal = (animalId: number) => {
-			console.log('AnimalID : ', animalId);
-			if (typeof animalId === 'number' && animalId >= 0) {
-				// animalId가 유효한 경우에만 실행
-				console.log('대표 동물 변경 요청됨:', animalId);
-				changeMainAnimal(animalId);
-			} else {
-				console.error('유효하지 않은 animalId:', animalId);
-			}
-		};
-
-		return () => {
-			delete window.UnityReadyCallback;
-			delete window.RequestUserData;
-			delete window.navigateToMap;
-			delete window.navigateToShopping;
-			delete window.navigateToRecycling;
-			delete window.changeRepresentativeAnimal;
-		};
-	}, []);
-
-	useEffect(() => {
-		window.handleUnityShowPanel = async () => {
-			console.log(user.userId);
-			if (user.userId !== 0) {
-				console.log('Unity에서 ShowPanel 호출됨, 미션 데이터를 가져옵니다.');
-				try {
-					const missionData = await getMissionList(user.userId);
-					console.log('미션 데이터:', missionData);
-					sendMissionDataToUnity(missionData); // Unity로 미션 데이터를 전송
-				} catch (error) {
-					console.error('미션 데이터 가져오기 실패:', error);
-				}
-			} else {
-				console.warn('userId가 설정되지 않았습니다.');
-			}
-		};
-		return () => {
-			delete window.handleUnityShowPanel;
-		};
-	}, [user.userId]);
-
-	useEffect(() => {
-		console.log('와와와와와와ㅣ와ㅗ아와와', pendingData);
-
-		if (isUnityLoaded && pendingData) {
-			console.log('Unity가 로드되었고, 데이터를 전송합니다.');
-			sendDataToUnity(pendingData);
-			setPendingData(null);
+	// Unity가 완전히 로드된 후 사용자 데이터를 가져오고 Unity로 전달
+	const fetchAndSendUserData = useCallback(async () => {
+		try {
+			getData();
+		} catch (error) {
+			console.error('getUserData 호출 중 오류:', error);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isUnityLoaded, pendingData]);
+	}, []);
 
 	function sendMissionDataToUnity(missions: InProgressMissionResponse) {
 		console.log('일단 여기까지 왔고??222222');
@@ -148,77 +86,112 @@ export default function MainPage() {
 		}
 	}
 
-	const sendDataToUnity = useCallback(
-		(data: any) => {
-			console.log('와우 이건 찍히겠지??????');
-
-			if (!isUnityLoaded) {
-				console.warn('Unity is not loaded yet. 데이터를 대기열에 추가합니다.');
-				setPendingData(data);
-				return;
-			}
-
-			console.log('일단 여기까지 왔고??');
-			const iframe = document.getElementById(
-				'unity-iframe',
-			) as HTMLIFrameElement;
-
-			if (
-				iframe &&
-				iframe.contentWindow &&
-				iframe.contentWindow.unityInstance
-			) {
-				const unityData: UnityMainResponse = {
-					userId: data.userId,
-					nickname: data.nickname,
-					level: data.level,
-					exp: data.exp,
-					isLevelUp: data.isLevelUp, // Convert boolean to 0 or 1 for Unity
-					mainAnimalId: data.mainAnimalId,
-					animals: data.animals,
-					drawAnimalId: data.drawAnimalId,
-				};
-				const jsonData = JSON.stringify(unityData);
-				try {
-					const unityInstance = iframe.contentWindow.unityInstance;
-					unityInstance.SendMessage(
-						'DataReceiver',
-						'receiveDataFromUnity',
-						jsonData,
-					);
-					console.log('Data sent to Unity:', unityData);
-				} catch (error) {
-					console.error('Error sending data to Unity:', error);
-				}
-			} else {
-				console.error('iframe 또는 unityInstance가 정의되지 않았습니다.');
-			}
-		},
-		[isUnityLoaded],
-	);
-
-	const handleUnityLoaded = useCallback(async () => {
-		console.log('Unity iframe loaded, preparing to send data...');
-		const getKidInfo = async () => {
+	const sendDataToUnity = useCallback((data: userDataResponse) => {
+		const iframe = document.getElementById('unity-iframe') as HTMLIFrameElement;
+		if (iframe?.contentWindow?.unityInstance) {
+			const unityData: ToUnityData = {
+				userId: data.userId,
+				nickname: data.nickname,
+				level: data.level,
+				exp: data.exp,
+				isLevelUp: data.isLevelUp,
+				mainAnimalId: data.mainAnimalId,
+				animals: data.animals,
+				drawAnimalId: data.drawAnimalId,
+			};
+			const jsonData = JSON.stringify(unityData);
 			try {
-				const kidData = await getUserData();
-				return kidData;
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				iframe.contentWindow.unityInstance.SendMessage(
+					'DataReceiver',
+					'receiveDataFromUnity',
+					jsonData,
+				);
+				console.log('Data sent to Unity:', unityData);
 			} catch (error) {
-				// setErrorMessage("")
+				console.error('Unity로 데이터 전송 중 오류:', error);
 			}
-			return null;
+		} else {
+			console.error('iframe 또는 unityInstance가 정의되지 않았습니다.');
+		}
+	}, []);
+
+	// Unity 관련 글로벌 이벤트 설정
+	useEffect(() => {
+		window.getData = getData;
+		window.UnityReadyCallback = () => {
+			console.log('Unity가 완전히 로드되었습니다.');
+			setIsUnityLoaded(true); // Unity 로드 완료
+			fetchAndSendUserData(); // Unity가 로드된 후 데이터 가져오기 및 전달
 		};
 
-		const kidData = await getKidInfo();
-		if (kidData) {
-			sendDataToUnity(kidData);
-		}
-	}, [sendDataToUnity]);
+		window.RequestUserData = async () => {
+			console.log('Unity에서 데이터 갱신 요청');
+			if (userData) {
+				sendDataToUnity(userData); // 이미 로드된 데이터를 Unity로 재전송
+			}
+		};
+
+		window.navigateToMap = () => {
+			router.push('/child/map');
+		};
+
+		window.navigateToShopping = (missionId: string) => {
+			console.log('장보기 missionId : ', missionId);
+			router.push(`/child/shop/${missionId}/route`);
+		};
+
+		window.navigateToRecycling = (missionId: string) => {
+			console.log('재활용 missionId : ', missionId);
+			router.push(`/child/mission/${missionId}/recycle`);
+		};
+
+		window.changeRepresentativeAnimal = (animalId: number) => {
+			console.log('AnimalID : ', animalId);
+			if (typeof animalId === 'number' && animalId >= 0) {
+				changeMainAnimal(animalId);
+			} else {
+				console.error('유효하지 않은 animalId:', animalId);
+			}
+		};
+
+		return () => {
+			delete window.UnityReadyCallback;
+			delete window.RequestUserData;
+			delete window.navigateToMap;
+			delete window.navigateToShopping;
+			delete window.navigateToRecycling;
+			delete window.changeRepresentativeAnimal;
+		};
+	}, [fetchAndSendUserData, userData, sendDataToUnity]);
+
+	useEffect(() => {
+		window.handleUnityShowPanel = async () => {
+			console.log(user.userId);
+			if (user.userId !== 0) {
+				console.log('Unity에서 ShowPanel 호출됨, 미션 데이터를 가져옵니다.');
+				try {
+					const missionData = await getMissionList(user.userId);
+					console.log('미션 데이터:', missionData);
+					sendMissionDataToUnity(missionData); // Unity로 미션 데이터를 전송
+				} catch (error) {
+					console.error('미션 데이터 가져오기 실패:', error);
+				}
+			} else {
+				console.warn('userId가 설정되지 않았습니다.');
+			}
+		};
+		return () => {
+			delete window.handleUnityShowPanel;
+		};
+	}, []);
 
 	return (
 		<div className="relative">
-			<UnityViewer onUnityLoaded={handleUnityLoaded} />
+			<UnityViewer
+				onUnityLoaded={() => {
+					console.log('Unity Loaded 이벤트 발생');
+				}}
+			/>
 		</div>
 	);
 }
