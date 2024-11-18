@@ -101,7 +101,7 @@ public class MissionService {
 				.completedAt(mission.getCompletedAt())
 				.image(mission.getImage())
 				.type(mission.getMissionType())
-				.shoppingId(mission.getShoppingId().toString())
+				.shoppingId(mission.getShoppingId() != null? mission.getShoppingId().toString() : null)
 				.build())
 			.toList();
 
