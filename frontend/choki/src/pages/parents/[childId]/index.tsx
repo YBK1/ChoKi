@@ -26,7 +26,7 @@ export default function Index() {
 	const [kidInfo, setKidInfo] = useState<KidDataResponseFromParent>();
 	// const [currentChildId, setCurrentChildId] = useState<number>();
 
-	const [missions, setMissions] = useState<Mission[]>();
+	const [missions, setMissions] = useState<InProgressMissionResponse[]>();
 
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,11 +72,21 @@ export default function Index() {
 			} else console.log(missionData);
 
 			// 데이터를 변환하여 mappedMissions로 설정
-			const mappedMissions: Mission[] = missionData.map(mission => ({
-				type: mission.type,
-				content: mission.content,
-			}));
-
+			// const mappedMissions: InProgressMissionResponse[] = missionData.map(
+			// 	mission => ({
+			// 		type: mission.type,
+			// 		content: mission.content,
+			// 	}),
+			// );
+			const mappedMissions: InProgressMissionResponse[] = missionData.map(
+				mission => ({
+					type: mission.type,
+					content: mission.content,
+					completedAt: mission.completedAt,
+					image: mission.image,
+					shoppingId: mission.shoppingId,
+				}),
+			);
 			setMissions(mappedMissions);
 		} catch (error) {
 			console.error('데이터를 가져오는 중 오류 발생:', error);
@@ -501,7 +511,9 @@ export default function Index() {
 			</div>
 		);
 	};
-
+	const handleGoShoppingPage = (shoppingId: string) => {
+		router.push(`${selectedChildId}/shop/${shoppingId}/list`);
+	};
 	const SearchContent = ({
 		onClose,
 		onItemSelect,
@@ -956,9 +968,7 @@ export default function Index() {
 								key={index}
 								type={mission.type}
 								content={mission.content}
-								onClick={() =>
-									console.log(`Clicked mission: ${mission.content}`)
-								}
+								onClick={() => handleGoShoppingPage(mission.shoppingId)}
 							/>
 						))}
 					</div>
