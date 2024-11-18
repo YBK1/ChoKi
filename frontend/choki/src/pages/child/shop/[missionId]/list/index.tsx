@@ -77,7 +77,7 @@ export default function ChildShoppingPage() {
 			<div className="mt-8">
 				<Navbar missionId={missionId as string} />
 			</div>
-			<div className="flex flex-col items-center justify-start mt-16">
+			<div className="relative flex flex-col items-center justify-start mt-16">
 				{isCameraOpen ? (
 					<Cam
 						onCaptureChange={closeCameraModal}
