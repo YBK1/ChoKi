@@ -41,12 +41,8 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, completeFlag }) => {
 		id: string | string[] | undefined,
 	) => {
 		try {
-			const formData = new FormData();
-			formData.append('data', JSON.stringify({ missionId: id }));
-			formData.append('file', image);
-
-			const result = await finishRecycle(formData);
-			onCaptureChange(result.data);
+			const result = await finishRecycle(id, image);
+			onCaptureChange(result);
 		} catch (error) {
 			console.error('분류 실패', error);
 		}
@@ -88,7 +84,6 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, completeFlag }) => {
 								lastModified: new Date().getTime(),
 							});
 							if (completeFlag) {
-								handleRetake();
 								captureFinish(file, missionId);
 							} else {
 								// const imageDataUrl = canvas.toDataURL('image/png');
