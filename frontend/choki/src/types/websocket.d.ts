@@ -35,6 +35,7 @@ interface AddToCartResponse extends BaseWSMessage {
 	quantity?: number;
 	reason?: 'SOLD_OUT' | 'NO_REASON' | 'BLANK';
 	status?: string;
+	cartItem?: CartItem;
 }
 
 // 장바구니 삭제

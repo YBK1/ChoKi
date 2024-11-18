@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import * as StompJs from '@stomp/stompjs';
 import { useAtom } from 'jotai';
-import { shoppingListAtom } from '@/atoms/shoppingAtom';
+import { shoppingListAtom, addShoppingItem } from '@/atoms/shoppingAtom';
 import ParentProductCard from '@/components/shop/ParentProductCard';
 import { useRouter } from 'next/router';
 import ParentsShoppingNavbar from '@/components/Common/Navbar/ParentsShoppingNavbar';
@@ -29,6 +29,19 @@ const ShoppingListPage = () => {
 
 					case 'ADD_PRODUCT_TO_CART':
 						if (!response.listBarcode) return;
+						// 아이가 추가한 물품이 들어올 때
+						if (response.listBarcode === '' && !response.cartItem) {
+							const addParentItem: ShoppingItem = {
+								barcode: '',
+								category: '',
+								productName: '',
+								image: '',
+								quantity: 0,
+								cartItem: response.cartItem, // 명시적 단언
+							};
+
+							addShoppingItem(setShoppingList, addParentItem);
+						}
 						setShoppingList(prev => {
 							return prev.map(item => {
 								if (item.barcode === response.listBarcode) {
