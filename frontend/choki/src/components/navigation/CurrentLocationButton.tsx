@@ -18,12 +18,10 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 			let compassHeading = 0;
 
 			if (webkitCompassHeading !== undefined) {
-				// iOS heading
 				compassHeading = webkitCompassHeading;
 				setIsCompassAvailable(true);
 			} else if (event.alpha !== null) {
-				// General heading
-				compassHeading = (360 - event.alpha + 360) % 360; // Normalize to 0-360
+				compassHeading = (360 - event.alpha + 360) % 360;
 				setIsCompassAvailable(true);
 			} else {
 				setIsCompassAvailable(false);
@@ -59,7 +57,6 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				setIsCompassAvailable(false);
 			}
 		} else {
-			// Non-iOS devices
 			window.addEventListener(
 				'deviceorientation',
 				handleDeviceOrientation,
@@ -76,8 +73,8 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				enableHighAccuracy: true,
 			},
 			trackUserLocation: true,
-			showUserHeading: true, // Enable heading indicator
-			showAccuracyCircle: false, // Hide accuracy circle
+			showUserHeading: true,
+			showAccuracyCircle: false,
 		});
 
 		map.addControl(geolocateControl);
@@ -110,7 +107,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				center: currentLocation,
 				zoom: 18,
 				pitch: 60,
-				bearing: deviceDirection, // Apply device direction
+				bearing: deviceDirection,
 				duration: 1000,
 			});
 		}
