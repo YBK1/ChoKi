@@ -7,8 +7,6 @@ import lombok.Getter;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
-
 @Document(collection = "mission")
 @Getter
 @Builder
@@ -23,7 +21,7 @@ public class Mission {
 
     private String content;
 
-    private Long exp;
+    private int exp;
 
     private Status status;
 

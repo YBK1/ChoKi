@@ -50,7 +50,7 @@ public class MissionService {
 			.parentId(shoppingCreateRequestDto.getParentId())
 			.childId(shoppingCreateRequestDto.getChildId())
 			.content("동네 마트 장보기")
-			.exp((long)50)
+			.exp(50)
 			.status(Status.IN_PROGRESS)
 			.completedAt(null)
 			.image(null)
@@ -75,7 +75,7 @@ public class MissionService {
 				.parentId(missionAddRequestDto.getParentId())
 				.childId(missionAddRequestDto.getChildId())
 				.content(missionAddRequestDto.getContent())
-				.exp(missionAddRequestDto.getMissionType() == MissionType.RECYCLE ? (long)50 : missionAddRequestDto.getExp())
+				.exp(missionAddRequestDto.getMissionType() == MissionType.RECYCLE ? 50 : missionAddRequestDto.getExp())
 				.status(Status.IN_PROGRESS)
 				.shoppingId(null)
 				.image(null)
@@ -117,8 +117,15 @@ public class MissionService {
 		ObjectId missionId = new ObjectId(missionCommentRequestDto.getMissionId());
 		String comment = missionCommentRequestDto.getComment();
 		missionRepository.setMissionComment(missionId, comment).orElseThrow(MissionNotFoundException::new);
+		increaseEXP(missionId);
 
 		notificationService.deleteNotificationByMissionId(missionId.toString());
+	}
+
+	private void increaseEXP(ObjectId missionId) {
+		Mission mission = missionRepository.findById(missionId).orElseThrow(MissionNotFoundException::new);
+		User user = userService.findById(mission.getChildId());
+		user.increaseExperience(mission.getExp());
 	}
 
 	@Transactional
