@@ -7,6 +7,7 @@ import { useParams } from 'next/navigation';
 const Cam: React.FC<CamProps> = ({ onCaptureChange, completeFlag }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [capturedImage, setCapturedImage] = useState<string | null>(null);
+	const { missionId } = useParams();
 
 	const startCamera = async () => {
 		try {
@@ -34,12 +35,13 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, completeFlag }) => {
 		}
 	};
 
-	const captureFinish = async (image: File) => {
+	const captureFinish = async (
+		image: File,
+		id: string | string[] | undefined,
+	) => {
 		try {
-			const params = useParams();
-
 			const formData = new FormData();
-			formData.append('data', JSON.stringify({ missionId: params.missionId }));
+			formData.append('data', JSON.stringify({ missionId: id }));
 			formData.append('file', image);
 
 			const result = await finishRecycle(formData);
@@ -86,9 +88,9 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, completeFlag }) => {
 							});
 							if (completeFlag) {
 								handleRetake();
-								captureFinish(file);
+								captureFinish(file, missionId);
 							} else {
-								const imageDataUrl = canvas.toDataURL('image/png');
+								// const imageDataUrl = canvas.toDataURL('image/png');
 								// setCapturedImage(imageDataUrl);
 								classify(file);
 							}
