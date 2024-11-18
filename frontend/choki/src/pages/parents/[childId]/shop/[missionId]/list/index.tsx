@@ -2,7 +2,11 @@ import React, { useRef, useState, useEffect } from 'react';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import * as StompJs from '@stomp/stompjs';
 import { useAtom } from 'jotai';
-import { shoppingListAtom, addShoppingItem } from '@/atoms/shoppingAtom';
+import {
+	shoppingListAtom,
+	addShoppingItem,
+	deletePlusItem,
+} from '@/atoms/shoppingAtom';
 import ParentProductCard from '@/components/shop/ParentProductCard';
 import { useRouter } from 'next/router';
 import ParentsShoppingNavbar from '@/components/Common/Navbar/ParentsShoppingNavbar';
@@ -41,43 +45,51 @@ const ShoppingListPage = () => {
 							};
 
 							addShoppingItem(setShoppingList, addParentItem);
-						}
-						setShoppingList(prev => {
-							return prev.map(item => {
-								if (item.barcode === response.listBarcode) {
-									return {
-										...item,
-										cartItem: {
-											barcode: response.barcode || '',
-											category: response.category || '',
-											productName: response.productName || '',
-											image: response.image || '',
-											quantity: response.quantity || 0,
-											reason: (response.reason || 'BLANK') as
-												| 'SOLD_OUT'
-												| 'NO_REASON'
-												| 'BLANK',
-											status: response.status || 'NOT_MATCH',
-										},
-									};
-								}
-								return item;
+						} else {
+							setShoppingList(prev => {
+								return prev.map(item => {
+									if (item.barcode === response.listBarcode) {
+										return {
+											...item,
+											cartItem: {
+												barcode: response.barcode || '',
+												category: response.category || '',
+												productName: response.productName || '',
+												image: response.image || '',
+												quantity: response.quantity || 0,
+												reason: (response.reason || 'BLANK') as
+													| 'SOLD_OUT'
+													| 'NO_REASON'
+													| 'BLANK',
+												status: response.status || 'NOT_MATCH',
+											},
+										};
+									}
+									return item;
+								});
 							});
-						});
+						}
+
 						break;
 					case 'DELETE_PRODUCT_FROM_CART':
 						if (!response.listBarcode) return;
-						setShoppingList(prev => {
-							return prev.map(item => {
-								if (item.barcode === response.listBarcode) {
-									return {
-										...item,
-										cartItem: undefined,
-									};
-								}
-								return item;
+
+						if (response.listBarcode === '') {
+							deletePlusItem(setShoppingList, response.barcode);
+						} else {
+							setShoppingList(prev => {
+								return prev.map(item => {
+									if (item.barcode === response.listBarcode) {
+										return {
+											...item,
+											cartItem: undefined,
+										};
+									}
+									return item;
+								});
 							});
-						});
+						}
+
 						break;
 				}
 			} catch (error) {
