@@ -10,7 +10,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 		[number, number] | null
 	>(null);
 	const [deviceDirection, setDeviceDirection] = useState<number>(0);
-	const [isCompassAvailable, setIsCompassAvailable] = useState<boolean>(false);
+	// const [isCompassAvailable, setIsCompassAvailable] = useState<boolean>(false);
 
 	const handleDeviceOrientation = useCallback(
 		(event: DeviceOrientationEvent) => {
@@ -18,15 +18,13 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 			let compassHeading = 0;
 
 			if (webkitCompassHeading !== undefined) {
-				// iOS heading
 				compassHeading = webkitCompassHeading;
-				setIsCompassAvailable(true);
+				// setIsCompassAvailable(true);
 			} else if (event.alpha !== null) {
-				// General heading
-				compassHeading = (360 - event.alpha + 360) % 360; // Normalize to 0-360
-				setIsCompassAvailable(true);
+				compassHeading = (360 - event.alpha + 360) % 360;
+				// setIsCompassAvailable(true);
 			} else {
-				setIsCompassAvailable(false);
+				// setIsCompassAvailable(false);
 			}
 
 			setDeviceDirection(compassHeading);
@@ -49,17 +47,16 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 						handleDeviceOrientation,
 						true,
 					);
-					setIsCompassAvailable(true);
+					// setIsCompassAvailable(true);
 				} else {
 					console.error('Compass permission denied');
-					setIsCompassAvailable(false);
+					// setIsCompassAvailable(false);
 				}
 			} catch (error) {
 				console.error('Error requesting compass permission:', error);
-				setIsCompassAvailable(false);
+				// setIsCompassAvailable(false);
 			}
 		} else {
-			// Non-iOS devices
 			window.addEventListener(
 				'deviceorientation',
 				handleDeviceOrientation,
@@ -76,8 +73,8 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				enableHighAccuracy: true,
 			},
 			trackUserLocation: true,
-			showUserHeading: true, // Enable heading indicator
-			showAccuracyCircle: false, // Hide accuracy circle
+			showUserHeading: true,
+			showAccuracyCircle: false,
 		});
 
 		map.addControl(geolocateControl);
@@ -110,7 +107,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				center: currentLocation,
 				zoom: 18,
 				pitch: 60,
-				bearing: deviceDirection, // Apply device direction
+				bearing: deviceDirection,
 				duration: 1000,
 			});
 		}
@@ -125,11 +122,11 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 			>
 				현재 위치로
 			</button>
-			{!isCompassAvailable && (
+			{/* {!isCompassAvailable && (
 				<div className="absolute bottom-48 right-4 bg-white p-2 rounded-lg shadow-md z-10 text-sm">
 					나침반을 사용할 수 없습니다
 				</div>
-			)}
+			)} */}
 		</>
 	);
 };

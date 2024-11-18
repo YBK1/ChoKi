@@ -29,7 +29,8 @@ export default function ChildShoppingPage() {
 
 	// WebSocket 구독 및 메시지 처리
 	useEffect(() => {
-		if (typeof missionId === 'string') {
+		console.log('구독시 missionId:', missionId);
+		if (missionId !== undefined && typeof missionId === 'string') {
 			setShoppingId(missionId);
 			childWebSocketClient.subscribe(
 				`/user/sub/shopping/${missionId}`,
