@@ -10,16 +10,43 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, completeFlag }) => {
 	const router = useRouter();
 	const { missionId } = router.query;
 
+	// 후면 카메라 접근 함수
+	const getRearCameraStream = async () => {
+		try {
+			const devices = await navigator.mediaDevices.enumerateDevices();
+			const videoDevices = devices.filter(
+				device => device.kind === 'videoinput',
+			);
+			const rearCamera = videoDevices.find(
+				device =>
+					device.label.toLowerCase().includes('back') ||
+					device.label.toLowerCase().includes('rear'),
+			);
+
+			if (rearCamera) {
+				return await navigator.mediaDevices.getUserMedia({
+					video: { deviceId: rearCamera.deviceId },
+				});
+			} else {
+				return await navigator.mediaDevices.getUserMedia({
+					video: { facingMode: { exact: 'environment' } },
+				});
+			}
+		} catch (error) {
+			console.error('후면 카메라 탐지 실패:', error);
+			throw error;
+		}
+	};
+
+	// 카메라 시작
 	const startCamera = async () => {
 		try {
-			const stream = await navigator.mediaDevices.getUserMedia({
-				video: true,
-			});
+			const stream = await getRearCameraStream();
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream;
 			}
 		} catch (error) {
-			console.error('카메라 권한 요청 실패:', error);
+			console.error('카메라 접근 실패:', error);
 		}
 	};
 
@@ -91,15 +118,13 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, completeFlag }) => {
 								handleRetake();
 								captureFinish(file, missionId);
 							} else {
-								// const imageDataUrl = canvas.toDataURL('image/png');
-								// setCapturedImage(imageDataUrl);
 								classify(file);
 							}
 						}
 					},
 					'image/png',
 					0.9,
-				); // 0.9는 품질 설정 (0~1)
+				);
 			}
 		}
 	};
@@ -112,7 +137,6 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, completeFlag }) => {
 
 	return (
 		<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg transform transition-transform mx-auto w-[80%] max-w-lg">
-			{/* 카메라 화면 or 찍은 사진 */}
 			<div className="mb-4 w-full flex justify-center">
 				<div className="bg-gray-200 rounded-md shadow-md overflow-hidden w-80 h-80 flex items-center justify-center">
 					{capturedImage ? (
@@ -133,7 +157,6 @@ const Cam: React.FC<CamProps> = ({ onCaptureChange, completeFlag }) => {
 				</div>
 			</div>
 
-			{/* 촬영 버튼 */}
 			{capturedImage ? (
 				<div className="flex gap-4 mt-4">
 					<Button
