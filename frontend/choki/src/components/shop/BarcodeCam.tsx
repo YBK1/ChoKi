@@ -29,8 +29,8 @@ const Cam: React.FC<BarcodeCamProps> = ({
 			// 후면 카메라 탐지 (label을 통해 탐색)
 			const rearCamera = videoDevices.find(
 				device =>
-					device.label.toLowerCase().includes('back') || // 후면 카메라 포함
-					device.label.toLowerCase().includes('rear') ||
+					(device.label.toLowerCase().includes('back') || // 후면 카메라 포함
+						device.label.toLowerCase().includes('rear')) &&
 					!device.label.toLowerCase().includes('wide'),
 			);
 
