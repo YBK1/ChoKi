@@ -130,7 +130,7 @@ export default function ChildShoppingPage() {
 			</div>
 
 			{shoppingMessage && (
-				<div className="absolute bottom-16 right-32">
+				<div className="absolute bottom-8 right-32">
 					<SpeechBubble speech={shoppingMessage} />
 				</div>
 			)}
