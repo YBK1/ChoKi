@@ -6,7 +6,7 @@ import Link from 'next/link';
 // import mission_plus from '@/assets/icons/mission_plus.svg';
 import CommonModal from '@/components/Common/Modal';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { searchItem, createShopping } from '@/lib/api/shopping';
+import { searchItem, createShopping, createMission } from '@/lib/api/shopping';
 import {
 	getDestinationList,
 	getGuidedRoute,
@@ -825,37 +825,64 @@ export default function Index() {
 		}
 	};
 
-	const ErrandConfirmation = () => (
-		<div className="flex flex-col h-full">
-			<h2 className="text-xl font-bold mb-4">
-				김애기에게 다음의
-				<br />
-				심부름을 부여하시겠어요?
-			</h2>
-			<div className="flex-1">
-				<input
-					type="text"
-					className="w-full p-2 border rounded"
-					value={selectedErrand}
-					readOnly
-				/>
+	const ErrandConfirmation = () => {
+		// selectedErrand 값에 따라 MissionType 결정
+		const getMissionType = (errand: string): MissionType => {
+			return errand === '재활용' ? 'RECYCLE' : 'EXTRA_MISSION';
+		};
+
+		const handleComplete = async () => {
+			try {
+				const requestBody: MissionRequest = {
+					parentId: user.userId,
+					childId: selectedChildId!,
+					missionType: getMissionType(selectedErrand),
+					content: selectedErrand,
+					exp: 100,
+				};
+
+				await createMission(requestBody);
+				if (selectedChildId) {
+					await getInProgressMissions(selectedChildId);
+				}
+				handleCloseModal();
+			} catch (error) {
+				console.error('Failed to create mission:', error);
+			}
+		};
+
+		return (
+			<div className="flex flex-col h-full">
+				<h2 className="text-xl font-bold mb-4">
+					김애기에게 다음의
+					<br />
+					심부름을 부여하시겠어요?
+				</h2>
+				<div className="flex-1">
+					<input
+						type="text"
+						className="w-full p-2 border rounded"
+						value={selectedErrand}
+						readOnly
+					/>
+				</div>
+				<div className="flex justify-between mt-auto gap-2">
+					<button
+						className="flex-1 px-4 py-2 rounded bg-gray-100 text-gray-500"
+						onClick={handlePrev}
+					>
+						이전
+					</button>
+					<button
+						className="flex-1 px-4 py-2 rounded bg-orange_main text-white"
+						onClick={handleComplete}
+					>
+						완료
+					</button>
+				</div>
 			</div>
-			<div className="flex justify-between mt-auto gap-2">
-				<button
-					className="flex-1 px-4 py-2 rounded bg-gray-100 text-gray-500"
-					onClick={handlePrev}
-				>
-					이전
-				</button>
-				<button
-					className="flex-1 px-4 py-2 rounded bg-orange_main text-white"
-					onClick={handleCloseModal}
-				>
-					완료
-				</button>
-			</div>
-		</div>
-	);
+		);
+	};
 
 	// 현재 단계와 선택된 심부름에 따른 컨텐츠 렌더링
 	const renderContent = () => {
