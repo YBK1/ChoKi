@@ -34,7 +34,7 @@ const ShoppingListPage = () => {
 					case 'ADD_PRODUCT_TO_CART':
 						if (!response.listBarcode) return;
 						// 아이가 추가한 물품이 들어올 때
-						if (response.listBarcode === '' && !response.barcode) {
+						if (response.listBarcode === '') {
 							const addCartItem: CartItem = {
 								barcode: response.barcode || '',
 								category: response.category || '',
@@ -55,8 +55,9 @@ const ShoppingListPage = () => {
 								quantity: 0,
 								cartItem: addCartItem, // 명시적 단언
 							};
-
-							addShoppingItem(setShoppingList, addParentItem);
+							// console.log('addCartItem:', addParentItem);
+							setShoppingList(prevList => [...prevList, addParentItem]);
+							// addShoppingItem(setShoppingList, addParentItem);
 						} else {
 							setShoppingList(prev => {
 								return prev.map(item => {
