@@ -38,7 +38,11 @@ export const deleteCartItemAndCheckEmptyProductName = (
 			)
 			.filter(
 				(item: ShoppingItem) =>
-					!(item.barcode === barcode && item.productName.trim() === ''), // barcode와 productName 조건에 일치하는 아이템만 삭제
+					!(
+						item.cartItem &&
+						item.cartItem.barcode === barcode &&
+						item.productName.trim() === ''
+					), // barcode와 productName 조건에 일치하는 아이템만 삭제
 			),
 	);
 };

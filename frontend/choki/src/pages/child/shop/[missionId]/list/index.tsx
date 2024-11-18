@@ -63,6 +63,7 @@ export default function ChildShoppingPage() {
 	};
 
 	const deleteItemFromShoppingList = (barcode: string) => {
+		console.log('삭제를 원하는 barcode', barcode);
 		// 해당하는  barcode를 가진 아이템을 삭제
 		deleteCartItemAndCheckEmptyProductName(setShoppingList, barcode);
 	};
