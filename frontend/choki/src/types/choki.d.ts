@@ -30,6 +30,12 @@ type LatLng = {
 	longitude: number;
 };
 
+interface Destination {
+	buildingName: string;
+	latitude: number;
+	longitude: number;
+}
+
 // Define a type for the RoutePolyline component props
 interface RoutePolylineProps {
 	map: kakao.maps.Map | null;
@@ -194,7 +200,13 @@ interface Speech {
 interface CamProps {
 	onCaptureChange: (captured: boolean) => void;
 }
-
+interface BarcodeCamProps {
+	onCaptureChange: (isCaptured: boolean) => void;
+	originBarcode: string;
+	productName: string;
+	addNewItem: (newItem: ShoppingItem) => void;
+	onClose: () => void;
+}
 // 재활용 동물 대화 인터페이스
 interface AnimalSpeechProps {
 	isImageCaptured: boolean;
@@ -213,9 +225,19 @@ interface RoutePoint {
 }
 
 interface RouteDetails {
-	startPoint: ShoppingLocation;
-	destination: ShoppingLocation;
-	routes: RoutePoint[];
+	startPoint: {
+		latitude: number;
+		longitude: number;
+	};
+	destination: {
+		buildingName: string;
+		latitude: number;
+		longitude: number;
+	};
+	routes: Array<{
+		latitude: number;
+		longitude: number;
+	}>;
 }
 
 // 아이 메인 페이지 유니티로 보내는 정보

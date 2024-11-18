@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { loginUser } from '@/lib/api/login';
 import { userAtom } from '@/atoms';
 import { useAtom } from 'jotai';
-import { getUserData } from '@/lib/api/user';
+import { getSimpleUserInfo } from '@/lib/api/user';
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -27,7 +27,7 @@ export default function LoginPage() {
 
 	const fetchUserData = async () => {
 		try {
-			const response = await getUserData();
+			const response = await getSimpleUserInfo();
 			const { userId, name } = response;
 			setUser({
 				userId,
