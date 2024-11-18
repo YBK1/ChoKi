@@ -26,6 +26,7 @@ export default function ChildShoppingPage() {
 	const router = useRouter();
 	const [, setShoppingId] = useAtom(shoppingIdAtom);
 	const { missionId } = router.query; //
+	// const [isLoading, setIsLoading] = useState(true);
 
 	// WebSocket 구독 및 메시지 처리
 	useEffect(() => {
@@ -42,7 +43,9 @@ export default function ChildShoppingPage() {
 			childWebSocketClient.disconnect();
 		};
 	}, [missionId, setShoppingList]);
-
+	useEffect(() => {
+		console.log('장바구니 변경:', shoppingList);
+	}, [shoppingList]);
 	const openCameraModal = (barcode: string = '', name: string = '') => {
 		setOriginBarcode(barcode);
 		setProductName(name);
