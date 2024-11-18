@@ -56,14 +56,14 @@ export default function GalleryDetailPage() {
 
 				<div className="flex justify-center items-center mt-5">
 					<div className="w-[330px] h-[330px] rounded-2xl bg-gray-100">
-						<div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center">
+						<div className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center relative">
 							{missionDetail.image && (
 								<Image
 									src={missionDetail.image}
 									alt="Mission completed"
-									width={280}
-									height={280}
+									fill
 									className="rounded-lg object-cover"
+									sizes="330px"
 								/>
 							)}
 						</div>

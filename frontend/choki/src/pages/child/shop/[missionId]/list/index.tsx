@@ -130,7 +130,7 @@ export default function ChildShoppingPage() {
 			</div>
 
 			{shoppingMessage && (
-				<div className="absolute bottom-24 right-32">
+				<div className="absolute bottom-16 right-32">
 					<SpeechBubble speech={shoppingMessage} />
 				</div>
 			)}
@@ -138,8 +138,8 @@ export default function ChildShoppingPage() {
 				src="/icons/shopping_character.svg"
 				alt="장보기 캐릭터"
 				className="absolute bottom-4 right-4 z-50" // bottom 값을 줄여 캐릭터가 화면 안에 잘 표시되도록 설정
-				width={50}
-				height={50}
+				width={70}
+				height={70}
 			/>
 		</div>
 	);

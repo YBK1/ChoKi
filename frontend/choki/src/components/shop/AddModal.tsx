@@ -75,7 +75,7 @@ export default function AddModal({
 			<NonCloseModal>
 				<div className="flex flex-col items-center p-6">
 					{conpareResult === 'MATCH' && (
-						<div className="flex flex-col items-center">
+						<div className="flex flex-col items-center mt-10">
 							<Image
 								src="/icons/success_icon.svg"
 								alt="Success"

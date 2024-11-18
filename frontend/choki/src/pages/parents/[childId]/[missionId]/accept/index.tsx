@@ -46,7 +46,7 @@ export default function MissionAcceptPage() {
 
 	return (
 		<>
-			<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow min-h-screen pb-10">
+			<div className="flex flex-col w-full max-w-md mx-auto bg-light_yellow min-h-screen pb-24">
 				<div className="flex items-center p-4 relative mt-5">
 					<button onClick={() => router.back()} className="p-2 absolute left-4">
 						<Image
@@ -76,9 +76,11 @@ export default function MissionAcceptPage() {
 								<Image
 									src={missionDetail.image}
 									alt="Mission completed"
-									width={280}
-									height={280}
+									width={330}
+									height={330}
+									fill
 									className="rounded-lg object-cover"
+									sizes="330px"
 								/>
 							)}
 						</div>
