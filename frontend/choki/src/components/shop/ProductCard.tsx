@@ -2,7 +2,11 @@ import React from 'react';
 import Image from 'next/image';
 
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
-import { shoppingIdAtom } from '@/atoms/shoppingAtom';
+import {
+	shoppingIdAtom,
+	deletePlusItem,
+	shoppingListAtom,
+} from '@/atoms/shoppingAtom';
 import { useAtom } from 'jotai';
 
 interface CartItem {
@@ -33,7 +37,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 	onDelete,
 }) => {
 	const [shoppingId] = useAtom(shoppingIdAtom);
-
+	const [, setShoppingList] = useAtom(shoppingListAtom);
 	const handleDelete = () => {
 		if (ChildrenShoppingItem) {
 			const requestBody = {
@@ -45,11 +49,9 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				'/pub/shopping/product/delete',
 				requestBody,
 			);
-			console.log(
-				'아이 장바구니 물품 삭제할 바코드',
-				ParentsShoppingItem.barcode,
-			);
-			onDelete(ParentsShoppingItem.barcode);
+
+			onDelete(ParentsShoppingItem.barcode); // 부모가 추가한 물품 삭제
+			deletePlusItem(setShoppingList, ChildrenShoppingItem.barcode);
 		}
 	};
 

@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import { useAtom } from 'jotai';
 import {
 	shoppingListAtom,
-	deleteCartItemAndCheckEmptyProductName,
+	deleteCartItem,
 	shoppingMessageAtom,
 	shoppingIdAtom,
 } from '@/atoms/shoppingAtom';
@@ -63,9 +63,8 @@ export default function ChildShoppingPage() {
 	};
 
 	const deleteItemFromShoppingList = (barcode: string) => {
-		console.log('삭제를 원하는 barcode', barcode);
-		// 해당하는  barcode를 가진 아이템을 삭제
-		deleteCartItemAndCheckEmptyProductName(setShoppingList, barcode);
+		// 부모가 추가한 물품을 삭제
+		deleteCartItem(setShoppingList, barcode);
 	};
 
 	return (
