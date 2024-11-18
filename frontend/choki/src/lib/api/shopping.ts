@@ -58,7 +58,17 @@ export const compareShopping = async ({
 		throw error;
 	}
 };
-
+export const createMission = async (
+	requestBody: MissionRequest,
+): Promise<any> => {
+	try {
+		const response = await axiosInstance.post(`/api/mission`, requestBody);
+		return response.data;
+	} catch (error) {
+		console.error('미션 생성 실패:', error);
+		throw error;
+	}
+};
 // 미션 완료 이미지 전송(장보기 제외)
 export const uploadMissionImage = async (missionId: string, image: File) => {
 	const formData = new FormData();
@@ -87,6 +97,7 @@ export const uploadMissionImage = async (missionId: string, image: File) => {
 // 장보기 완료 이미지 전송
 export const uploadShoppingImage = async (shoppingId: string, image: File) => {
 	const formData = new FormData();
+	console.log(`Image file size: ${image.size} bytes`); // 이미지 파일 크기 출력
 
 	formData.append('image', image);
 
