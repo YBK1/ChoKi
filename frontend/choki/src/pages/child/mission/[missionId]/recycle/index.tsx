@@ -2,29 +2,40 @@ import ChildNavbar from '@/components/Common/Navbar/ChildNavBar';
 import AnimalSpeech from '@/components/Recycle/AnimalSpeech';
 import Cam from '@/components/Recycle/Cam';
 import Button from '@/components/Common/Button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import MissionCompleteModal from '@/components/Common/Modal/MissionCompleteModal';
 
 const RecyclePage = () => {
 	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-	const [isImageCaptured, setIsImageCaptured] = useState<boolean>(false);
 	const router = useRouter();
-
 	const { missionId } = router.query;
-
-	const handleComplete = () => {
-		setIsModalOpen(true);
-		console.log('엄마 분리수거 끝내써');
-	};
-
-	const handleCaptureChange = (captured: boolean) => {
-		setIsImageCaptured(captured);
-	};
-
 	const closeMissionFinishModal = () => {
 		setIsModalOpen(false);
 	};
+
+	const [classifyResult, setClassifyResult] = useState<
+		RecycleResponse | undefined
+	>(undefined);
+
+	const [animalMessage, setAnimalMessage] = useState<string>();
+	const [completeFlag, setCompleteFlag] = useState<boolean>(false);
+
+	const handleComplete = () => {
+		setAnimalMessage(`재활용을 마무리 할래? 인증 사진 찰칵~`);
+		setCompleteFlag(true);
+	};
+
+	useEffect(() => {
+		// console.log(classifyResult);
+		setAnimalMessage(
+			classifyResult
+				? classifyResult.predictions.length > 0
+					? `이건 ${classifyResult!.predictions[0].name}인 것 같은데?`
+					: '쓰레기가 더 잘 보이도록 다시 찍어볼까?'
+				: '헷갈리는 쓰레기는 사진을 찍어봐!',
+		);
+	}, [classifyResult]);
 
 	return (
 		<div
@@ -48,11 +59,14 @@ const RecyclePage = () => {
 			) : (
 				<>
 					<div className="-mt-6 md:mt-0">
-						<AnimalSpeech isImageCaptured={isImageCaptured} />
+						<AnimalSpeech animalMessage={animalMessage} />
 					</div>
 
 					<div className="mt-3 mb-8 w-full max-w-md">
-						<Cam onCaptureChange={handleCaptureChange} />
+						<Cam
+							onCaptureChange={setClassifyResult}
+							completeFlag={completeFlag}
+						/>
 					</div>
 
 					<div className="flex justify-center">
