@@ -1,5 +1,4 @@
 import axiosInstance from '@/lib/api/axiosInstance';
-import axios from 'axios';
 
 interface TempRecycleResponse {
 	status: number;
