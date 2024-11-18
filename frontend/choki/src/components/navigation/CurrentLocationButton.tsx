@@ -10,6 +10,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 		[number, number] | null
 	>(null);
 	const [deviceDirection, setDeviceDirection] = useState<number>(0);
+	const [permissionsGranted, setPermissionsGranted] = useState(false);
 	const geolocateControlRef = useRef<mapboxgl.GeolocateControl | null>(null);
 	const cleanupRef = useRef(false);
 
@@ -29,30 +30,48 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 		[],
 	);
 
-	const requestDeviceOrientationPermission = useCallback(async () => {
+	const requestPermissions = useCallback(async () => {
+		// Request device orientation permission
 		if (
 			typeof DeviceOrientationEvent !== 'undefined' &&
 			typeof (DeviceOrientationEvent as any).requestPermission === 'function'
 		) {
 			try {
-				const permission = await (
+				const orientationPermission = await (
 					DeviceOrientationEvent as any
 				).requestPermission();
-				if (permission === 'granted') {
-					window.addEventListener('deviceorientation', handleDeviceOrientation);
-				} else {
-					console.error('Compass permission denied');
+				if (orientationPermission === 'granted') {
+					window.addEventListener(
+						'deviceorientation',
+						handleDeviceOrientation,
+						true,
+					);
 				}
 			} catch (error) {
-				console.error('Error requesting compass permission:', error);
+				console.error('Error requesting orientation permission:', error);
 			}
-		} else {
-			window.addEventListener('deviceorientation', handleDeviceOrientation);
 		}
+
+		// Request geolocation permission
+		if ('geolocation' in navigator) {
+			try {
+				await new Promise((resolve, reject) => {
+					navigator.geolocation.getCurrentPosition(resolve, reject, {
+						enableHighAccuracy: true,
+						timeout: 5000,
+						maximumAge: 0,
+					});
+				});
+			} catch (error) {
+				console.error('Error requesting geolocation permission:', error);
+			}
+		}
+
+		setPermissionsGranted(true);
 	}, [handleDeviceOrientation]);
 
 	useEffect(() => {
-		if (!map || cleanupRef.current) return;
+		if (!map || cleanupRef.current || !permissionsGranted) return;
 
 		if (!geolocateControlRef.current) {
 			const geolocateControl = new mapboxgl.GeolocateControl({
@@ -72,14 +91,11 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				setCurrentLocation([longitude, latitude]);
 			});
 
-			requestDeviceOrientationPermission();
-
 			setTimeout(() => {
 				geolocateControl.trigger();
 			}, 1000);
 		}
 
-		// Cleanup
 		return () => {
 			if (!cleanupRef.current && geolocateControlRef.current && map) {
 				cleanupRef.current = true;
@@ -92,10 +108,11 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 				window.removeEventListener(
 					'deviceorientation',
 					handleDeviceOrientation,
+					true,
 				);
 			}
 		};
-	}, [map, requestDeviceOrientationPermission, handleDeviceOrientation]);
+	}, [map, handleDeviceOrientation, permissionsGranted]);
 
 	const centerMapOnLocation = useCallback(() => {
 		if (map && currentLocation) {
@@ -108,6 +125,17 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 			});
 		}
 	}, [map, currentLocation, deviceDirection]);
+
+	if (!permissionsGranted) {
+		return (
+			<button
+				onClick={requestPermissions}
+				className="absolute bottom-40 right-4 bg-white border-none p-2.5 cursor-pointer rounded-lg shadow-md z-10 flex items-center justify-center"
+			>
+				위치 및 나침반 권한 요청
+			</button>
+		);
+	}
 
 	return (
 		<button
