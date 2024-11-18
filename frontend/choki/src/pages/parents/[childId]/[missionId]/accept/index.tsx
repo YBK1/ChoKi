@@ -76,9 +76,11 @@ export default function MissionAcceptPage() {
 								<Image
 									src={missionDetail.image}
 									alt="Mission completed"
-									width={280}
-									height={280}
+									width={330}
+									height={330}
+									fill
 									className="rounded-lg object-cover"
+									sizes="330px"
 								/>
 							)}
 						</div>
