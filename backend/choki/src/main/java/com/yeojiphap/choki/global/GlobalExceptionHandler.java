@@ -6,6 +6,7 @@ import com.yeojiphap.choki.domain.collected.exception.AnimalAlreadyExistExceptio
 import com.yeojiphap.choki.domain.mission.exception.MissionNotFoundException;
 import com.yeojiphap.choki.domain.notification.exception.NotificationNotFoundException;
 import com.yeojiphap.choki.domain.shopping.exception.BadRequestException;
+import com.yeojiphap.choki.domain.shopping.exception.CartItemAlreadyExistException;
 import com.yeojiphap.choki.domain.shopping.exception.ProductNotFoundException;
 import com.yeojiphap.choki.domain.shopping.exception.ShoppingNotFoundException;
 import com.yeojiphap.choki.domain.family.exception.ChildNotExistException;
@@ -121,6 +122,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MissionNotFoundException.class)
     public ApiResponse<Void> handleMissionNotFoundException(MissionNotFoundException e) {
+        return ApiResponse.error(e.getStatus(), e.getMessage());
+    }
+
+    @ExceptionHandler(CartItemAlreadyExistException.class)
+    public ApiResponse<Void> handleCartItemAlreadyExistException(CartItemAlreadyExistException e) {
         return ApiResponse.error(e.getStatus(), e.getMessage());
     }
 }

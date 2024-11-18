@@ -92,20 +92,17 @@ public class CustomShoppingRepositoryImpl implements CustomShoppingRepository {
 		query.addCriteria(Criteria.where("_id").is(shoppingId));
 
 		if (listBarcode == null || listBarcode.isEmpty()) {
-			// Product의 barcode가 비어있지 않고, cartItem의 barcode가 일치하는 항목 찾기
-			query.addCriteria(
-				new Criteria().andOperator(
-					Criteria.where("shoppingList.barcode").in(null, ""),
-					Criteria.where("shoppingList.cartItem.barcode").is(barcode)
-				)
-			);
+			query.addCriteria(Criteria.where("shoppingList")
+				.elemMatch(Criteria.where("barcode").in(null, "")
+					.and("cartItem.barcode").is(barcode)));
 		} else {
-			// listBarcode로 직접 찾기
-			query.addCriteria(Criteria.where("shoppingList.barcode").is(listBarcode));
+			query.addCriteria(Criteria.where("shoppingList")
+				.elemMatch(Criteria.where("barcode").is(listBarcode)));
 		}
 
 		Update update = new Update();
 		update.unset("shoppingList.$.cartItem");
+
 		mongoTemplate.updateFirst(query, update, Shopping.class);
 	}
 
