@@ -58,7 +58,17 @@ export const compareShopping = async ({
 		throw error;
 	}
 };
-
+export const createMission = async (
+	requestBody: MissionRequest,
+): Promise<any> => {
+	try {
+		const response = await axiosInstance.post(`/api/mission`, requestBody);
+		return response.data;
+	} catch (error) {
+		console.error('미션 생성 실패:', error);
+		throw error;
+	}
+};
 // 미션 완료 이미지 전송(장보기 제외)
 export const uploadMissionImage = async (missionId: string, image: File) => {
 	const formData = new FormData();
@@ -85,92 +95,19 @@ export const uploadMissionImage = async (missionId: string, image: File) => {
 };
 
 // 장보기 완료 이미지 전송
-// export const uploadShoppingImage = async (shoppingId: string, image: File) => {
-// 	const formData = new FormData();
-
-// 	formData.append('image', image);
-
-// 	const dataObject = { shoppingId: shoppingId };
-// 	formData.append(
-// 		'data',
-// 		new Blob([JSON.stringify(dataObject)], { type: 'application/json' }),
-// 	);
-
-// 	try {
-// 		const response = await axiosInstance.post(`/api/shopping/image`, formData, {
-// 			headers: {
-// 				'Content-Type': 'multipart/form-data',
-// 			},
-// 		});
-// 		return response.data;
-// 	} catch (error) {
-// 		console.error('이미지 업로드 실패:', error);
-// 		throw error;
-// 	}
-// };
 export const uploadShoppingImage = async (shoppingId: string, image: File) => {
-	// 이미지 리사이즈 함수
-	const resizeImage = (file: File): Promise<Blob> => {
-		return new Promise((resolve, reject) => {
-			const reader = new FileReader();
+	const formData = new FormData();
+	console.log(`Image file size: ${image.size} bytes`); // 이미지 파일 크기 출력
 
-			reader.onload = e => {
-				const img = new Image();
-				img.onload = () => {
-					const canvas = document.createElement('canvas');
-					const ctx = canvas.getContext('2d');
+	formData.append('image', image);
 
-					if (ctx) {
-						// 이미지 크기 조정
-						const scaleFactor = 0.3; // 축소 비율
-						canvas.width = img.width * scaleFactor;
-						canvas.height = img.height * scaleFactor;
-
-						// canvas에 이미지를 그리기
-						ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-						// canvas를 Blob으로 변환
-						canvas.toBlob(
-							blob => {
-								if (blob) {
-									resolve(blob);
-								} else {
-									reject(new Error('Blob 변환 실패'));
-								}
-							},
-							file.type, // 원본 파일의 포맷 유지
-							0.7, // 이미지 품질 (0.1 ~ 1.0)
-						);
-					} else {
-						reject(new Error('Canvas context를 가져올 수 없음'));
-					}
-				};
-				img.src = e.target?.result as string; // FileReader의 결과를 이미지 소스로 설정
-			};
-
-			reader.onerror = error => reject(error);
-			reader.readAsDataURL(file); // File을 Data URL로 읽기
-		});
-	};
+	const dataObject = { shoppingId: shoppingId };
+	formData.append(
+		'data',
+		new Blob([JSON.stringify(dataObject)], { type: 'application/json' }),
+	);
 
 	try {
-		// 이미지 크기 조정
-		const resizedBlob = await resizeImage(image);
-		const resizedFile = new File([resizedBlob], image.name, {
-			type: image.type,
-		});
-
-		// FormData 생성 (기존 규격 유지)
-		const formData = new FormData();
-		formData.append('image', resizedFile);
-
-		const dataObject = { shoppingId: shoppingId };
-		formData.append(
-			'data',
-			new Blob([JSON.stringify(dataObject)], { type: 'application/json' }),
-		);
-
-		// 서버로 전송
 		const response = await axiosInstance.post(`/api/shopping/image`, formData, {
 			headers: {
 				'Content-Type': 'multipart/form-data',
