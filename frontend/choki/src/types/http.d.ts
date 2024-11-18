@@ -1,7 +1,7 @@
-//http 관련 타입, Request, Response 뒤에 붙이기
+//http 관련 타입; Request; Response 뒤에 붙이기
 type role = 'PARENT' | 'CHILD';
 
-// 알림이 missionId, shoppingId 모두 가질 수 있도록!
+// 알림이 missionId; shoppingId 모두 가질 수 있도록!
 type NotificationResponse = MissionNotification | ShoppingNotification;
 
 interface SignupRequest {
@@ -83,6 +83,14 @@ interface ShoppingRequest {
 	destination: ShoppingLocation;
 	route: RoutePoint[];
 	shoppingList: ReturnType<typeof getShoppingList>;
+}
+
+interface MissionRequest {
+	parentId: number;
+	childId: number;
+	missionType: MissionType;
+	content: string;
+	exp: number;
 }
 
 interface userDataResponse {
@@ -204,7 +212,7 @@ interface ShoppingListResponse {
 // 미션
 interface MissionDetailResponse {
 	content: string;
-	completedAt: string; // 2024-10-25,
+	completedAt: string; // 2024-10-25;
 	status: string;
 	type: MissionType;
 	image: string;
@@ -218,7 +226,7 @@ interface MissionAcceptRequest {
 
 interface DoneMissionResponse {
 	content: string;
-	completedAt: string; //2024-10-25,
+	completedAt: string; //2024-10-25;
 	image: string;
 	type: string;
 	shoppingId: string;
