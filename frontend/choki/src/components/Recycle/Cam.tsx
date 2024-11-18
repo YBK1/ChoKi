@@ -2,12 +2,13 @@ import React, { useRef, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Button from '../Common/Button';
 import { classifyRecycle, finishRecycle } from '@/lib/api/recycle';
-import { useParams } from 'next/navigation';
+import { useRouter } from 'next/router';
 
 const Cam: React.FC<CamProps> = ({ onCaptureChange, completeFlag }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [capturedImage, setCapturedImage] = useState<string | null>(null);
-	const { missionId } = useParams();
+	const router = useRouter();
+	const { missionId } = router.query;
 
 	const startCamera = async () => {
 		try {
