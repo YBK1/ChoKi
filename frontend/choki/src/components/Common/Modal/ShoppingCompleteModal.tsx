@@ -127,22 +127,7 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 						className="object-cover w-full h-full"
 					/>
 				)}
-				{isCaptured ? (
-					<div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-2">
-						<button
-							onClick={confirmAndUploadImage}
-							className="px-4 py-2 bg-green-500 text-white rounded-full"
-						>
-							미션 완료
-						</button>
-						<button
-							onClick={resetCapture}
-							className="px-4 py-2 bg-gray-500 text-white rounded-full"
-						>
-							다시 찍기
-						</button>
-					</div>
-				) : (
+				{!isCaptured && (
 					<button
 						onClick={captureImage}
 						className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-white rounded-full border-2 border-gray-300"
@@ -150,7 +135,23 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 				)}
 			</div>
 
-			{/* Hidden Canvas for capturing image */}
+			{isCaptured && (
+				<div className="flex space-x-2 w-full px-4">
+					<button
+						onClick={confirmAndUploadImage}
+						className="flex-1 px-6 py-2.5 bg-green-500 text-white rounded-2xl min-w-[90px]"
+					>
+						미션 완료
+					</button>
+					<button
+						onClick={resetCapture}
+						className="flex-1 px-6 py-2.5 bg-gray-500 text-white rounded-2xl min-w-[90px]"
+					>
+						다시 찍기
+					</button>
+				</div>
+			)}
+
 			<canvas ref={canvasRef} className="hidden"></canvas>
 		</div>
 	);
