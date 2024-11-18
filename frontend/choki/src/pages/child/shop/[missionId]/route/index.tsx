@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-
+// import { useAtom } from 'jotai';
+// import { shoppingListAtom } from '@/atoms/shoppingAtom';
 interface MapProps {
 	missionId: string;
 }

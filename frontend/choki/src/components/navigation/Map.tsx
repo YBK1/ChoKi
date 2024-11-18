@@ -10,7 +10,8 @@ import ChildLocationSender from '@/lib/ws/ChildLocationSender';
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
 import ShoppingCompleteModal from '../Common/Modal/ShoppingCompleteModal';
 import Image from 'next/image';
-
+import { useAtom } from 'jotai';
+import { shoppingListAtom } from '@/atoms/shoppingAtom';
 mapboxgl.accessToken =
 	'pk.eyJ1IjoicGlpbGxsIiwiYSI6ImNtMnk1YTFsejBkcW0ycHM4a2lsNnNjbmcifQ.Iw08nUzhhZyUbZQNPoOu1A';
 
@@ -31,7 +32,7 @@ const MapComponent = () => {
 	const [destination, setDestination] = useState<'Mart' | 'Home'>('Mart');
 	const [isMissionFinishModalOpen, setIsMissionFinishModalOpen] =
 		useState(false);
-
+	const [, setShoppingList] = useAtom(shoppingListAtom);
 	const router = useRouter();
 
 	const { missionId } = router.query;
@@ -116,6 +117,8 @@ const MapComponent = () => {
 		childWebSocketClient.subscribe(`/user/sub/shopping/${missionId}`, msg => {
 			console.log('받은 문자:', msg.body);
 			const missionRoute = JSON.parse(msg.body).route;
+			const initShoppingList = JSON.parse(msg.body).shoppingList;
+			setShoppingList(initShoppingList);
 			setOriginalRoute(missionRoute);
 			setCurrentRoute(missionRoute);
 		});

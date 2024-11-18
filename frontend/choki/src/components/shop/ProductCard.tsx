@@ -2,7 +2,11 @@ import React from 'react';
 import Image from 'next/image';
 
 import { childWebSocketClient } from '@/lib/ws/WebSocketClient';
-import { shoppingIdAtom } from '@/atoms/shoppingAtom';
+import {
+	shoppingIdAtom,
+	deletePlusItem,
+	shoppingListAtom,
+} from '@/atoms/shoppingAtom';
 import { useAtom } from 'jotai';
 
 interface CartItem {
@@ -33,7 +37,7 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 	onDelete,
 }) => {
 	const [shoppingId] = useAtom(shoppingIdAtom);
-
+	const [, setShoppingList] = useAtom(shoppingListAtom);
 	const handleDelete = () => {
 		if (ChildrenShoppingItem) {
 			const requestBody = {
@@ -45,7 +49,20 @@ const ProductCard: React.FC<ShoppingCardProps> = ({
 				'/pub/shopping/product/delete',
 				requestBody,
 			);
-			onDelete(ParentsShoppingItem.barcode);
+
+			if (ParentsShoppingItem.barcode === '') {
+				console.log(
+					'아이가 추가한 물품 삭제 ParentsShoppingItem',
+					ParentsShoppingItem,
+				);
+				deletePlusItem(setShoppingList, ChildrenShoppingItem.barcode); // 아이가 추가한 물품 삭제
+			} else {
+				console.log(
+					'부모가 추가한 물품 삭제 ParentsShoppingItem',
+					ParentsShoppingItem,
+				);
+				onDelete(ParentsShoppingItem.barcode); // 부모가 추가한 물품 삭제
+			}
 		}
 	};
 

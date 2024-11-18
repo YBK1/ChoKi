@@ -10,12 +10,16 @@ interface TempRecycleResponse {
 export const classifyRecycle = async (
 	formData: FormData,
 ): Promise<TempRecycleResponse> => {
-	const response = await axios.post('http://localhost:5000/predict', formData, {
-		headers: {
-			'Content-Type': 'multipart/form-data',
+	const response = await axios.post(
+		'https://choki.co.kr/ai/predict',
+		formData,
+		{
+			headers: {
+				'Content-Type': 'multipart/form-data',
+			},
 		},
-	});
-	// const response = await axiosInstance.post('/ai/classify', formData, {
+	);
+	// const response = await axiosInstance.post('/ai/predict', formData, {
 	// 	headers: {
 	// 		'Content-Type': 'multipart/form-data',
 	// 	},

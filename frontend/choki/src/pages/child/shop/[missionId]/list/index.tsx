@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import { useAtom } from 'jotai';
 import {
 	shoppingListAtom,
-	deleteCartItemAndCheckEmptyProductName,
+	deleteCartItem,
 	shoppingMessageAtom,
 	shoppingIdAtom,
 } from '@/atoms/shoppingAtom';
@@ -26,6 +26,7 @@ export default function ChildShoppingPage() {
 	const router = useRouter();
 	const [, setShoppingId] = useAtom(shoppingIdAtom);
 	const { missionId } = router.query; //
+	// const [isLoading, setIsLoading] = useState(true);
 
 	// WebSocket 구독 및 메시지 처리
 	useEffect(() => {
@@ -42,7 +43,9 @@ export default function ChildShoppingPage() {
 			childWebSocketClient.disconnect();
 		};
 	}, [missionId, setShoppingList]);
-
+	useEffect(() => {
+		console.log('장바구니 변경:', shoppingList);
+	}, [shoppingList]);
 	const openCameraModal = (barcode: string = '', name: string = '') => {
 		setOriginBarcode(barcode);
 		setProductName(name);
@@ -60,8 +63,8 @@ export default function ChildShoppingPage() {
 	};
 
 	const deleteItemFromShoppingList = (barcode: string) => {
-		// 해당하는  barcode를 가진 아이템을 삭제
-		deleteCartItemAndCheckEmptyProductName(setShoppingList, barcode);
+		// 부모가 추가한 물품을 삭제
+		deleteCartItem(setShoppingList, barcode);
 	};
 
 	return (
