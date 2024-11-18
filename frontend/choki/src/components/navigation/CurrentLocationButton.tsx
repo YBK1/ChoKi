@@ -10,7 +10,7 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 		[number, number] | null
 	>(null);
 	const [deviceDirection, setDeviceDirection] = useState<number>(0);
-	const [isCompassAvailable, setIsCompassAvailable] = useState<boolean>(false);
+	// const [isCompassAvailable, setIsCompassAvailable] = useState<boolean>(false);
 
 	const handleDeviceOrientation = useCallback(
 		(event: DeviceOrientationEvent) => {
@@ -19,12 +19,12 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 
 			if (webkitCompassHeading !== undefined) {
 				compassHeading = webkitCompassHeading;
-				setIsCompassAvailable(true);
+				// setIsCompassAvailable(true);
 			} else if (event.alpha !== null) {
 				compassHeading = (360 - event.alpha + 360) % 360;
-				setIsCompassAvailable(true);
+				// setIsCompassAvailable(true);
 			} else {
-				setIsCompassAvailable(false);
+				// setIsCompassAvailable(false);
 			}
 
 			setDeviceDirection(compassHeading);
@@ -47,14 +47,14 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 						handleDeviceOrientation,
 						true,
 					);
-					setIsCompassAvailable(true);
+					// setIsCompassAvailable(true);
 				} else {
 					console.error('Compass permission denied');
-					setIsCompassAvailable(false);
+					// setIsCompassAvailable(false);
 				}
 			} catch (error) {
 				console.error('Error requesting compass permission:', error);
-				setIsCompassAvailable(false);
+				// setIsCompassAvailable(false);
 			}
 		} else {
 			window.addEventListener(
@@ -122,11 +122,11 @@ const CurrentLocationButton: FC<CenterButtonProps> = ({ map }) => {
 			>
 				현재 위치로
 			</button>
-			{!isCompassAvailable && (
+			{/* {!isCompassAvailable && (
 				<div className="absolute bottom-48 right-4 bg-white p-2 rounded-lg shadow-md z-10 text-sm">
 					나침반을 사용할 수 없습니다
 				</div>
-			)}
+			)} */}
 		</>
 	);
 };
