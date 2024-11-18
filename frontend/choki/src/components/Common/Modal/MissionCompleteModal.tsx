@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { uploadMissionImage } from '@/lib/api/shopping';
+import { useRouter } from 'next/router';
 
 interface MissionFinishComponentProps {
 	missionId: string;
@@ -18,15 +19,27 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 		height: number;
 	} | null>(null);
 	const [isCaptured, setIsCaptured] = useState(false);
+	const [cameraError, setCameraError] = useState(false);
+	const router = useRouter();
 
 	const startCamera = async () => {
 		try {
-			const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+			const stream = await navigator.mediaDevices.getUserMedia({
+				video: {
+					facingMode: 'environment',
+					width: { ideal: 1280 },
+					height: { ideal: 720 },
+				},
+			});
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream;
+			} else {
+				// Clean up the stream if the video element is gone
+				stream.getTracks().forEach(track => track.stop());
 			}
 		} catch (error) {
 			console.error('Error accessing the camera:', error);
+			setCameraError(true);
 		}
 	};
 
@@ -46,6 +59,11 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 						setCapturedImage(file);
 						setImageDimensions({ width: canvas.width, height: canvas.height });
 						setIsCaptured(true);
+
+						const stream = video.srcObject as MediaStream;
+						if (stream) {
+							stream.getTracks().forEach(track => track.stop());
+						}
 					}
 				}, 'image/png');
 			} else {
@@ -56,8 +74,14 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 
 	const confirmAndUploadImage = () => {
 		if (capturedImage) {
-			uploadMissionImage(missionId, capturedImage);
-			resetCapture();
+			uploadMissionImage(missionId, capturedImage)
+				.then(() => {
+					resetCapture();
+					router.push('/child/main');
+				})
+				.catch(error => {
+					console.error('이미지 업로드 실패:', error);
+				});
 		}
 	};
 
@@ -79,6 +103,15 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 
 	useEffect(() => {
 		startCamera();
+
+		const videoElement = videoRef.current;
+
+		return () => {
+			if (videoElement && videoElement.srcObject) {
+				const stream = videoElement.srcObject as MediaStream;
+				stream.getTracks().forEach(track => track.stop());
+			}
+		};
 	}, []);
 
 	return (
@@ -86,7 +119,7 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 			<div className="relative flex items-center">
 				<div className="mr-4 p-2 bg-light_yellow text-sm rounded-lg shadow-md">
 					<p>
-						장보기를 마무리할래?
+						분리수거를 마무리할래?
 						<br />
 						인증 사진을 찰칵~!
 					</p>
@@ -112,14 +145,22 @@ const MissionCompleteModal: React.FC<MissionFinishComponentProps> = ({
 						height={imageDimensions?.height || 100}
 						className="object-cover w-full h-full"
 					/>
+				) : cameraError ? (
+					<div className="flex items-center justify-center w-full h-full">
+						<p className="text-sm text-gray-500">
+							카메라를 사용할 수 없습니다.
+						</p>
+					</div>
 				) : (
 					<video
 						ref={videoRef}
 						autoPlay
+						playsInline
+						muted
 						className="object-cover w-full h-full"
 					/>
 				)}
-				{!isCaptured && (
+				{!isCaptured && !cameraError && (
 					<button
 						onClick={captureImage}
 						className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-white rounded-full border-2 border-gray-300"

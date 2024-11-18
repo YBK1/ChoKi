@@ -19,16 +19,27 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 		height: number;
 	} | null>(null);
 	const [isCaptured, setIsCaptured] = useState(false);
+	const [cameraError, setCameraError] = useState(false);
 	const router = useRouter();
 
 	const startCamera = async () => {
 		try {
-			const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+			const stream = await navigator.mediaDevices.getUserMedia({
+				video: {
+					facingMode: 'environment',
+					width: { ideal: 1280 },
+					height: { ideal: 720 },
+				},
+			});
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream;
+			} else {
+				// Clean up the stream if the video element is gone
+				stream.getTracks().forEach(track => track.stop());
 			}
 		} catch (error) {
 			console.error('Error accessing the camera:', error);
+			setCameraError(true);
 		}
 	};
 
@@ -48,6 +59,12 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 						setCapturedImage(file);
 						setImageDimensions({ width: canvas.width, height: canvas.height });
 						setIsCaptured(true);
+
+						// Stop the camera stream after capturing
+						const stream = video.srcObject as MediaStream;
+						if (stream) {
+							stream.getTracks().forEach(track => track.stop());
+						}
 					}
 				}, 'image/png');
 			} else {
@@ -87,6 +104,17 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 
 	useEffect(() => {
 		startCamera();
+
+		// Store the current video element and its stream in variables
+		const videoElement = videoRef.current;
+
+		return () => {
+			// Use the stored videoElement in cleanup
+			if (videoElement && videoElement.srcObject) {
+				const stream = videoElement.srcObject as MediaStream;
+				stream.getTracks().forEach(track => track.stop());
+			}
+		};
 	}, []);
 
 	return (
@@ -120,14 +148,22 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 						height={imageDimensions?.height || 100}
 						className="object-cover w-full h-full"
 					/>
+				) : cameraError ? (
+					<div className="flex items-center justify-center w-full h-full">
+						<p className="text-sm text-gray-500">
+							카메라를 사용할 수 없습니다.
+						</p>
+					</div>
 				) : (
 					<video
 						ref={videoRef}
 						autoPlay
+						playsInline
+						muted
 						className="object-cover w-full h-full"
 					/>
 				)}
-				{!isCaptured && (
+				{!isCaptured && !cameraError && (
 					<button
 						onClick={captureImage}
 						className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-white rounded-full border-2 border-gray-300"
