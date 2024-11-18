@@ -34,14 +34,26 @@ const ShoppingListPage = () => {
 					case 'ADD_PRODUCT_TO_CART':
 						if (!response.listBarcode) return;
 						// 아이가 추가한 물품이 들어올 때
-						if (response.listBarcode === '' && !response.cartItem) {
+						if (response.listBarcode === '' && !response.barcode) {
+							const addCartItem: CartItem = {
+								barcode: response.barcode || '',
+								category: response.category || '',
+								productName: response.productName || '',
+								image: response.image || '',
+								quantity: response.quantity || 0,
+								reason: (response.reason || 'BLANK') as
+									| 'SOLD_OUT'
+									| 'NO_REASON'
+									| 'BLANK',
+								status: response.status || 'NOT_MATCH',
+							};
 							const addParentItem: ShoppingItem = {
 								barcode: '',
 								category: '',
 								productName: '',
 								image: '',
 								quantity: 0,
-								cartItem: response.cartItem, // 명시적 단언
+								cartItem: addCartItem, // 명시적 단언
 							};
 
 							addShoppingItem(setShoppingList, addParentItem);
