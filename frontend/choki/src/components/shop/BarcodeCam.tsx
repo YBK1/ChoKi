@@ -96,6 +96,35 @@ const Cam: React.FC<BarcodeCamProps> = ({
 		}
 	};
 
+	// const getRearCameraStream = async (): Promise<MediaStream> => {
+	// 	try {
+	// 		const devices = await navigator.mediaDevices.enumerateDevices();
+	// 		const videoDevices = devices.filter(
+	// 			device => device.kind === 'videoinput',
+	// 		);
+
+	// 		const rearCamera = videoDevices.find(device =>
+	// 			device.label.toLowerCase().includes('back'),
+	// 		);
+
+	// 		// 고화질 설정으로 변경
+	// 		const constraints: MediaStreamConstraints = {
+	// 			video: {
+	// 				...(rearCamera
+	// 					? { deviceId: rearCamera.deviceId }
+	// 					: { facingMode: 'environment' }),
+	// 				width: { ideal: 1920 }, // 4K
+	// 				height: { ideal: 1080 },
+	// 				aspectRatio: { ideal: 16 / 9 },
+	// 			},
+	// 		};
+
+	// 		return await navigator.mediaDevices.getUserMedia(constraints);
+	// 	} catch (error) {
+	// 		console.error('후면 카메라 탐지 실패:', error);
+	// 		throw error;
+	// 	}
+	// };
 	const getRearCameraStream = async (): Promise<MediaStream> => {
 		try {
 			const devices = await navigator.mediaDevices.enumerateDevices();
@@ -103,29 +132,65 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				device => device.kind === 'videoinput',
 			);
 
-			const rearCamera = videoDevices.find(device =>
-				device.label.toLowerCase().includes('back'),
+			// 후면 카메라 찾기 - wide 카메라 제외
+			const rearCamera = videoDevices.find(
+				device =>
+					(device.label.toLowerCase().includes('back') ||
+						device.label.toLowerCase().includes('rear')) &&
+					!device.label.toLowerCase().includes('wide'),
 			);
 
-			// 고화질 설정으로 변경
-			const constraints: MediaStreamConstraints = {
-				video: {
-					...(rearCamera
-						? { deviceId: rearCamera.deviceId }
-						: { facingMode: 'environment' }),
-					width: { ideal: 1920 }, // 4K
-					height: { ideal: 1080 },
-					aspectRatio: { ideal: 16 / 9 },
-				},
-			};
+			// 단순화된 constraints
+			const constraints = rearCamera
+				? { video: { deviceId: rearCamera.deviceId } }
+				: { video: { facingMode: { exact: 'environment' } } };
 
-			return await navigator.mediaDevices.getUserMedia(constraints);
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+			// 기본 줌 설정
+			const videoTrack = stream.getVideoTracks()[0];
+			const capabilities =
+				videoTrack.getCapabilities() as MediaTrackCapabilities & {
+					zoom?: number;
+				};
+
+			if (capabilities.zoom) {
+				await videoTrack.applyConstraints({
+					advanced: [{ zoom: 1.0 } as ExtendedMediaTrackConstraintSet],
+				});
+			}
+
+			return stream;
 		} catch (error) {
 			console.error('후면 카메라 탐지 실패:', error);
 			throw error;
 		}
 	};
 
+	// const checkCameraPermission = async () => {
+	// 	try {
+	// 		// 실제 카메라 접근을 먼저 시도
+	// 		const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+	// 		stream.getTracks().forEach(track => track.stop()); // 테스트 스트림 정리
+
+	// 		// 권한이 허용된 후 permissions API 확인
+	// 		const permission = await navigator.permissions.query({
+	// 			name: 'camera' as PermissionName,
+	// 		});
+
+	// 		if (permission.state === 'denied') {
+	// 			setHasPermission(false);
+	// 			throw new Error('카메라 권한이 거부되었습니다.');
+	// 		} else {
+	// 			setHasPermission(true);
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('권한 확인 실패:', error);
+	// 		setShowToast('카메라 권한을 허용해주세요.');
+	// 		setHasPermission(false);
+	// 		throw error;
+	// 	}
+	// };
 	const sharpenImage = (
 		ctx: CanvasRenderingContext2D,
 		canvas: HTMLCanvasElement,
