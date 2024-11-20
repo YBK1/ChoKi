@@ -5,13 +5,10 @@ import AddModal from './AddModal';
 import { Toast } from '@/components/Toast/Toast';
 import { compareShopping } from '@/lib/api/shopping';
 
-// MediaTrackConstraintSet 확장
 interface ExtendedMediaTrackConstraintSet extends MediaTrackConstraintSet {
 	zoom?: number;
-}
-// MediaTrackConstraintSet 확장
-interface ExtendedMediaTrackConstraintSet extends MediaTrackConstraintSet {
 	focusMode?: string;
+	focusDistance?: number;
 }
 
 interface BarcodeCamProps {
@@ -55,20 +52,27 @@ const Cam: React.FC<BarcodeCamProps> = ({
 			throw error;
 		}
 	};
+
 	const applyFocusConstraints = async (videoTrack: MediaStreamTrack) => {
 		const capabilities = videoTrack.getCapabilities() as Partial<{
 			focusMode?: string[];
+			focusDistance?: { min: number; max: number; step: number };
+			zoom?: { min: number; max: number; step: number };
 		}>;
 
-		if (capabilities.focusMode?.includes('continuous')) {
+		const constraints: ExtendedMediaTrackConstraintSet = {
+			focusMode: 'manual',
+			focusDistance: 0.3,
+			zoom: 1.5,
+		};
+
+		if (capabilities.focusMode?.includes('manual')) {
 			await videoTrack.applyConstraints({
-				advanced: [
-					{ focusMode: 'continuous' } as ExtendedMediaTrackConstraintSet,
-				],
+				advanced: [constraints],
 			});
-			console.log('카메라 초점: 연속 모드 활성화');
+			console.log('카메라 초점: 수동 모드 활성화');
 		} else {
-			console.warn('카메라가 연속 초점 모드를 지원하지 않습니다.');
+			console.warn('카메라가 수동 초점 모드를 지원하지 않습니다.');
 		}
 	};
 
@@ -83,30 +87,19 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				device.label.toLowerCase().includes('back'),
 			);
 
-			const constraints: MediaStreamConstraints = rearCamera
-				? {
-						video: {
-							deviceId: rearCamera.deviceId,
-							width: { ideal: 1920 }, // Full HD
-							height: { ideal: 1080 },
-						},
-					}
-				: {
-						video: {
-							facingMode: { exact: 'environment' },
-							width: { ideal: 1920 }, // Full HD
-							height: { ideal: 1080 },
-						},
-					};
+			// 고화질 설정으로 변경
+			const constraints: MediaStreamConstraints = {
+				video: {
+					...(rearCamera
+						? { deviceId: rearCamera.deviceId }
+						: { facingMode: { exact: 'environment' } }),
+					width: { ideal: 3840 }, // 4K
+					height: { ideal: 2160 },
+					aspectRatio: { ideal: 16 / 9 },
+				},
+			};
 
-			const stream = await navigator.mediaDevices.getUserMedia(constraints);
-
-			const videoTrack = stream.getVideoTracks()[0];
-
-			// 연속 초점 활성화
-			await applyFocusConstraints(videoTrack);
-
-			return stream;
+			return await navigator.mediaDevices.getUserMedia(constraints);
 		} catch (error) {
 			console.error('후면 카메라 탐지 실패:', error);
 			throw error;
@@ -120,12 +113,22 @@ const Cam: React.FC<BarcodeCamProps> = ({
 		const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		const data = imageData.data;
 
-		const sharpenFactor = 1.5;
+		const sharpenFactor = 2.0;
+		const contrast = 1.2;
 
 		for (let i = 0; i < data.length; i += 4) {
-			data[i] = Math.min(data[i] * sharpenFactor, 255); // R
-			data[i + 1] = Math.min(data[i + 1] * sharpenFactor, 255); // G
-			data[i + 2] = Math.min(data[i + 2] * sharpenFactor, 255); // B
+			data[i] = Math.min(
+				((data[i] / 255 - 0.5) * contrast + 0.5) * 255 * sharpenFactor,
+				255,
+			);
+			data[i + 1] = Math.min(
+				((data[i + 1] / 255 - 0.5) * contrast + 0.5) * 255 * sharpenFactor,
+				255,
+			);
+			data[i + 2] = Math.min(
+				((data[i + 2] / 255 - 0.5) * contrast + 0.5) * 255 * sharpenFactor,
+				255,
+			);
 		}
 
 		ctx.putImageData(imageData, 0, 0);
@@ -139,7 +142,6 @@ const Cam: React.FC<BarcodeCamProps> = ({
 			if (ctx) {
 				const video = videoRef.current;
 
-				// 박스 영역 설정
 				const scanBox = {
 					x: video.videoWidth * 0.1,
 					y: video.videoHeight * 0.4,
@@ -150,7 +152,6 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				canvas.width = scanBox.width;
 				canvas.height = scanBox.height;
 
-				// 캔버스에 비디오 프레임 그리기 (박스 영역만)
 				ctx.drawImage(
 					video,
 					scanBox.x,
@@ -163,17 +164,15 @@ const Cam: React.FC<BarcodeCamProps> = ({
 					scanBox.height,
 				);
 
-				// 샤프닝 필터 적용
 				sharpenImage(ctx, canvas);
 
-				// 바코드 인식 시도
 				try {
 					const result = await barcodeReader.decodeFromCanvas(canvas);
 					if (result) {
 						const scannedBarcode = result.getText();
 						setInputBarcode(scannedBarcode);
 						goCompare(originBarcode || '', scannedBarcode);
-						onCaptureChange(true); // 성공 시 카메라 닫기
+						onCaptureChange(true);
 					}
 				} catch (error) {
 					console.log('바코드 탐지 실패:', error);
@@ -199,9 +198,10 @@ const Cam: React.FC<BarcodeCamProps> = ({
 		if (videoRef.current) {
 			try {
 				const stream = await getRearCameraStream();
-				videoRef.current.srcObject = stream;
+				const videoTrack = stream.getVideoTracks()[0];
+				await applyFocusConstraints(videoTrack);
 
-				// 주기적으로 박스 영역 스캔
+				videoRef.current.srcObject = stream;
 				const intervalId = setInterval(scanBarcodeFromCanvas, 500);
 
 				return () => clearInterval(intervalId);
