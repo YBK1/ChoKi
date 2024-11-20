@@ -32,27 +32,39 @@ const Cam: React.FC<BarcodeCamProps> = ({
 	const [showToast, setShowToast] = useState<string | null>(null);
 	const [hasPermission, setHasPermission] = useState<boolean>(false);
 	const [barcodeReader] = useState(new BrowserMultiFormatReader());
-
 	const checkCameraPermission = async () => {
 		try {
-			// 먼저 getUserMedia로 권한 요청
-			const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+			// 바로 getUserMedia를 시도하여 권한 요청
+			const stream = await navigator.mediaDevices.getUserMedia({
+				video: {
+					facingMode: 'environment', // 후면 카메라 우선
+				},
+			});
+
+			// 권한이 허용되면 스트림을 즉시 중지
 			stream.getTracks().forEach(track => track.stop());
 			setHasPermission(true);
 
-			// 권한 상태 모니터링
-			const permission = await navigator.permissions.query({
-				name: 'camera' as PermissionName,
-			});
+			try {
+				// permissions.query는 선택적으로 시도
+				const permission = await navigator.permissions.query({
+					name: 'camera' as PermissionName,
+				});
 
-			permission.addEventListener('change', () => {
-				if (permission.state === 'denied') {
-					setHasPermission(false);
-					setShowToast('카메라 권한이 거부되었습니다.');
-				} else {
-					setHasPermission(true);
-				}
-			});
+				permission.addEventListener('change', () => {
+					if (permission.state === 'denied') {
+						setHasPermission(false);
+						setShowToast('카메라 권한이 거부되었습니다.');
+					} else {
+						setHasPermission(true);
+					}
+				});
+			} catch {
+				// permissions.query가 실패해도 getUserMedia가 성공했다면 권한이 있는 것으로 간주
+				console.log(
+					'권한 모니터링은 지원되지 않지만, 카메라는 사용 가능합니다.',
+				);
+			}
 		} catch (error) {
 			console.error('권한 확인 실패:', error);
 			setShowToast('카메라 권한을 허용해주세요.');
