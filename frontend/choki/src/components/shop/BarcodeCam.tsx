@@ -19,8 +19,30 @@ const Cam: React.FC<BarcodeCamProps> = ({
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [compareResult, setCompareResult] = useState<string | null>(null);
 	const [inputBarcode, setInputBarcode] = useState<string | null>(null);
-	const [showToast, setShowToast] = useState<boolean>(false);
+	const [showToast, setShowToast] = useState<string | null>(null);
+	const [hasPermission, setHasPermission] = useState<boolean>(false); // 권한 상태
 	const [barcodeReader] = useState(new BrowserMultiFormatReader());
+
+	// 권한 상태 확인 및 요청
+	const checkCameraPermission = async () => {
+		try {
+			const permission = await navigator.permissions.query({
+				name: 'camera' as PermissionName,
+			});
+
+			if (permission.state === 'denied') {
+				setHasPermission(false);
+				throw new Error('카메라 권한이 거부되었습니다.');
+			} else {
+				setHasPermission(true);
+			}
+		} catch (error) {
+			console.error('권한 확인 실패:', error);
+			setShowToast('카메라 권한을 허용해주세요.');
+			setHasPermission(false);
+			throw error;
+		}
+	};
 
 	// 후면 카메라 스트림 가져오기
 	const getRearCameraStream = async () => {
@@ -94,7 +116,9 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				});
 			} catch (error) {
 				console.error('카메라 접근 실패:', error);
-				setShowToast(true);
+				setShowToast(
+					'카메라를 사용할 수 없습니다. 권한을 확인하거나 재시도해주세요.',
+				);
 			}
 		}
 	};
@@ -102,14 +126,13 @@ const Cam: React.FC<BarcodeCamProps> = ({
 	useEffect(() => {
 		const checkPermissionsAndStart = async () => {
 			try {
-				const stream = await navigator.mediaDevices.getUserMedia({
-					video: true,
-				});
-				stream.getTracks().forEach(track => track.stop());
-				await startScan();
+				await checkCameraPermission();
+				if (hasPermission) {
+					await startScan();
+				}
 			} catch (error) {
 				console.error('카메라 권한 부족 또는 접근 실패:', error);
-				setShowToast(true);
+				setShowToast('기기에서 카메라 권한을 허용해주세요.');
 			}
 		};
 
@@ -121,7 +144,7 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				stream?.getTracks().forEach(track => track.stop());
 			}
 		};
-	}, [barcodeReader, originBarcode]);
+	}, [barcodeReader, originBarcode, hasPermission]);
 
 	const handleConfirm = () => {
 		onCaptureChange(true);
@@ -169,7 +192,7 @@ const Cam: React.FC<BarcodeCamProps> = ({
 			{showToast && (
 				<Toast
 					message="카메라를 사용할 수 없습니다. 권한을 확인하거나 재시도해주세요."
-					onClose={() => setShowToast(false)}
+					onClose={() => setShowToast(null)}
 				/>
 			)}
 		</div>
