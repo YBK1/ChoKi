@@ -35,16 +35,24 @@ const Cam: React.FC<BarcodeCamProps> = ({
 
 	const checkCameraPermission = async () => {
 		try {
+			// 먼저 getUserMedia로 권한 요청
+			const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+			stream.getTracks().forEach(track => track.stop());
+			setHasPermission(true);
+
+			// 권한 상태 모니터링
 			const permission = await navigator.permissions.query({
 				name: 'camera' as PermissionName,
 			});
 
-			if (permission.state === 'denied') {
-				setHasPermission(false);
-				throw new Error('카메라 권한이 거부되었습니다.');
-			} else {
-				setHasPermission(true);
-			}
+			permission.addEventListener('change', () => {
+				if (permission.state === 'denied') {
+					setHasPermission(false);
+					setShowToast('카메라 권한이 거부되었습니다.');
+				} else {
+					setHasPermission(true);
+				}
+			});
 		} catch (error) {
 			console.error('권한 확인 실패:', error);
 			setShowToast('카메라 권한을 허용해주세요.');
