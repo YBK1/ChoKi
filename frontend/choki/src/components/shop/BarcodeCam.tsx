@@ -253,6 +253,8 @@ const Cam: React.FC<BarcodeCamProps> = ({
 						<video
 							ref={videoRef}
 							autoPlay
+							playsInline
+							muted
 							className="w-full h-full object-cover"
 						/>
 						<canvas ref={canvasRef} className="hidden" />
