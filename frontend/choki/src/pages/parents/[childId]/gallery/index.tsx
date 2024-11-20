@@ -50,7 +50,7 @@ export default function Index() {
 						<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
 					</div>
 				) : (
-					<div className="grid grid-cols-2 gap-4 px-5">
+					<div className="grid grid-cols-2 gap-4 px-5 overflow-y-auto touch-pan-y h-[calc(100vh-225px)]">
 						{missions.map(mission => (
 							<MissionList
 								key={mission.missionId}
