@@ -61,9 +61,9 @@ const Cam: React.FC<BarcodeCamProps> = ({
 		}>;
 
 		const constraints: ExtendedMediaTrackConstraintSet = {
-			focusMode: 'manual',
-			focusDistance: 0.15,
-			zoom: 4.0,
+			focusMode: 'continuous', // 자동 초점 모드
+			focusDistance: 0.5, // 중간 거리
+			zoom: 1.0, // 기본 배율
 		};
 
 		if (capabilities.focusMode?.includes('manual')) {
