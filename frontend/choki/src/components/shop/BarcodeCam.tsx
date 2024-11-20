@@ -5,6 +5,11 @@ import AddModal from './AddModal';
 import { Toast } from '@/components/Toast/Toast';
 import { compareShopping } from '@/lib/api/shopping';
 
+// Extended interface for zoom support
+interface ExtendedMediaTrackConstraintSet extends MediaTrackConstraintSet {
+	zoom?: number;
+}
+
 const Cam: React.FC<BarcodeCamProps> = ({
 	onCaptureChange,
 	originBarcode,
@@ -20,31 +25,37 @@ const Cam: React.FC<BarcodeCamProps> = ({
 	// 후면 카메라 스트림 가져오기
 	const getRearCameraStream = async () => {
 		try {
-			// 디바이스 목록 가져오기
 			const devices = await navigator.mediaDevices.enumerateDevices();
 			const videoDevices = devices.filter(
 				device => device.kind === 'videoinput',
 			);
 
-			// 후면 카메라 탐지 (label을 통해 탐색)
 			const rearCamera = videoDevices.find(
 				device =>
-					(device.label.toLowerCase().includes('back') || // 후면 카메라 포함
+					(device.label.toLowerCase().includes('back') ||
 						device.label.toLowerCase().includes('rear')) &&
 					!device.label.toLowerCase().includes('wide'),
 			);
 
-			if (rearCamera) {
-				// deviceId를 이용하여 후면 카메라 스트림 가져오기
-				return await navigator.mediaDevices.getUserMedia({
-					video: { deviceId: rearCamera.deviceId },
-				});
-			} else {
-				// fallback: facingMode로 후면 카메라 요청
-				return await navigator.mediaDevices.getUserMedia({
-					video: { facingMode: { exact: 'environment' } },
+			const constraints = rearCamera
+				? { video: { deviceId: rearCamera.deviceId } }
+				: { video: { facingMode: { exact: 'environment' } } };
+
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+			const videoTrack = stream.getVideoTracks()[0];
+			const capabilities =
+				videoTrack.getCapabilities() as MediaTrackCapabilities & {
+					zoom?: number;
+				};
+
+			if (capabilities.zoom) {
+				await videoTrack.applyConstraints({
+					advanced: [{ zoom: 1.0 } as ExtendedMediaTrackConstraintSet],
 				});
 			}
+
+			return stream;
 		} catch (error) {
 			console.error('후면 카메라 탐지 실패:', error);
 			throw error;
@@ -54,13 +65,12 @@ const Cam: React.FC<BarcodeCamProps> = ({
 	// 바코드 비교 함수
 	const goCompare = async (originBarcode: string, inputBarcode: string) => {
 		try {
-			if (originBarcode === '') {
+			if (!originBarcode) {
 				setCompareResult('MATCH');
 				setInputBarcode(inputBarcode);
 			} else {
 				const response = await compareShopping({ originBarcode, inputBarcode });
-				const matchStatus = response.matchStatus;
-				setCompareResult(matchStatus);
+				setCompareResult(response.matchStatus);
 				setInputBarcode(inputBarcode);
 			}
 		} catch (error) {
@@ -75,7 +85,6 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				const stream = await getRearCameraStream();
 				videoRef.current.srcObject = stream;
 
-				// 바코드 리더로 스캔 시작
 				barcodeReader.decodeFromVideoElement(videoRef.current, result => {
 					if (result) {
 						const scannedBarcode = result.getText();
@@ -85,7 +94,7 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				});
 			} catch (error) {
 				console.error('카메라 접근 실패:', error);
-				setShowToast(true); // 사용자에게 알림
+				setShowToast(true);
 			}
 		}
 	};
@@ -93,22 +102,24 @@ const Cam: React.FC<BarcodeCamProps> = ({
 	useEffect(() => {
 		const checkPermissionsAndStart = async () => {
 			try {
-				// 카메라 권한 확인
 				const stream = await navigator.mediaDevices.getUserMedia({
 					video: true,
 				});
-				stream.getTracks().forEach(track => track.stop()); // 스트림 해제
+				stream.getTracks().forEach(track => track.stop());
 				await startScan();
 			} catch (error) {
 				console.error('카메라 권한 부족 또는 접근 실패:', error);
-				setShowToast(true); // 사용자 알림
+				setShowToast(true);
 			}
 		};
 
 		checkPermissionsAndStart();
 
 		return () => {
-			videoRef.current?.pause();
+			if (videoRef.current) {
+				const stream = videoRef.current.srcObject as MediaStream;
+				stream?.getTracks().forEach(track => track.stop());
+			}
 		};
 	}, [barcodeReader, originBarcode]);
 
@@ -134,9 +145,7 @@ const Cam: React.FC<BarcodeCamProps> = ({
 							autoPlay
 							className="w-full h-full object-cover"
 						/>
-						{/* 비디오 배경 어둡게 처리 */}
 						<div className="absolute inset-0 bg-black bg-opacity-50 pointer-events-none"></div>
-						{/* 가이드라인 추가 */}
 						<div className="absolute inset-0 flex justify-center items-center pointer-events-none">
 							<div className="border-2 border-orange-300 w-[80%] h-[20%]">
 								<span className="text-white mt-2 text-sm bg-opacity-50 px-2 py-1 rounded">
