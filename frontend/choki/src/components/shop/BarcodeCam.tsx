@@ -64,7 +64,7 @@ const Cam: React.FC<BarcodeCamProps> = ({
 			await videoTrack.applyConstraints({
 				advanced: [
 					{ focusMode: 'continuous' } as ExtendedMediaTrackConstraintSet,
-				], // 확장된 타입 적용
+				],
 			});
 			console.log('카메라 초점: 연속 모드 활성화');
 		} else {
@@ -87,15 +87,15 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				? {
 						video: {
 							deviceId: rearCamera.deviceId,
-							width: { ideal: 1280 },
-							height: { ideal: 720 },
+							width: { ideal: 1920 }, // Full HD
+							height: { ideal: 1080 },
 						},
 					}
 				: {
 						video: {
 							facingMode: { exact: 'environment' },
-							width: { ideal: 1280 },
-							height: { ideal: 720 },
+							width: { ideal: 1920 }, // Full HD
+							height: { ideal: 1080 },
 						},
 					};
 
@@ -103,23 +103,7 @@ const Cam: React.FC<BarcodeCamProps> = ({
 
 			const videoTrack = stream.getVideoTracks()[0];
 
-			// 줌 강제 설정
-			const capabilities = videoTrack.getCapabilities() as Partial<{
-				zoom?: { min: number; max: number; step: number };
-			}>;
-
-			if (capabilities.zoom) {
-				console.log(
-					`줌 설정 가능: min=${capabilities.zoom.min}, max=${capabilities.zoom.max}`,
-				);
-				await videoTrack.applyConstraints({
-					advanced: [{ zoom: 2.0 } as ExtendedMediaTrackConstraintSet], // 확장된 타입 적용
-				});
-			} else {
-				console.warn('줌 기능을 지원하지 않는 디바이스입니다.');
-			}
-
-			// 연속 초점 설정
+			// 연속 초점 활성화
 			await applyFocusConstraints(videoTrack);
 
 			return stream;
@@ -127,6 +111,24 @@ const Cam: React.FC<BarcodeCamProps> = ({
 			console.error('후면 카메라 탐지 실패:', error);
 			throw error;
 		}
+	};
+
+	const sharpenImage = (
+		ctx: CanvasRenderingContext2D,
+		canvas: HTMLCanvasElement,
+	) => {
+		const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+		const data = imageData.data;
+
+		const sharpenFactor = 1.5;
+
+		for (let i = 0; i < data.length; i += 4) {
+			data[i] = Math.min(data[i] * sharpenFactor, 255); // R
+			data[i + 1] = Math.min(data[i + 1] * sharpenFactor, 255); // G
+			data[i + 2] = Math.min(data[i + 2] * sharpenFactor, 255); // B
+		}
+
+		ctx.putImageData(imageData, 0, 0);
 	};
 
 	const scanBarcodeFromCanvas = async () => {
@@ -160,6 +162,9 @@ const Cam: React.FC<BarcodeCamProps> = ({
 					scanBox.width,
 					scanBox.height,
 				);
+
+				// 샤프닝 필터 적용
+				sharpenImage(ctx, canvas);
 
 				// 바코드 인식 시도
 				try {
