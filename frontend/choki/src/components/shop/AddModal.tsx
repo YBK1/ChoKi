@@ -8,7 +8,7 @@ import { useAtom } from 'jotai';
 import { shoppingIdAtom } from '@/atoms/shoppingAtom';
 
 interface AddModalProps {
-	conpareResult: string;
+	compareResult: string;
 	ProductName: string;
 	originBarcode: string;
 	inputBarcode: string;
@@ -16,7 +16,7 @@ interface AddModalProps {
 }
 
 export default function AddModal({
-	conpareResult,
+	compareResult: compareResult,
 	ProductName,
 	originBarcode,
 	inputBarcode,
@@ -74,7 +74,7 @@ export default function AddModal({
 		<div>
 			<NonCloseModal>
 				<div className="flex flex-col items-center p-6">
-					{conpareResult === 'MATCH' && (
+					{compareResult === 'MATCH' && (
 						<div className="flex flex-col items-center mt-12">
 							<Image
 								src="/icons/success_icon.svg"
@@ -106,7 +106,7 @@ export default function AddModal({
 							</div>
 						</div>
 					)}
-					{conpareResult === 'NOT_MATCH' && (
+					{compareResult === 'NOT_MATCH' && (
 						<div className="flex flex-col items-center">
 							<Image
 								src="/icons/fail_icon.svg"
@@ -129,7 +129,7 @@ export default function AddModal({
 							</div>
 						</div>
 					)}
-					{conpareResult === 'SIMILAR' && (
+					{compareResult === 'SIMILAR' && (
 						<div className="flex flex-col items-center">
 							<Image
 								src="/icons/warning_icon.svg"
