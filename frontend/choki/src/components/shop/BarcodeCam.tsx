@@ -9,6 +9,10 @@ import { compareShopping } from '@/lib/api/shopping';
 interface ExtendedMediaTrackConstraintSet extends MediaTrackConstraintSet {
 	zoom?: number;
 }
+// MediaTrackConstraintSet 확장
+interface ExtendedMediaTrackConstraintSet extends MediaTrackConstraintSet {
+	focusMode?: string;
+}
 
 interface BarcodeCamProps {
 	onCaptureChange: (captured: boolean) => void;
@@ -49,6 +53,22 @@ const Cam: React.FC<BarcodeCamProps> = ({
 			setShowToast('카메라 권한을 허용해주세요.');
 			setHasPermission(false);
 			throw error;
+		}
+	};
+	const applyFocusConstraints = async (videoTrack: MediaStreamTrack) => {
+		const capabilities = videoTrack.getCapabilities() as Partial<{
+			focusMode?: string[];
+		}>;
+
+		if (capabilities.focusMode?.includes('continuous')) {
+			await videoTrack.applyConstraints({
+				advanced: [
+					{ focusMode: 'continuous' } as ExtendedMediaTrackConstraintSet,
+				], // 확장된 타입 적용
+			});
+			console.log('카메라 초점: 연속 모드 활성화');
+		} else {
+			console.warn('카메라가 연속 초점 모드를 지원하지 않습니다.');
 		}
 	};
 
@@ -98,6 +118,9 @@ const Cam: React.FC<BarcodeCamProps> = ({
 			} else {
 				console.warn('줌 기능을 지원하지 않는 디바이스입니다.');
 			}
+
+			// 연속 초점 설정
+			await applyFocusConstraints(videoTrack);
 
 			return stream;
 		} catch (error) {
