@@ -93,8 +93,8 @@ const Cam: React.FC<BarcodeCamProps> = ({
 					...(rearCamera
 						? { deviceId: rearCamera.deviceId }
 						: { facingMode: { exact: 'environment' } }),
-					width: { ideal: 3840 }, // 4K
-					height: { ideal: 2160 },
+					width: { ideal: 1920 }, // 4K
+					height: { ideal: 1080 },
 					aspectRatio: { ideal: 16 / 9 },
 				},
 			};
