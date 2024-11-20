@@ -6,9 +6,6 @@ import { Toast } from '@/components/Toast/Toast';
 import { compareShopping } from '@/lib/api/shopping';
 
 // Extended interface for zoom support
-interface ExtendedMediaTrackConstraintSet extends MediaTrackConstraintSet {
-	zoom?: number;
-}
 
 const Cam: React.FC<BarcodeCamProps> = ({
 	onCaptureChange,
@@ -44,8 +41,47 @@ const Cam: React.FC<BarcodeCamProps> = ({
 		}
 	};
 
-	// 후면 카메라 스트림 가져오기
-	const getRearCameraStream = async () => {
+	// // 후면 카메라 스트림 가져오기
+	// const getRearCameraStream = async () => {
+	// 	try {
+	// 		const devices = await navigator.mediaDevices.enumerateDevices();
+	// 		const videoDevices = devices.filter(
+	// 			device => device.kind === 'videoinput',
+	// 		);
+
+	// 		const rearCamera = videoDevices.find(
+	// 			device =>
+	// 				(device.label.toLowerCase().includes('back') ||
+	// 					device.label.toLowerCase().includes('rear')) &&
+	// 				!device.label.toLowerCase().includes('wide'),
+	// 		);
+
+	// 		const constraints = rearCamera
+	// 			? { video: { deviceId: rearCamera.deviceId } }
+	// 			: { video: { facingMode: { exact: 'environment' } } };
+
+	// 		const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+	// 		const videoTrack = stream.getVideoTracks()[0];
+	// 		const capabilities =
+	// 			videoTrack.getCapabilities() as MediaTrackCapabilities & {
+	// 				zoom?: number;
+	// 			};
+
+	// 		if (capabilities.zoom) {
+	// 			await videoTrack.applyConstraints({
+	// 				advanced: [{ zoom: 1.0 } as ExtendedMediaTrackConstraintSet],
+	// 			});
+	// 		}
+
+	// 		return stream;
+	// 	} catch (error) {
+	// 		console.error('후면 카메라 탐지 실패:', error);
+	// 		throw error;
+	// 	}
+	// };
+
+	const getRearCameraStream = async (): Promise<MediaStream> => {
 		try {
 			const devices = await navigator.mediaDevices.enumerateDevices();
 			const videoDevices = devices.filter(
@@ -59,22 +95,44 @@ const Cam: React.FC<BarcodeCamProps> = ({
 					!device.label.toLowerCase().includes('wide'),
 			);
 
-			const constraints = rearCamera
-				? { video: { deviceId: rearCamera.deviceId } }
-				: { video: { facingMode: { exact: 'environment' } } };
+			const constraints: MediaStreamConstraints = rearCamera
+				? {
+						video: {
+							deviceId: rearCamera.deviceId,
+							width: { ideal: 1280 },
+							height: { ideal: 720 },
+						},
+					}
+				: {
+						video: {
+							facingMode: { exact: 'environment' },
+							width: { ideal: 1280 },
+							height: { ideal: 720 },
+						},
+					};
 
 			const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
 			const videoTrack = stream.getVideoTracks()[0];
-			const capabilities =
-				videoTrack.getCapabilities() as MediaTrackCapabilities & {
-					zoom?: number;
-				};
+			const capabilities = videoTrack.getCapabilities() as unknown as {
+				zoom?: { min: number; max: number; step: number };
+				focusMode?: string[];
+			};
+
+			// 초점 및 줌 설정
+			if (capabilities.focusMode?.includes('continuous')) {
+				await videoTrack.applyConstraints({
+					advanced: [{ focusMode: 'continuous' }],
+				} as unknown as MediaTrackConstraints);
+			}
 
 			if (capabilities.zoom) {
+				const zoomValue =
+					capabilities.zoom.min +
+					(capabilities.zoom.max - capabilities.zoom.min) * 0.5;
 				await videoTrack.applyConstraints({
-					advanced: [{ zoom: 1.0 } as ExtendedMediaTrackConstraintSet],
-				});
+					advanced: [{ zoom: zoomValue }],
+				} as unknown as MediaTrackConstraints);
 			}
 
 			return stream;
@@ -111,6 +169,7 @@ const Cam: React.FC<BarcodeCamProps> = ({
 					if (result) {
 						const scannedBarcode = result.getText();
 						goCompare(originBarcode, scannedBarcode);
+						setInputBarcode(scannedBarcode);
 						videoRef.current?.pause();
 					}
 				});
