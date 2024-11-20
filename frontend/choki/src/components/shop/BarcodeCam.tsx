@@ -5,10 +5,17 @@ import AddModal from './AddModal';
 import { Toast } from '@/components/Toast/Toast';
 import { compareShopping } from '@/lib/api/shopping';
 
-// Extended interface for zoom support
-// MediaTrackConstraintSet에 zoom 속성 추가
+// MediaTrackConstraintSet 확장
 interface ExtendedMediaTrackConstraintSet extends MediaTrackConstraintSet {
 	zoom?: number;
+}
+
+interface BarcodeCamProps {
+	onCaptureChange: (captured: boolean) => void;
+	originBarcode: string | null;
+	productName?: string;
+	onClose: () => void;
+	addNewItem?: (newItem: ShoppingItem) => void;
 }
 
 const Cam: React.FC<BarcodeCamProps> = ({
@@ -18,13 +25,13 @@ const Cam: React.FC<BarcodeCamProps> = ({
 	onClose,
 }) => {
 	const videoRef = useRef<HTMLVideoElement>(null);
+	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [compareResult, setCompareResult] = useState<string | null>(null);
 	const [inputBarcode, setInputBarcode] = useState<string | null>(null);
 	const [showToast, setShowToast] = useState<string | null>(null);
-	const [hasPermission, setHasPermission] = useState<boolean>(false); // 권한 상태
+	const [hasPermission, setHasPermission] = useState<boolean>(false);
 	const [barcodeReader] = useState(new BrowserMultiFormatReader());
 
-	// 권한 상태 확인 및 요청
 	const checkCameraPermission = async () => {
 		try {
 			const permission = await navigator.permissions.query({
@@ -45,106 +52,6 @@ const Cam: React.FC<BarcodeCamProps> = ({
 		}
 	};
 
-	// // 후면 카메라 스트림 가져오기(기존 버전)
-	// const getRearCameraStream = async () => {
-	// 	try {
-	// 		const devices = await navigator.mediaDevices.enumerateDevices();
-	// 		const videoDevices = devices.filter(
-	// 			device => device.kind === 'videoinput',
-	// 		);
-
-	// 		const rearCamera = videoDevices.find(
-	// 			device =>
-	// 				(device.label.toLowerCase().includes('back') ||
-	// 					device.label.toLowerCase().includes('rear')) &&
-	// 				!device.label.toLowerCase().includes('wide'),
-	// 		);
-
-	// 		const constraints = rearCamera
-	// 			? { video: { deviceId: rearCamera.deviceId } }
-	// 			: { video: { facingMode: { exact: 'environment' } } };
-
-	// 		const stream = await navigator.mediaDevices.getUserMedia(constraints);
-
-	// 		const videoTrack = stream.getVideoTracks()[0];
-	// 		const capabilities =
-	// 			videoTrack.getCapabilities() as MediaTrackCapabilities & {
-	// 				zoom?: number;
-	// 			};
-
-	// 		if (capabilities.zoom) {
-	// 			await videoTrack.applyConstraints({
-	// 				advanced: [{ zoom: 1.0 } as ExtendedMediaTrackConstraintSet],
-	// 			});
-	// 		}
-
-	// 		return stream;
-	// 	} catch (error) {
-	// 		console.error('후면 카메라 탐지 실패:', error);
-	// 		throw error;
-	// 	}
-	// };
-
-	// const getRearCameraStream = async (): Promise<MediaStream> => {
-	// 	try {
-	// 		const devices = await navigator.mediaDevices.enumerateDevices();
-	// 		const videoDevices = devices.filter(
-	// 			device => device.kind === 'videoinput',
-	// 		);
-
-	// 		const rearCamera = videoDevices.find(
-	// 			device =>
-	// 				(device.label.toLowerCase().includes('back') ||
-	// 					device.label.toLowerCase().includes('rear')) &&
-	// 				!device.label.toLowerCase().includes('wide'),
-	// 		);
-
-	// 		const constraints: MediaStreamConstraints = rearCamera
-	// 			? {
-	// 					video: {
-	// 						deviceId: rearCamera.deviceId,
-	// 						width: { ideal: 1280 },
-	// 						height: { ideal: 720 },
-	// 					},
-	// 				}
-	// 			: {
-	// 					video: {
-	// 						facingMode: { exact: 'environment' },
-	// 						width: { ideal: 1280 },
-	// 						height: { ideal: 720 },
-	// 					},
-	// 				};
-
-	// 		const stream = await navigator.mediaDevices.getUserMedia(constraints);
-
-	// 		const videoTrack = stream.getVideoTracks()[0];
-	// 		const capabilities = videoTrack.getCapabilities() as unknown as {
-	// 			zoom?: { min: number; max: number; step: number };
-	// 			focusMode?: string[];
-	// 		};
-
-	// 		// 초점 및 줌 설정
-	// 		if (capabilities.focusMode?.includes('continuous')) {
-	// 			await videoTrack.applyConstraints({
-	// 				advanced: [{ focusMode: 'continuous' }],
-	// 			} as unknown as MediaTrackConstraints);
-	// 		}
-
-	// 		if (capabilities.zoom) {
-	// 			const zoomValue =
-	// 				capabilities.zoom.min +
-	// 				(capabilities.zoom.max - capabilities.zoom.min) * 0.5;
-	// 			await videoTrack.applyConstraints({
-	// 				advanced: [{ zoom: zoomValue }],
-	// 			} as unknown as MediaTrackConstraints);
-	// 		}
-
-	// 		return stream;
-	// 	} catch (error) {
-	// 		console.error('후면 카메라 탐지 실패:', error);
-	// 		throw error;
-	// 	}
-	// };
 	const getRearCameraStream = async (): Promise<MediaStream> => {
 		try {
 			const devices = await navigator.mediaDevices.enumerateDevices();
@@ -152,11 +59,8 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				device => device.kind === 'videoinput',
 			);
 
-			const rearCamera = videoDevices.find(
-				device =>
-					(device.label.toLowerCase().includes('back') ||
-						device.label.toLowerCase().includes('rear')) &&
-					!device.label.toLowerCase().includes('wide'),
+			const rearCamera = videoDevices.find(device =>
+				device.label.toLowerCase().includes('back'),
 			);
 
 			const constraints: MediaStreamConstraints = rearCamera
@@ -177,10 +81,9 @@ const Cam: React.FC<BarcodeCamProps> = ({
 
 			const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
-			// 비디오 트랙 가져오기
 			const videoTrack = stream.getVideoTracks()[0];
 
-			// 줌 설정이 가능한 경우만 처리
+			// 줌 강제 설정
 			const capabilities = videoTrack.getCapabilities() as Partial<{
 				zoom?: { min: number; max: number; step: number };
 			}>;
@@ -189,10 +92,9 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				console.log(
 					`줌 설정 가능: min=${capabilities.zoom.min}, max=${capabilities.zoom.max}`,
 				);
-				const zoomConstraints: ExtendedMediaTrackConstraintSet = {
-					zoom: 1.0, // 1배율로 고정
-				};
-				await videoTrack.applyConstraints({ advanced: [zoomConstraints] });
+				await videoTrack.applyConstraints({
+					advanced: [{ zoom: 2.0 } as ExtendedMediaTrackConstraintSet], // 확장된 타입 적용
+				});
 			} else {
 				console.warn('줌 기능을 지원하지 않는 디바이스입니다.');
 			}
@@ -204,37 +106,77 @@ const Cam: React.FC<BarcodeCamProps> = ({
 		}
 	};
 
-	// 바코드 비교 함수
+	const scanBarcodeFromCanvas = async () => {
+		if (canvasRef.current && videoRef.current) {
+			const canvas = canvasRef.current;
+			const ctx = canvas.getContext('2d');
+
+			if (ctx) {
+				const video = videoRef.current;
+
+				// 박스 영역 설정
+				const scanBox = {
+					x: video.videoWidth * 0.1,
+					y: video.videoHeight * 0.4,
+					width: video.videoWidth * 0.8,
+					height: video.videoHeight * 0.2,
+				};
+
+				canvas.width = scanBox.width;
+				canvas.height = scanBox.height;
+
+				// 캔버스에 비디오 프레임 그리기 (박스 영역만)
+				ctx.drawImage(
+					video,
+					scanBox.x,
+					scanBox.y,
+					scanBox.width,
+					scanBox.height,
+					0,
+					0,
+					scanBox.width,
+					scanBox.height,
+				);
+
+				// 바코드 인식 시도
+				try {
+					const result = await barcodeReader.decodeFromCanvas(canvas);
+					if (result) {
+						const scannedBarcode = result.getText();
+						setInputBarcode(scannedBarcode);
+						goCompare(originBarcode || '', scannedBarcode);
+						onCaptureChange(true); // 성공 시 카메라 닫기
+					}
+				} catch (error) {
+					console.log('바코드 탐지 실패:', error);
+				}
+			}
+		}
+	};
+
 	const goCompare = async (originBarcode: string, inputBarcode: string) => {
 		try {
 			if (!originBarcode) {
 				setCompareResult('MATCH');
-				setInputBarcode(inputBarcode);
 			} else {
 				const response = await compareShopping({ originBarcode, inputBarcode });
 				setCompareResult(response.matchStatus);
-				setInputBarcode(inputBarcode);
 			}
 		} catch (error) {
 			console.error('장보기 비교 실패:', error);
 		}
 	};
 
-	// 스캔 시작
 	const startScan = async () => {
 		if (videoRef.current) {
 			try {
 				const stream = await getRearCameraStream();
 				videoRef.current.srcObject = stream;
 
-				barcodeReader.decodeFromVideoElement(videoRef.current, result => {
-					if (result) {
-						const scannedBarcode = result.getText();
-						goCompare(originBarcode, scannedBarcode);
-						setInputBarcode(scannedBarcode);
-						videoRef.current?.pause();
-					}
-				});
+				// 주기적으로 박스 영역 스캔
+				const intervalId = setInterval(scanBarcodeFromCanvas, 500);
+
+				return () => clearInterval(intervalId);
 			} catch (error) {
 				console.error('카메라 접근 실패:', error);
 				setShowToast(
@@ -267,17 +209,13 @@ const Cam: React.FC<BarcodeCamProps> = ({
 		};
 	}, [barcodeReader, originBarcode, hasPermission]);
 
-	const handleConfirm = () => {
-		onCaptureChange(true);
-	};
-
 	return (
 		<div className="flex flex-col items-center p-4 bg-white rounded-lg shadow-lg mx-auto w-[80%] max-w-lg">
 			{compareResult ? (
 				<AddModal
 					conpareResult={compareResult}
 					ProductName={productName || '새로 담은 상품'}
-					originBarcode={originBarcode}
+					originBarcode={originBarcode || ''}
 					inputBarcode={inputBarcode || ''}
 					onClose={onClose}
 				/>
@@ -289,7 +227,7 @@ const Cam: React.FC<BarcodeCamProps> = ({
 							autoPlay
 							className="w-full h-full object-cover"
 						/>
-						<div className="absolute inset-0 bg-black bg-opacity-50 pointer-events-none"></div>
+						<canvas ref={canvasRef} className="hidden" />
 						<div className="absolute inset-0 flex justify-center items-center pointer-events-none">
 							<div className="border-2 border-orange-300 w-[80%] h-[20%]">
 								<span className="text-white mt-2 text-sm bg-opacity-50 px-2 py-1 rounded">
@@ -300,12 +238,7 @@ const Cam: React.FC<BarcodeCamProps> = ({
 					</div>
 
 					<div className="flex gap-4 mt-4">
-						<Button
-							size="small"
-							color="blue"
-							onClick={handleConfirm}
-							text="돌아가기"
-						/>
+						<Button size="small" color="blue" onClick={onClose} text="닫기" />
 					</div>
 				</>
 			)}
