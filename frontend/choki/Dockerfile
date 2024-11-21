@@ -19,7 +19,7 @@ RUN wget -q -P ./public/unity https://choki-s3.s3.ap-southeast-2.amazonaws.com/u
     wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unitybuild.data && \
     wget -q -P ./public/unity/Build https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/Build/unitybuild.wasm && \
     wget -q -P ./public/unity/TemplateData https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/TemplateData/Group.svg && \
-    wget -q -P ./public/unity/TemplateData https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/TemplateData/style.css && \
+    wget -q -P ./public/unity/TemplateData https://choki-s3.s3.ap-southeast-2.amazonaws.com/unity/TemplateData/style.css
 
 # Next.js 프로젝트 빌드
 RUN npm run build
