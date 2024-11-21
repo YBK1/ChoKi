@@ -24,7 +24,7 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 	const [showToast, setShowToast] = useState<string | null>(null); // 토스트 메시지 상태
 	const router = useRouter();
 
-	// 권한 상태 확인 및 요청
+	// 카메라 권한 확인 및 요청
 	const checkCameraPermission = async () => {
 		try {
 			const permission = await navigator.permissions.query({
@@ -45,27 +45,45 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 		}
 	};
 
-	const startCamera = async () => {
+	// 특정 카메라 장치 스트림 가져오기
+	const getRearCameraStream = async (): Promise<MediaStream> => {
 		try {
-			// 카메라 권한 확인
-			await checkCameraPermission();
-			if (!hasPermission) return;
+			const targetDeviceId =
+				'687e92c404c067d9a9032fdc5a5fe77586531a3ae2477a69a272346598bdbc17'; // 특정 카메라 ID 설정
 
-			const stream = await navigator.mediaDevices.getUserMedia({
+			const constraints: MediaStreamConstraints = {
 				video: {
-					facingMode: 'environment',
+					deviceId: targetDeviceId,
 					width: { ideal: 1280 },
 					height: { ideal: 720 },
 				},
-			});
+			};
+
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
+			console.log(`Selected Camera: Device ID ${targetDeviceId}`);
+			return stream;
+		} catch (error) {
+			console.error('카메라 접근 실패:', error);
+			throw error;
+		}
+	};
+
+	// 카메라 시작
+	const startCamera = async () => {
+		try {
+			await checkCameraPermission(); // 권한 확인
+			if (!hasPermission) return;
+
+			const stream = await getRearCameraStream();
+
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream;
 			} else {
-				// Clean up the stream if the video element is gone
+				// 비디오 요소가 없으면 스트림 정리
 				stream.getTracks().forEach(track => track.stop());
 			}
 		} catch (error) {
-			console.error('카메라 접근 실패:', error);
+			console.error('카메라 초기화 실패:', error);
 			setCameraError(true);
 		}
 	};
@@ -87,7 +105,7 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 						setImageDimensions({ width: canvas.width, height: canvas.height });
 						setIsCaptured(true);
 
-						// Stop the camera stream after capturing
+						// 캡처 후 카메라 스트림 정리
 						const stream = video.srcObject as MediaStream;
 						if (stream) {
 							stream.getTracks().forEach(track => track.stop());
