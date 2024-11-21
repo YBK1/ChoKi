@@ -20,10 +20,37 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 	} | null>(null);
 	const [isCaptured, setIsCaptured] = useState(false);
 	const [cameraError, setCameraError] = useState(false);
+	const [hasPermission, setHasPermission] = useState<boolean>(false); // 권한 상태
+	const [showToast, setShowToast] = useState<string | null>(null); // 토스트 메시지 상태
 	const router = useRouter();
+
+	// 권한 상태 확인 및 요청
+	const checkCameraPermission = async () => {
+		try {
+			const permission = await navigator.permissions.query({
+				name: 'camera' as PermissionName,
+			});
+
+			if (permission.state === 'denied') {
+				setHasPermission(false);
+				throw new Error('카메라 권한이 거부되었습니다.');
+			} else {
+				setHasPermission(true);
+			}
+		} catch (error) {
+			console.error('권한 확인 실패:', error);
+			setShowToast('카메라 권한을 허용해주세요.');
+			setHasPermission(false);
+			throw error;
+		}
+	};
 
 	const startCamera = async () => {
 		try {
+			// 카메라 권한 확인
+			await checkCameraPermission();
+			if (!hasPermission) return;
+
 			const stream = await navigator.mediaDevices.getUserMedia({
 				video: {
 					facingMode: 'environment',
@@ -38,7 +65,7 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 				stream.getTracks().forEach(track => track.stop());
 			}
 		} catch (error) {
-			console.error('Error accessing the camera:', error);
+			console.error('카메라 접근 실패:', error);
 			setCameraError(true);
 		}
 	};
@@ -103,16 +130,20 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 	}, [capturedImage]);
 
 	useEffect(() => {
-		startCamera();
+		const initializeCamera = async () => {
+			try {
+				await startCamera();
+			} catch (error) {
+				console.error('카메라 초기화 실패:', error);
+			}
+		};
 
-		// Store the current video element and its stream in variables
-		const videoElement = videoRef.current;
+		initializeCamera();
 
 		return () => {
-			// Use the stored videoElement in cleanup
-			if (videoElement && videoElement.srcObject) {
-				const stream = videoElement.srcObject as MediaStream;
-				stream.getTracks().forEach(track => track.stop());
+			if (videoRef.current) {
+				const stream = videoRef.current.srcObject as MediaStream;
+				stream?.getTracks().forEach(track => track.stop());
 			}
 		};
 	}, []);
@@ -138,7 +169,6 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 				</div>
 			</div>
 
-			{/* 캡쳐 상태에 따라 카메라 화면 or 이미지 렌더링 */}
 			<div className="relative w-40 h-52 bg-gray-200 rounded-lg overflow-hidden">
 				{imagePreviewUrl ? (
 					<Image
@@ -189,6 +219,12 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 			)}
 
 			<canvas ref={canvasRef} className="hidden"></canvas>
+
+			{showToast && (
+				<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white py-2 px-4 rounded-lg shadow-lg">
+					{showToast}
+				</div>
+			)}
 		</div>
 	);
 };
