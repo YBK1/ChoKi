@@ -177,7 +177,7 @@ const Cam: React.FC<BarcodeCamProps> = ({
 				device => device.kind === 'videoinput',
 			);
 
-			// 광각 카메라를 명시적으로 찾기
+			// 광각 카메라를 우선적으로 선택
 			const wideCamera = videoDevices.find(
 				device =>
 					device.label.toLowerCase().includes('rear') &&
@@ -185,17 +185,25 @@ const Cam: React.FC<BarcodeCamProps> = ({
 					!device.label.toLowerCase().includes('telephoto'), // 망원 카메라 필터링
 			);
 
-			const constraints: MediaStreamConstraints = wideCamera
+			// 만약 광각 카메라가 없다면, 후면 카메라를 기본으로 설정
+			const rearCamera = videoDevices.find(device =>
+				device.label.toLowerCase().includes('rear'),
+			);
+
+			// 사용할 카메라 선택 (광각 카메라가 우선, 없으면 후면 카메라)
+			const selectedCamera = wideCamera || rearCamera;
+
+			const constraints: MediaStreamConstraints = selectedCamera
 				? {
 						video: {
-							deviceId: wideCamera.deviceId, // 광각 카메라의 deviceId 설정
+							deviceId: selectedCamera.deviceId, // 선택된 카메라의 deviceId
 							width: { ideal: 1280 },
 							height: { ideal: 720 },
 						},
 					}
 				: {
 						video: {
-							facingMode: { exact: 'environment' },
+							facingMode: { exact: 'environment' }, // 환경 카메라 설정
 							width: { ideal: 1280 },
 							height: { ideal: 720 },
 						},
