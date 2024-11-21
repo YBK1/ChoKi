@@ -93,7 +93,7 @@ const Cam: React.FC<BarcodeCamProps> = ({
 					if (result) {
 						const scannedBarcode = result.getText();
 						goCompare(originBarcode, scannedBarcode);
-						videoRef.current?.pause();
+						stream.getTracks().forEach(track => track.stop());
 					}
 				});
 			} catch (error) {
