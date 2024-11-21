@@ -21,90 +21,82 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 	} | null>(null);
 	const [isCaptured, setIsCaptured] = useState(false);
 	const [cameraError, setCameraError] = useState(false);
+	const [hasPermission, setHasPermission] = useState<boolean>(false);
 	const [showToast, setShowToast] = useState<string | null>(null);
 	const router = useRouter();
 
 	// 카메라 권한 확인 및 요청
 	const checkCameraPermission = async () => {
 		try {
-			// 먼저 getUserMedia로 직접 권한 요청
-			const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-			stream.getTracks().forEach(track => track.stop()); // 테스트 스트림 정리
-			return true;
-		} catch {
-			// getUserMedia 실패 시 permissions API로 상태 확인
-			try {
-				const permission = await navigator.permissions.query({
-					name: 'camera' as PermissionName,
-				});
+			const permission = await navigator.permissions.query({
+				name: 'camera' as PermissionName,
+			});
 
-				if (permission.state === 'granted') {
-					return true;
-				} else if (permission.state === 'prompt') {
-					return true;
-				} else {
-					setShowToast('카메라 권한을 허용해주세요.');
-					return false;
-				}
-			} catch {
-				console.error('권한 확인 실패');
-				setShowToast('카메라 권한을 확인할 수 없습니다.');
-				return false;
+			if (permission.state === 'denied') {
+				setHasPermission(false);
+				throw new Error('카메라 권한이 거부되었습니다.');
+			} else {
+				setHasPermission(true);
 			}
+		} catch (error) {
+			console.error('권한 확인 실패:', error);
+			setShowToast('카메라 권한을 허용해주세요.');
+			setHasPermission(false);
+			throw error;
 		}
 	};
 	const getRearCameraStream = async (): Promise<MediaStream> => {
 		try {
-			// 먼저 사용 가능한 카메라 목록 가져오기
-			const devices = await navigator.mediaDevices.enumerateDevices();
-			const videoDevices = devices.filter(
-				device => device.kind === 'videoinput',
-			);
+			// 기본적인 후면 카메라 설정
+			const constraints: MediaStreamConstraints = {
+				video: {
+					facingMode: { exact: 'environment' }, // 후면 카메라 강제 설정
+					width: { ideal: 1280 },
+					height: { ideal: 720 },
+				},
+			};
 
-			// 우선 facingMode로 시도
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
+			return stream;
+		} catch (firstError) {
+			console.error('후면 카메라 접근 실패, 일반 카메라로 시도:', firstError);
+
+			// 첫 시도 실패시 덜 제한적인 설정으로 재시도
 			try {
-				const stream = await navigator.mediaDevices.getUserMedia({
+				const fallbackConstraints: MediaStreamConstraints = {
 					video: {
-						facingMode: 'environment', // exact 제거
+						// facingMode: 'environment', // exact 없이 더 유연하게 설정
 						width: { ideal: 1280 },
 						height: { ideal: 720 },
 					},
-				});
-				return stream;
-			} catch {
-				// facingMode 실패시 마지막 비디오 장치 사용 (보통 후면 카메라)
-				const lastDevice = videoDevices[videoDevices.length - 1];
-				if (lastDevice) {
-					const stream = await navigator.mediaDevices.getUserMedia({
-						video: {
-							deviceId: lastDevice.deviceId,
-							width: { ideal: 1280 },
-							height: { ideal: 720 },
-						},
-					});
-					return stream;
-				}
-				throw new Error('사용 가능한 카메라를 찾을 수 없습니다.');
+				};
+
+				const fallbackStream =
+					await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+				return fallbackStream;
+			} catch (error) {
+				console.error('카메라 접근 실패:', error);
+				throw error;
 			}
-		} catch (error) {
-			console.error('후면 카메라 접근 실패:', error);
-			throw error;
 		}
 	};
+
 	// 카메라 시작
 	const startCamera = async () => {
 		try {
-			const hasAccess = await checkCameraPermission();
-			if (!hasAccess) return;
+			await checkCameraPermission();
+			if (!hasPermission) return;
 
 			const stream = await getRearCameraStream();
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream;
 			}
-		} catch {
-			console.error('카메라 초기화 실패');
+		} catch (error) {
+			console.error('카메라 초기화 실패:', error);
 			setCameraError(true);
-			setShowToast('후면 카메라를 사용할 수 없습니다.');
+			setShowToast(
+				'카메라를 사용할 수 없습니다. 권한을 확인하거나 재시도해주세요.',
+			);
 		}
 	};
 
@@ -143,8 +135,8 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 					resetCapture();
 					router.push('/child/main');
 				})
-				.catch(() => {
-					console.error('이미지 업로드 실패');
+				.catch(error => {
+					console.error('이미지 업로드 실패:', error);
 					setShowToast('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
 				});
 		}
@@ -169,9 +161,9 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 		const initializeCamera = async () => {
 			try {
 				await startCamera();
-			} catch {
-				console.error('카메라 초기화 실패');
-				setShowToast('카메라를 사용할 수 없습니다.');
+			} catch (error) {
+				console.error('카메라 초기화 실패:', error);
+				setShowToast('카메라 초기화에 실패했습니다. 다시 시도해주세요.');
 			}
 		};
 
@@ -183,7 +175,7 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 				stream?.getTracks().forEach(track => track.stop());
 			}
 		};
-	}, []);
+	}, [hasPermission]);
 
 	return (
 		<div className="flex flex-col items-center space-y-4 p-4 bg-white rounded-lg shadow-lg max-w-xs mx-auto">
