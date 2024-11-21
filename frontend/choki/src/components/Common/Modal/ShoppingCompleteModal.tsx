@@ -2,6 +2,7 @@ import Image from 'next/image';
 import React, { useEffect, useRef, useState } from 'react';
 import { uploadShoppingImage } from '@/lib/api/shopping';
 import { useRouter } from 'next/router';
+import { Toast } from '@/components/Toast/Toast';
 
 interface ShoppingFinishComponentProps {
 	missionId: string;
@@ -20,8 +21,8 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 	} | null>(null);
 	const [isCaptured, setIsCaptured] = useState(false);
 	const [cameraError, setCameraError] = useState(false);
-	const [hasPermission, setHasPermission] = useState<boolean>(false); // 권한 상태
-	const [showToast, setShowToast] = useState<string | null>(null); // 토스트 메시지 상태
+	const [hasPermission, setHasPermission] = useState<boolean>(false);
+	const [showToast, setShowToast] = useState<string | null>(null);
 	const router = useRouter();
 
 	// 카메라 권한 확인 및 요청
@@ -44,47 +45,58 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 			throw error;
 		}
 	};
-
-	// 특정 카메라 장치 스트림 가져오기
 	const getRearCameraStream = async (): Promise<MediaStream> => {
 		try {
-			const targetDeviceId =
-				'687e92c404c067d9a9032fdc5a5fe77586531a3ae2477a69a272346598bdbc17'; // 특정 카메라 ID 설정
-
+			// 기본적인 후면 카메라 설정
 			const constraints: MediaStreamConstraints = {
 				video: {
-					deviceId: targetDeviceId,
+					facingMode: { exact: 'environment' }, // 후면 카메라 강제 설정
 					width: { ideal: 1280 },
 					height: { ideal: 720 },
 				},
 			};
 
 			const stream = await navigator.mediaDevices.getUserMedia(constraints);
-			console.log(`Selected Camera: Device ID ${targetDeviceId}`);
 			return stream;
-		} catch (error) {
-			console.error('카메라 접근 실패:', error);
-			throw error;
+		} catch (firstError) {
+			console.error('후면 카메라 접근 실패, 일반 카메라로 시도:', firstError);
+
+			// 첫 시도 실패시 덜 제한적인 설정으로 재시도
+			try {
+				const fallbackConstraints: MediaStreamConstraints = {
+					video: {
+						facingMode: 'environment', // exact 없이 더 유연하게 설정
+						width: { ideal: 1280 },
+						height: { ideal: 720 },
+					},
+				};
+
+				const fallbackStream =
+					await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+				return fallbackStream;
+			} catch (error) {
+				console.error('카메라 접근 실패:', error);
+				throw error;
+			}
 		}
 	};
 
 	// 카메라 시작
 	const startCamera = async () => {
 		try {
-			await checkCameraPermission(); // 권한 확인
+			await checkCameraPermission();
 			if (!hasPermission) return;
 
 			const stream = await getRearCameraStream();
-
 			if (videoRef.current) {
 				videoRef.current.srcObject = stream;
-			} else {
-				// 비디오 요소가 없으면 스트림 정리
-				stream.getTracks().forEach(track => track.stop());
 			}
 		} catch (error) {
 			console.error('카메라 초기화 실패:', error);
 			setCameraError(true);
+			setShowToast(
+				'카메라를 사용할 수 없습니다. 권한을 확인하거나 재시도해주세요.',
+			);
 		}
 	};
 
@@ -112,8 +124,6 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 						}
 					}
 				}, 'image/png');
-			} else {
-				console.error('Error: Unable to get 2D context from canvas');
 			}
 		}
 	};
@@ -127,6 +137,7 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 				})
 				.catch(error => {
 					console.error('이미지 업로드 실패:', error);
+					setShowToast('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
 				});
 		}
 	};
@@ -142,7 +153,6 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 		if (capturedImage) {
 			const objectUrl = URL.createObjectURL(capturedImage);
 			setImagePreviewUrl(objectUrl);
-
 			return () => URL.revokeObjectURL(objectUrl);
 		}
 	}, [capturedImage]);
@@ -153,6 +163,7 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 				await startCamera();
 			} catch (error) {
 				console.error('카메라 초기화 실패:', error);
+				setShowToast('카메라 초기화에 실패했습니다. 다시 시도해주세요.');
 			}
 		};
 
@@ -164,7 +175,7 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 				stream?.getTracks().forEach(track => track.stop());
 			}
 		};
-	}, []);
+	}, [hasPermission]);
 
 	return (
 		<div className="flex flex-col items-center space-y-4 p-4 bg-white rounded-lg shadow-lg max-w-xs mx-auto">
@@ -239,9 +250,7 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 			<canvas ref={canvasRef} className="hidden"></canvas>
 
 			{showToast && (
-				<div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black text-white py-2 px-4 rounded-lg shadow-lg">
-					{showToast}
-				</div>
+				<Toast message={showToast} onClose={() => setShowToast(null)} />
 			)}
 		</div>
 	);
