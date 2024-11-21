@@ -170,8 +170,6 @@ const Cam: React.FC<BarcodeCamProps> = ({
 	// 		throw error;
 	// 	}
 	// };
-
-	// 디폴트 : 광각 카메라 사용
 	const getRearCameraStream = async (): Promise<MediaStream> => {
 		try {
 			const devices = await navigator.mediaDevices.enumerateDevices();
@@ -182,8 +180,9 @@ const Cam: React.FC<BarcodeCamProps> = ({
 			// 광각 카메라를 명시적으로 찾기
 			const wideCamera = videoDevices.find(
 				device =>
-					device.label.toLowerCase().includes('back') ||
-					device.label.toLowerCase().includes('rear'),
+					device.label.toLowerCase().includes('rear') &&
+					!device.label.toLowerCase().includes('wide') && // 초광각 필터링
+					!device.label.toLowerCase().includes('telephoto'), // 망원 카메라 필터링
 			);
 
 			const constraints: MediaStreamConstraints = wideCamera
