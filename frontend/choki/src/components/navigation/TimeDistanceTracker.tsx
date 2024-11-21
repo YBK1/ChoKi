@@ -11,6 +11,7 @@ type TimeDistanceTrackerProps = {
 	route: RoutePoint[];
 	userLocation: [number, number] | null;
 	shoppingId: string;
+	onOffRouteChange: (isOffRoute: boolean) => void;
 };
 
 const AVERAGE_WALKING_SPEED = 1.0;
@@ -20,6 +21,7 @@ const OFF_ROUTE_THRESHOLD = 20;
 const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
 	route,
 	shoppingId,
+	onOffRouteChange,
 }) => {
 	const [userLocation, setUserLocation] = useState<[number, number] | null>(
 		null,
@@ -91,7 +93,10 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
 		// 아이가 경로 이탈했는지 확인
 		const isDeviated = minDistanceToRoute > OFF_ROUTE_THRESHOLD;
 
-		setIsOffRoute(isDeviated);
+		if (isDeviated !== isOffRoute) {
+			setIsOffRoute(isDeviated);
+			onOffRouteChange(isDeviated);
+		}
 
 		const destination = route[route.length - 1];
 
@@ -108,7 +113,7 @@ const TimeDistanceTracker: React.FC<TimeDistanceTrackerProps> = ({
 
 		setRemainingTime(Math.ceil(timeInSeconds / 60));
 		setRemainingSteps(Math.ceil(steps));
-	}, [route, userLocation]);
+	}, [route, userLocation, isOffRoute, onOffRouteChange]);
 
 	return (
 		<>

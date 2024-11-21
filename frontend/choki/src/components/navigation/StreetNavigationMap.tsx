@@ -37,6 +37,28 @@ const StreetNavigationMap: React.FC<StreetNavigationMapProps> = ({
 	const [, setShoppingList] = useAtom(shoppingListAtom);
 	const stepRef = useRef(0);
 	const [, setCurrentLocation] = useState<[number, number] | null>(null);
+	const [showRedFlash, setShowRedFlash] = useState(false);
+	const flashIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+	const startFlashing = useCallback(() => {
+		if (!flashIntervalRef.current) {
+			flashIntervalRef.current = setInterval(() => {
+				setShowRedFlash(prev => !prev);
+			}, 500);
+		}
+	}, []);
+
+	const stopFlashing = useCallback(() => {
+		if (flashIntervalRef.current) {
+			clearInterval(flashIntervalRef.current);
+			flashIntervalRef.current = null;
+			setShowRedFlash(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		return () => stopFlashing();
+	}, [stopFlashing]);
 
 	const applyKoreanLabels = (mapInstance: mapboxgl.Map) => {
 		const style = mapInstance.getStyle();
@@ -238,6 +260,12 @@ const StreetNavigationMap: React.FC<StreetNavigationMapProps> = ({
 	return (
 		<div className="relative w-full h-screen">
 			<style>{`.mapboxgl-ctrl-logo { display: none !important; }`}</style>
+			<div
+				className={`absolute inset-0 bg-red-500 z-50 transition-opacity ${
+					showRedFlash ? 'opacity-60' : 'opacity-0'
+				}`}
+				style={{ pointerEvents: 'none' }}
+			/>
 			<div ref={mapContainerRef} className="w-full h-full" />
 			{missionId && <ChildLocationSender shoppingId={missionId} />}
 
@@ -247,6 +275,13 @@ const StreetNavigationMap: React.FC<StreetNavigationMapProps> = ({
 				route={currentRoute ?? []}
 				userLocation={mapViewState.userLocation}
 				shoppingId={missionId}
+				onOffRouteChange={isOffRoute => {
+					if (isOffRoute) {
+						startFlashing();
+					} else {
+						stopFlashing();
+					}
+				}}
 			/>
 
 			{destination === 'Home' && (
