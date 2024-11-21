@@ -242,11 +242,19 @@ const Cam: React.FC<BarcodeCamProps> = ({
 
 	const getRearCameraStream = async (): Promise<MediaStream> => {
 		try {
-			// 연결 가능한 모든 비디오 입력 장치 가져오기
+			// 모든 비디오 입력 장치 가져오기
 			const devices = await navigator.mediaDevices.enumerateDevices();
 			const videoDevices = devices.filter(
 				device => device.kind === 'videoinput',
 			);
+
+			// 카메라 목록 출력
+			console.log('Available video devices:');
+			videoDevices.forEach((device, index) => {
+				console.log(
+					`Device ${index + 1}: ${device.label} (ID: ${device.deviceId})`,
+				);
+			});
 
 			// 광각 카메라 탐색
 			const wideCamera = videoDevices.find(
@@ -266,6 +274,11 @@ const Cam: React.FC<BarcodeCamProps> = ({
 			if (!defaultCamera) {
 				throw new Error('광각 또는 후면 카메라를 찾을 수 없습니다.');
 			}
+
+			// 선택된 카메라 정보 출력
+			console.log(
+				`Selected Camera: ${defaultCamera.label} (ID: ${defaultCamera.deviceId})`,
+			);
 
 			// 선택된 카메라로 스트림 생성
 			const constraints: MediaStreamConstraints = {
