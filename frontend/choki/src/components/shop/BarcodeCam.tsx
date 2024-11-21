@@ -242,56 +242,25 @@ const Cam: React.FC<BarcodeCamProps> = ({
 
 	const getRearCameraStream = async (): Promise<MediaStream> => {
 		try {
-			// 모든 비디오 입력 장치 가져오기
-			const devices = await navigator.mediaDevices.enumerateDevices();
-			const videoDevices = devices.filter(
-				device => device.kind === 'videoinput',
-			);
+			// 특정 deviceId 지정 (Device 4: camera2 0, facing back)
+			const targetDeviceId =
+				'687e92c404c067d9a9032fdc5a5fe77586531a3ae2477a69a272346598bdbc17';
 
-			// 카메라 목록 출력
-			console.log('Available video devices:');
-			videoDevices.forEach((device, index) => {
-				console.log(
-					`Device ${index + 1}: ${device.label} (ID: ${device.deviceId})`,
-				);
-			});
-
-			// 광각 카메라 탐색
-			const wideCamera = videoDevices.find(
-				device =>
-					device.label.toLowerCase().includes('rear') && // 후면 카메라
-					!device.label.toLowerCase().includes('wide') && // 초광각 제외
-					!device.label.toLowerCase().includes('telephoto'), // 망원 제외
-			);
-
-			// 광각 카메라 없을 경우 기본 후면 카메라 선택
-			const defaultCamera =
-				wideCamera ||
-				videoDevices.find(device =>
-					device.label.toLowerCase().includes('rear'),
-				);
-
-			if (!defaultCamera) {
-				throw new Error('광각 또는 후면 카메라를 찾을 수 없습니다.');
-			}
-
-			// 선택된 카메라 정보 출력
-			console.log(
-				`Selected Camera: ${defaultCamera.label} (ID: ${defaultCamera.deviceId})`,
-			);
-
-			// 선택된 카메라로 스트림 생성
+			// 스트림 생성
 			const constraints: MediaStreamConstraints = {
 				video: {
-					deviceId: defaultCamera.deviceId,
+					deviceId: targetDeviceId,
 					width: { ideal: 1280 },
 					height: { ideal: 720 },
 				},
 			};
 
-			return await navigator.mediaDevices.getUserMedia(constraints);
+			// 선택된 카메라로 스트림 반환
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
+			console.log(`Selected Camera: Device 4 (ID: ${targetDeviceId})`);
+			return stream;
 		} catch (error) {
-			console.error('광각 카메라 선택 실패:', error);
+			console.error('카메라 선택 실패:', error);
 			throw error;
 		}
 	};
