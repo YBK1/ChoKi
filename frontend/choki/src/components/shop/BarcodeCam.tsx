@@ -242,27 +242,35 @@ const Cam: React.FC<BarcodeCamProps> = ({
 
 	const getRearCameraStream = async (): Promise<MediaStream> => {
 		try {
+			// 연결 가능한 모든 비디오 입력 장치 가져오기
 			const devices = await navigator.mediaDevices.enumerateDevices();
 			const videoDevices = devices.filter(
 				device => device.kind === 'videoinput',
 			);
 
-			// 광각 카메라를 명시적으로 선택
+			// 광각 카메라 탐색
 			const wideCamera = videoDevices.find(
 				device =>
-					device.label.toLowerCase().includes('50mp') || // 갤럭시 S24+ 광각 카메라 식별
-					(device.label.toLowerCase().includes('rear') &&
-						!device.label.toLowerCase().includes('wide') &&
-						!device.label.toLowerCase().includes('telephoto')),
+					device.label.toLowerCase().includes('rear') && // 후면 카메라
+					!device.label.toLowerCase().includes('wide') && // 초광각 제외
+					!device.label.toLowerCase().includes('telephoto'), // 망원 제외
 			);
 
-			if (!wideCamera) {
-				throw new Error('광각 카메라를 찾을 수 없습니다.');
+			// 광각 카메라 없을 경우 기본 후면 카메라 선택
+			const defaultCamera =
+				wideCamera ||
+				videoDevices.find(device =>
+					device.label.toLowerCase().includes('rear'),
+				);
+
+			if (!defaultCamera) {
+				throw new Error('광각 또는 후면 카메라를 찾을 수 없습니다.');
 			}
 
+			// 선택된 카메라로 스트림 생성
 			const constraints: MediaStreamConstraints = {
 				video: {
-					deviceId: wideCamera.deviceId,
+					deviceId: defaultCamera.deviceId,
 					width: { ideal: 1280 },
 					height: { ideal: 720 },
 				},
