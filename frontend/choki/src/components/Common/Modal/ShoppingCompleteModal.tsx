@@ -50,7 +50,7 @@ const ShoppingCompleteModal: React.FC<ShoppingFinishComponentProps> = ({
 			// 기본적인 후면 카메라 설정
 			const constraints: MediaStreamConstraints = {
 				video: {
-					facingMode: { exact: 'environment' }, // 후면 카메라 강제 설정
+					// facingMode: { exact: 'environment' }, // 후면 카메라 강제 설정
 					width: { ideal: 1280 },
 					height: { ideal: 720 },
 				},
