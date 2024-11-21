@@ -107,7 +107,7 @@ export default function AddModal({
 						</div>
 					)}
 					{compareResult === 'NOT_MATCH' && (
-						<div className="flex flex-col items-center">
+						<div className="flex flex-col items-center mt-12">
 							<Image
 								src="/icons/fail_icon.svg"
 								alt="Fail"
@@ -130,7 +130,7 @@ export default function AddModal({
 						</div>
 					)}
 					{compareResult === 'SIMILAR' && (
-						<div className="flex flex-col items-center">
+						<div className="flex flex-col items-center mt-12">
 							<Image
 								src="/icons/warning_icon.svg"
 								alt="Warning"
