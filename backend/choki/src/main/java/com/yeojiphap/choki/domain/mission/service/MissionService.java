@@ -44,7 +44,6 @@ public class MissionService {
 	}
 
 	// 장보기 미션 저장하기
-	// 경험치는 일단 하드코딩 했음!!
 	public ObjectId addShoppingMission(ShoppingCreateRequestDto shoppingCreateRequestDto){
 		Mission mission = Mission.builder()
 			.parentId(shoppingCreateRequestDto.getParentId())
