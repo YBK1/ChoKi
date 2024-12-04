@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .connected { background-color: #d4edda; }
+        .disconnected { background-color: #f8d7da; }
+        button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #connect { background-color: #28a745; color: white; }
+        #disconnect { background-color: #dc3545; color: white; }
+        .input-group {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #messages {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .message-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>WebSocket Test Page</h2>
+
+    <!-- 웹소켓 연결 설정 -->
+    <div class="input-group">
+        <label for="wsUrl">WebSocket URL:</label>
+        <input type="text" id="wsUrl" value="ws://localhost:8080/ws/shopping">
+    </div>
+
+    <div id="status" class="status disconnected">Status: Disconnected</div>
+    <div>
+        <button id="connect">Connect</button>
+        <button id="disconnect" disabled>Disconnect</button>
+    </div>
+
+    <!-- 구독 설정 -->
+    <div class="input-group">
+        <label for="subUrl">Subscribe Topic:</label>
+        <input type="text" id="subUrl" value="/sub/test">
+        <button id="subscribe">Subscribe</button>
+    </div>
+
+    <!-- 메시지 전송 설정 -->
+    <div class="input-group">
+        <label for="pubUrl">Publish Destination:</label>
+        <input type="text" id="pubUrl" value="/pub/test">
+        <label for="message">Message:</label>
+        <input type="text" id="message" placeholder="Enter message to send">
+        <button id="send">Send Message</button>
+    </div>
+
+    <div id="messages"></div>
+</div>
+
+<script>
+    let stompClient = null;
+    let currentAccessToken = null;
+    const statusDiv = document.getElementById('status');
+    const connectButton = document.getElementById('connect');
+    const disconnectButton = document.getElementById('disconnect');
+    const messagesDiv = document.getElementById('messages');
+    const subscribeButton = document.getElementById('subscribe');
+    const sendButton = document.getElementById('send');
+
+    function getAccessToken() {
+        // 쿠키에서 access 토큰 읽기
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'access') {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    function getAuthHeaders() {
+        return {
+            'access': currentAccessToken
+        };
+    }
+
+    function addMessage(message) {
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message-item';
+        messageElement.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+        messagesDiv.insertBefore(messageElement, messagesDiv.firstChild);
+    }
+
+    function connect() {
+        try {
+            const wsUrl = document.getElementById('wsUrl').value;
+            addMessage('Attempting to connect to ' + wsUrl);
+
+            // access 토큰 가져오기
+            currentAccessToken = getAccessToken();
+            console.log(currentAccessToken);
+            if (!currentAccessToken) {
+                addMessage('Warning: No access token found in cookies');
+            }
+
+            const socket = new WebSocket(wsUrl);
+            stompClient = Stomp.over(socket);
+
+            // stompClient.debug = null;
+            stompClient.debug = function(str) {
+                console.log(str);
+            };
+
+            // access 헤더에 토큰 추가
+            const connectHeaders = getAuthHeaders();
+
+            stompClient.connect(connectHeaders,
+                function(frame) {
+                    statusDiv.textContent = 'Status: Connected';
+                    statusDiv.className = 'status connected';
+                    connectButton.disabled = true;
+                    disconnectButton.disabled = false;
+                    subscribeButton.disabled = false;
+                    sendButton.disabled = false;
+                    addMessage('Connected successfully');
+                },
+                function(error) {
+                    addMessage('Error: ' + error);
+                    disconnect();
+                }
+            );
+        } catch (err) {
+            addMessage('Connection error: ' + err.message);
+            disconnect();
+        }
+    }
+
+    function disconnect() {
+        if (stompClient !== null) {
+            stompClient.disconnect();
+            stompClient = null;
+        }
+        statusDiv.textContent = 'Status: Disconnected';
+        statusDiv.className = 'status disconnected';
+        connectButton.disabled = false;
+        disconnectButton.disabled = true;
+        subscribeButton.disabled = true;
+        sendButton.disabled = true;
+        currentAccessToken = null;
+        addMessage('Disconnected');
+    }
+
+    function subscribe() {
+        if (stompClient && stompClient.connected) {
+            const subUrl = document.getElementById('subUrl').value;
+            try {
+                // 구독 시에도 access 헤더 추가
+                stompClient.subscribe(subUrl, function(message) {
+                    addMessage(`Received from ${subUrl}: ${message.body}`);
+                }, getAuthHeaders());
+                addMessage(`Subscribed to ${subUrl}`);
+            } catch (err) {
+                addMessage(`Subscribe error: ${err.message}`);
+            }
+        } else {
+            addMessage('Not connected. Please connect first.');
+        }
+    }
+
+    function sendMessage() {
+        if (stompClient && stompClient.connected) {
+            const pubUrl = document.getElementById('pubUrl').value;
+            const message = document.getElementById('message').value;
+            try {
+                // 메시지 발행 시에도 access 헤더 추가
+                stompClient.send(pubUrl, getAuthHeaders(), message);
+                addMessage(`Sent to ${pubUrl}: ${message}`);
+                document.getElementById('message').value = ''; // Clear message input
+            } catch (err) {
+                addMessage(`Send error: ${err.message}`);
+            }
+        } else {
+            addMessage('Not connected. Please connect first.');
+        }
+    }
+
+    // 이벤트 리스너 등록
+    connectButton.addEventListener('click', connect);
+    disconnectButton.addEventListener('click', disconnect);
+    subscribeButton.addEventListener('click', subscribe);
+    sendButton.addEventListener('click', sendMessage);
+
+    // Enter 키로 메시지 전송
+    document.getElementById('message').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    subscribeButton.disabled = true;
+    sendButton.disabled = true;
+
+    // 초기 메시지
+    window.addEventListener('load', function() {
+        addMessage('Page loaded. Click Connect to start.');
+    });
+</script>
+</body>
+</html>
